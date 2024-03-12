@@ -1,4 +1,6 @@
 import tkinter as tk
+from tkinter import ttk
+
 import ssh_password_gui
 from gui_resources import config
 from login_gui import LoginGUI
@@ -32,44 +34,28 @@ class MainGUI:
 
         self.root.configure(bg=BG_COLOR)
 
-        # Header labels in 'ALL' section
-        lblHostnameHeader = tk.Label(self.root, text='Hostname')
-        lblStateHeader = tk.Label(self.root, text='State')
-        lblRIPHeader = tk.Label(self.root, text='RIP')
-        lblOSPFHeader = tk.Label(self.root, text='OSPF')
-        lblBGPHeader = tk.Label(self.root, text='BGP')
-
-        headerLabels = [lblHostnameHeader, lblStateHeader, lblRIPHeader, lblOSPFHeader, lblBGPHeader]
-        x = 5  # starting point for headers
-        for header in headerLabels:
-            header.place(x=x, y=70, width=80, height=30)
-            header.configure(bg=BG_COLOR, bd=2, relief='solid')
-            x = x + 80
-
-        self.lstbxRouters = tk.Listbox(self.root)
-        self.lstbxRouters["borderwidth"] = "1px"
-        self.lstbxRouters["fg"] = "#333333"
-        self.lstbxRouters["justify"] = "center"
-        self.lstbxRouters.place(x=5, y=100, width=680, height=650)
-        self.lstbxRouters.configure(bg=BG_COLOR)
-
         # Sample data:
-        routers = {
-            "R1": {'ip': '10.1.1.11'},
-            "R2": {'ip': '10.1.1.22'}
-        }
-        # Loading data to listbox, change padx parameter to move
+        routers = [
+            ('1', 'R1', '10.1.1.11'),
+            ('2', 'R2', '10.1.1.22')
+             ]
+        columns = ('No', 'Hostname', 'IP')
+        self.tree = ttk.Treeview(self.root, columns=columns, show='headings')
+        self.tree.place(x=5, y=100, width=650, height=500)
+
         for router in routers:
-            item_frame = tk.Frame(self.lstbxRouters)
-            item_frame.pack(fill='x')
+            self.tree.insert('', tk.END, values=router)
 
-            lblHostname = tk.Label(item_frame, text=router)
-            lblHostname.pack(side='left', padx=20)
-            lblIP = tk.Label(item_frame, text=routers[router]['ip'])
-            lblIP.pack(side='left', padx=20)
+        self.tree.heading('No', text='No',)
+        self.tree.column('No', width=30)
 
-            button = tk.Button(item_frame, text='Download config')
-            button.pack(side='right')
+        self.tree.heading('Hostname', text='Hostname')
+        self.tree.column('Hostname', width=80)
+
+        self.tree.heading('IP', text='IP')
+        self.tree.column('IP', width=50)
+
+        self.tree.bind('<Button-3>', self.show_content_menu)
 
         # Buttons
         btnAll = tk.Button(self.root, text='All', command=self.btnAll_command)
@@ -98,7 +84,21 @@ class MainGUI:
         btnQuit = tk.Button(self.root, text='Quit', image=quit_icon, compound=tk.RIGHT, command=self.root.destroy)
         btnQuit.place(x=725, y=765, width=70, height=30)
 
+        self.menu = tk.Menu(self.root)
+        self.menu.add_command(label='test', command=self.do_test)
+
         self.root.mainloop()
+
+    def show_content_menu(self, event):
+        item = self.tree.identify_row(event.y)
+        if item:
+            self.menu.post(event.x_root, event.y_root)
+
+    def do_test(self):
+        selected_item = self.tree.selection()
+        if selected_item:
+            item_text = self.tree.item(selected_item)['values']
+            print(f'do something: {item_text}')
 
     def btnLogOut_command(self) -> None:
         self.root.destroy()
@@ -112,8 +112,8 @@ class MainGUI:
         return
 
     def btnRIP_command(self):
-        self.lstbxRouters.delete(0, tk.END)
-
+        for item in self.tree.get_children():
+            self.tree.delete(item)
     def btnBGP_command(self):
         return
 
