@@ -30,9 +30,22 @@ class MainGUI:
         screenheight = self.root.winfo_screenheight()
         alignstr = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
         self.root.geometry(alignstr)
-        self.root.resizable(width=False, height=False)
+        self.root.resizable(width=True, height=True)
 
         self.root.configure(bg=BG_COLOR)
+
+        self.root.minsize(300, 200)
+
+        self.root.columnconfigure(0, weight=4)
+        self.root.columnconfigure(1, weight=4)
+        self.root.columnconfigure(2, weight=4)
+        self.root.columnconfigure(3, weight=4)
+        self.root.columnconfigure(4, weight=1)
+
+        self.root.rowconfigure(0, weight=1)
+        self.root.rowconfigure(1, weight=4)
+        self.root.rowconfigure(2, weight=4)
+        self.root.rowconfigure(3, weight=4)
 
         # Sample data:
         routers = [
@@ -41,7 +54,7 @@ class MainGUI:
              ]
         columns = ('No', 'Hostname', 'IP')
         self.tree = ttk.Treeview(self.root, columns=columns, show='headings')
-        self.tree.place(x=5, y=100, width=650, height=500)
+        self.tree.grid(column=0, row=1, padx=2, pady=2, columnspan=4, rowspan=4, sticky='NSWE')
 
         for router in routers:
             self.tree.insert('', tk.END, values=router)
@@ -58,31 +71,36 @@ class MainGUI:
         self.tree.bind('<Button-3>', self.show_content_menu)
 
         # Buttons
-        btnAll = tk.Button(self.root, text='All', command=self.btnAll_command)
-        btnRIP = tk.Button(self.root, text='RIP', command=self.btnRIP_command)
-        btnOSPF = tk.Button(self.root, text='OSPF', command=self.btnOSPF_command)
-        btnBGP = tk.Button(self.root, text='BGP', command=self.btnBGP_command)
+        buttonsFrame = tk.Frame(self.root)
+        buttonsFrame.grid(column=0, row=0, sticky='EW')
+        buttonsFrame.configure(bg=BG_COLOR)
 
-        buttons = [btnAll, btnRIP, btnOSPF, btnBGP]
-        x = 5  # starting point
-        for button in buttons:
-            button.place(x=x, y=5, width=70, height=30)
-            x = x + 70
+        btnAll = tk.Button(buttonsFrame, text='All', padx=10, command=self.btnAll_command)
+        btnAll.grid(column=0, row=1)
+
+        btnRIP = tk.Button(buttonsFrame, text='RIP', padx=10, command=self.btnRIP_command)
+        btnRIP.grid(column=1, row=1)
+
+        btnOSPF = tk.Button(buttonsFrame, text='OSPF', padx=10, command=self.btnOSPF_command)
+        btnOSPF.grid(column=2, row=1)
+
+        btnBGP = tk.Button(buttonsFrame, text='BGP', padx=10, command=self.btnBGP_command)
+        btnBGP.grid(column=3, row=1)
 
         btnAddRouter = tk.Button(self.root, text='Add Router', command=self.btnAddRouter_command)
-        btnAddRouter.place(x=695, y=100, width=100, height=30)
+        btnAddRouter.grid(column=4, row=2, sticky='EW')
 
-        btnSSHPassword = tk.Button(self.root, text='SSH Password', command=ssh_password_gui.SSHPasswordGUI)
-        btnSSHPassword.place(x=695, y=5, width=100, height=30)
+        btnSSHPassword = tk.Button(self.root, text='SSH Password', padx=10, pady=2, command=ssh_password_gui.SSHPasswordGUI)
+        btnSSHPassword.grid(column=4, row=0, pady=10)
 
         btnLogOut = tk.Button(self.root, text='Log Out', command=self.btnLogOut_command)
-        btnLogOut.place(x=725, y=735, width=70, height=30)
+        btnLogOut.grid(column=4, row=3, sticky='EWS')
 
         QUIT_ICON = Image.open(QUIT_ICON_PATH)
         QUIT_ICON = QUIT_ICON.resize((24, 24))
         quit_icon = ImageTk.PhotoImage(QUIT_ICON)
         btnQuit = tk.Button(self.root, text='Quit', image=quit_icon, compound=tk.RIGHT, command=self.root.destroy)
-        btnQuit.place(x=725, y=765, width=70, height=30)
+        btnQuit.grid(column=4, row=4, sticky='EWS')
 
         self.menu = tk.Menu(self.root)
         self.menu.add_command(label='test', command=self.do_test)
