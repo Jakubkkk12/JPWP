@@ -22,46 +22,49 @@ class LoginGUI:
         self.root.wm_iconphoto(False, icon)
 
         # size parameters
-        width = 400
-        height = 400
+        width = 300
+        height = 220
         screenwidth = self.root.winfo_screenwidth()
         screenheight = self.root.winfo_screenheight()
         alignstr = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
         self.root.geometry(alignstr)
-        self.root.resizable(width=False, height=False)
+        self.root.resizable(width=True, height=True)
+
+        self.root.minsize(width, height)
 
         # background color
         self.root.configure(bg=BG_COLOR)
 
         # ######## FUNCTIONS ######## #
+        top_margin = tk.Frame(self.root, bg=BG_COLOR, height=10)
+        top_margin.pack()
 
         lblUsername = tk.Label(self.root, text='Username:', bg=BG_COLOR)
-        lblUsername.place(x=100, y=50, width=200, height=30)
+        lblUsername.pack()
 
         self.usernameEntry = tk.Entry(self.root)
-        self.usernameEntry.place(x=100, y=80, width=200, height=30)
+        self.usernameEntry.pack(fill='x', padx=50)
 
         lblPassword = tk.Label(self.root, text='Password:', bg=BG_COLOR)
-        lblPassword.place(x=100, y=110, width=200, height=30)
+        lblPassword.pack()
 
         self.entryPassword = tk.Entry(self.root, show='*')
-        self.entryPassword.place(x=100, y=140, width=200, height=30)
+        self.entryPassword.pack(fill='x', padx=50)
 
         lblSSHPassword = tk.Label(self.root, text='SSH password (optional):', bg=BG_COLOR)
-        lblSSHPassword.place(x=100, y=170, width=200, height=30)
+        lblSSHPassword.pack()
 
         self.entrySSHPassword = tk.Entry(self.root, show='*')
-        self.entrySSHPassword.place(x=100, y=200, width=200, height=30)
+        self.entrySSHPassword.pack(fill='x', padx=50)
 
         LOGIN_ICON = Image.open(LOGIN_ICON_PATH)
         LOGIN_ICON = LOGIN_ICON.resize((24, 24))
         tk_icon = ImageTk.PhotoImage(LOGIN_ICON)
-        btnLogin = tk.Button(self.root, text='Login', image=tk_icon, compound=tk.RIGHT,
-                             command=self.validate_credentials)
-        btnLogin.place(x=100, y=240, width=200, height=30)
+        btnLogin = tk.Button(self.root, text='Login', image=tk_icon, compound=tk.RIGHT, command=self.validate_credentials)
+        btnLogin.pack(pady=5)
 
         btnQuit = tk.Button(self.root, text='Quit', command=self.root.destroy)
-        btnQuit.place(x=150, y=310, width=100, height=30)
+        btnQuit.pack(pady=5)
 
         self.root.mainloop()
 
