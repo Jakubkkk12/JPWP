@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+import resources.TEST
 import ssh_password_gui
 from gui_resources import config
 from login_gui import LoginGUI
@@ -28,6 +29,7 @@ QUIT_ICON_PATH = 'gui_resources/QUIT_512.png'
 class MainGUI:
     def __init__(self):
         self.root = tk.Tk()
+
         # title
         self.root.title(APPNAME + ' ' + VERSION)
 
@@ -61,167 +63,166 @@ class MainGUI:
 
         # Sample data:
         self.devices = {
-            'R1': Router(name='R1',
-                         ssh_information=SSHInformation(ip_addresses={'0': '10.250.250.1',
-                                                                      '1': '10.250.250.2'}),
-                         type='cisco',
-                         enable_password='ZSEDCxzaqwe',
-                         interfaces={'f0/0': RouterInterface(name='f0/0',
-                                                             statistics=InterfaceStatistics(
-                                                                 information=InformationStatistics(
-                                                                     collision=1,
-                                                                     late_collision=12,
-                                                                     broadcast=234,
-                                                                     packets_input=45,
-                                                                     packets_output=76,
-                                                                     duplex='full',
-                                                                     speed='100 Mb/s',
-                                                                     layer1_status='up',
-                                                                     layer2_status='up',
-                                                                     mtu=1500,
-                                                                     encapsulation='XD'
-                                                                 ),
-                                                                 errors=ErrorsStatistics(
-                                                                     input_errors=123,
-                                                                     output_errors=45,
-                                                                     output_buffer_failures=34,
-                                                                     runts=9,
-                                                                     giants=0,
-                                                                     crc=56,
-                                                                     frame=4,
-                                                                     throttles=9,
-                                                                     overrun=0,
-                                                                     ignored=0
-                                                                 )
+        'R1': Router(name='R1',
+                     ssh_information=SSHInformation(ip_addresses={'0': '10.250.250.1',
+                                                                  '1': '10.250.250.2'}),
+                     type='cisco',
+                     enable_password='ZSEDCxzaqwe',
+                     interfaces={'f0/0': RouterInterface(name='f0/0',
+                                                         statistics=InterfaceStatistics(
+                                                             information=InformationStatistics(
+                                                                 collision=1,
+                                                                 late_collision=12,
+                                                                 broadcast=234,
+                                                                 packets_input=45,
+                                                                 packets_output=76,
+                                                                 duplex='full',
+                                                                 speed='100 Mb/s',
+                                                                 layer1_status='up',
+                                                                 layer2_status='up',
+                                                                 mtu=1500,
+                                                                 encapsulation='XD'
                                                              ),
-                                                             ip_address='23.45.67.43',
-                                                             subnet=24,
-                                                             ospf=InterfaceOSPFInformation(
-                                                                 network_type='broadcast',
-                                                                 cost=10,
-                                                                 state='DR',
-                                                                 passive_interface=False,
-                                                                 priority=10,
-                                                                 timers=OSPFTimers(hello_timer=5,
-                                                                                   dead_timer=20,
-                                                                                   wait_timer=20,
-                                                                                   retransmit_timer=30
-                                                                                   )
+                                                             errors=ErrorsStatistics(
+                                                                 input_errors=123,
+                                                                 output_errors=45,
+                                                                 output_buffer_failures=34,
+                                                                 runts=9,
+                                                                 giants=0,
+                                                                 crc=56,
+                                                                 frame=4,
+                                                                 throttles=9,
+                                                                 overrun=0,
+                                                                 ignored=0
                                                              )
+                                                         ),
+                                                         ip_address='23.45.67.43',
+                                                         subnet=24,
+                                                         ospf=InterfaceOSPFInformation(
+                                                             network_type='broadcast',
+                                                             cost=10,
+                                                             state='DR',
+                                                             passive_interface=False,
+                                                             priority=10,
+                                                             timers=OSPFTimers(hello_timer=5,
+                                                                               dead_timer=20,
+                                                                               wait_timer=20,
+                                                                               retransmit_timer=30
+                                                                               )
                                                              )
-                                     },
-                         static_routes={'192.168.1.0/24': StaticRoute(network=Network(network='192.168.1.0',
-                                                                                      mask=24,
-                                                                                      wildcard='0.0.0.255'
-                                                                                      ),
-                                                                      next_hop='12.345.32.1',
-                                                                      interface='f0/0')
-                                        },
-                         ospf=OSPFInformation(router_id='1.1.1.1',
-                                              auto_cost_reference_bandwidth=1000,
-                                              default_information_originate=False,
-                                              default_metric_of_redistributed_routes=10,
-                                              distance=110,
-                                              maximum_paths=2,
-                                              passive_interface_default=False,
-                                              redistribution=Redistribution(is_redistribute_static=True,
-                                                                            is_redistribute_bgp=False,
-                                                                            is_redistribute_rip=False,
-                                                                            is_redistribute_connected=True
-                                                                            ),
-                                              areas={'0': OSPFArea(id='0',
-                                                                   is_authentication_message_digest=False,
-                                                                   type='NSSA',
-                                                                   networks={'10.0.0.0/16': Network(network='10.0.0.0',
-                                                                                                    mask=16,
-                                                                                                    wildcard='0.0.255.255'
-                                                                                                    )
-                                                                             }
-                                                                   )
-                                                     }
-                                              ),
-                         ),
-            'R2': Router(name='R2',
-                         ssh_information=SSHInformation(ip_addresses={'0': '10.250.250.1',
-                                                                      '1': '10.250.250.2'}),
-                         type='cisco',
-                         enable_password='ZSEDCxzaqwe',
-                         interfaces={'f0/0': RouterInterface(name='f0/0',
-                                                             statistics=InterfaceStatistics(
-                                                                 information=InformationStatistics(
-                                                                     collision=1,
-                                                                     late_collision=12,
-                                                                     broadcast=234,
-                                                                     packets_input=45,
-                                                                     packets_output=76,
-                                                                     duplex='full',
-                                                                     speed='100 Mb/s',
-                                                                     layer1_status='up',
-                                                                     layer2_status='up',
-                                                                     mtu=1500,
-                                                                     encapsulation='XD'
-                                                                 ),
-                                                                 errors=ErrorsStatistics(
-                                                                     input_errors=123,
-                                                                     output_errors=45,
-                                                                     output_buffer_failures=34,
-                                                                     runts=9,
-                                                                     giants=0,
-                                                                     crc=56,
-                                                                     frame=4,
-                                                                     throttles=9,
-                                                                     overrun=0,
-                                                                     ignored=0
-                                                                 )
+                                                         )
+                                 },
+                     static_routes={'192.168.1.0/24': StaticRoute(network=Network(network='192.168.1.0',
+                                                                                  mask=24,
+                                                                                  wildcard='0.0.0.255'
+                                                                                  ),
+                                                                  next_hop='12.345.32.1',
+                                                                  interface='f0/0')
+                                    },
+                     ospf=OSPFInformation(router_id='1.1.1.1',
+                                          auto_cost_reference_bandwidth=1000,
+                                          default_information_originate=False,
+                                          default_metric_of_redistributed_routes=10,
+                                          distance=110,
+                                          maximum_paths=2,
+                                          passive_interface_default=False,
+                                          redistribution=Redistribution(is_redistribute_static=True,
+                                                                        is_redistribute_bgp=False,
+                                                                        is_redistribute_rip=False,
+                                                                        is_redistribute_connected=True
+                                                                        ),
+                                          areas={'0': OSPFArea(id='0',
+                                                               is_authentication_message_digest=False,
+                                                               type='NSSA',
+                                                               networks={'10.0.0.0/16': Network(network='10.0.0.0',
+                                                                                                mask=16,
+                                                                                                wildcard='0.0.255.255'
+                                                                                                )
+                                                                         }
+                                                               )
+                                                 }
+                                          ),
+                     ),
+        'R2': Router(name='R2',
+                     ssh_information=SSHInformation(ip_addresses={'0': '10.250.250.1'}),
+                     type='cisco',
+                     enable_password='ZSEDCxzaqwe',
+                     interfaces={'f0/0': RouterInterface(name='f0/0',
+                                                         statistics=InterfaceStatistics(
+                                                             information=InformationStatistics(
+                                                                 collision=1,
+                                                                 late_collision=12,
+                                                                 broadcast=234,
+                                                                 packets_input=45,
+                                                                 packets_output=76,
+                                                                 duplex='full',
+                                                                 speed='100 Mb/s',
+                                                                 layer1_status='up',
+                                                                 layer2_status='up',
+                                                                 mtu=1500,
+                                                                 encapsulation='XD'
                                                              ),
-                                                             ip_address='23.45.67.43',
-                                                             subnet=24,
-                                                             ospf=InterfaceOSPFInformation(
-                                                                 network_type='broadcast',
-                                                                 cost=10,
-                                                                 state='DR',
-                                                                 passive_interface=False,
-                                                                 priority=10,
-                                                                 timers=OSPFTimers(hello_timer=5,
-                                                                                   dead_timer=20,
-                                                                                   wait_timer=20,
-                                                                                   retransmit_timer=30
-                                                                                   )
+                                                             errors=ErrorsStatistics(
+                                                                 input_errors=123,
+                                                                 output_errors=45,
+                                                                 output_buffer_failures=34,
+                                                                 runts=9,
+                                                                 giants=0,
+                                                                 crc=56,
+                                                                 frame=4,
+                                                                 throttles=9,
+                                                                 overrun=0,
+                                                                 ignored=0
                                                              )
+                                                         ),
+                                                         ip_address='23.45.67.43',
+                                                         subnet=24,
+                                                         ospf=InterfaceOSPFInformation(
+                                                             network_type='broadcast',
+                                                             cost=10,
+                                                             state='DR',
+                                                             passive_interface=False,
+                                                             priority=10,
+                                                             timers=OSPFTimers(hello_timer=5,
+                                                                               dead_timer=20,
+                                                                               wait_timer=20,
+                                                                               retransmit_timer=30
+                                                                               )
                                                              )
-                                     },
-                         static_routes={'192.168.1.0/24': StaticRoute(network=Network(network='192.168.1.0',
-                                                                                      mask=24,
-                                                                                      wildcard='0.0.0.255'
-                                                                                      ),
-                                                                      next_hop='12.345.32.1',
-                                                                      interface='f0/0')
-                                        },
-                         ospf=OSPFInformation(router_id='1.1.1.1',
-                                              auto_cost_reference_bandwidth=1000,
-                                              default_information_originate=False,
-                                              default_metric_of_redistributed_routes=10,
-                                              distance=110,
-                                              maximum_paths=2,
-                                              passive_interface_default=False,
-                                              redistribution=Redistribution(is_redistribute_static=True,
-                                                                            is_redistribute_bgp=False,
-                                                                            is_redistribute_rip=False,
-                                                                            is_redistribute_connected=True
-                                                                            ),
-                                              areas={'0': OSPFArea(id='0',
-                                                                   is_authentication_message_digest=False,
-                                                                   type='NSSA',
-                                                                   networks={'10.0.0.0/16': Network(network='10.0.0.0',
-                                                                                                    mask=16,
-                                                                                                    wildcard='0.0.255.255'
-                                                                                                    )
-                                                                             }
-                                                                   )
-                                                     }
-                                              ),
-                         )
-        }
+                                                         )
+                                 },
+                     static_routes={'192.168.1.0/24': StaticRoute(network=Network(network='192.168.1.0',
+                                                                                  mask=24,
+                                                                                  wildcard='0.0.0.255'
+                                                                                  ),
+                                                                  next_hop='12.345.32.1',
+                                                                  interface='f0/0')
+                                    },
+                     ospf=OSPFInformation(router_id='1.1.1.1',
+                                          auto_cost_reference_bandwidth=1000,
+                                          default_information_originate=False,
+                                          default_metric_of_redistributed_routes=10,
+                                          distance=110,
+                                          maximum_paths=2,
+                                          passive_interface_default=False,
+                                          redistribution=Redistribution(is_redistribute_static=True,
+                                                                        is_redistribute_bgp=False,
+                                                                        is_redistribute_rip=False,
+                                                                        is_redistribute_connected=True
+                                                                        ),
+                                          areas={'0': OSPFArea(id='0',
+                                                               is_authentication_message_digest=False,
+                                                               type='NSSA',
+                                                               networks={'10.0.0.0/16': Network(network='10.0.0.0',
+                                                                                                mask=16,
+                                                                                                wildcard='0.0.255.255'
+                                                                                                )
+                                                                         }
+                                                               )
+                                                 }
+                                          ),
+                     )
+    }
 
         treeColumns = ('No', 'Name', 'Type', 'SSH IP')
         slc_no: slice = slice(0, 1)
@@ -232,33 +233,32 @@ class MainGUI:
         self.tree = ttk.Treeview(self.root, columns=treeColumns, show='headings')
         self.tree.grid(column=0, row=1, padx=2, pady=2, columnspan=4, rowspan=4, sticky='NSWE')
 
-        max_height = 1
+        # verticalScrollbar = ttk.Scrollbar(self.root, orient='vertical', command=self.tree.yview)
+        # horizontalScrollbar = ttk.Scrollbar(self.root, orient='horizontal', command=self.tree.xview)
+        # self.tree.configure(yscrollcommand=verticalScrollbar.set)
+        # self.tree.configure(xscrollcommand=horizontalScrollbar.set)
+        # horizontalScrollbar.grid(column=0, row=0, columnspan=4, sticky='EW')
+        # verticalScrollbar.grid(column=4, row=1, rowspan=4, sticky='NS')
+
+
         for i, (router_name, router) in enumerate(self.devices.items(), start=1):
             ssh_ips = self.get_ssh_ip_addresses(router)
             values = (i, router.name, router.type, ssh_ips)
-            self.tree.insert('', tk.END, values=values, iid=i)
-
-            if self.get_number_of_ssh_addresses(router) > max_height:
-                max_height = self.get_number_of_ssh_addresses(router)
-
-        # Adjust row height
-        max_height_px = max_height*15
-        s = ttk.Style()
-        s.configure('Treeview', rowheight=max_height_px)
+            self.tree.insert('', tk.END, values=values)
 
         self.tree.heading(treeColumns[slc_no], text='No')
-        self.tree.column(treeColumns[slc_no], width=30)
+        self.tree.column(treeColumns[slc_no], width=30, stretch=True)
 
         self.tree.heading(treeColumns[slc_name], text='Hostname')
-        self.tree.column(treeColumns[slc_name], width=80)
+        self.tree.column(treeColumns[slc_name], width=50, stretch=True)
 
         self.tree.heading(treeColumns[slc_type], text='Type')
-        self.tree.column(treeColumns[slc_type], width=50)
+        self.tree.column(treeColumns[slc_type], width=50, stretch=True)
 
-        self.tree.heading(treeColumns[3], text='SSH Address')
-        self.tree.column(treeColumns[3], width=50)
+        self.tree.heading(treeColumns[3], text='SSH Addresses')
+        self.tree.column(treeColumns[3], width=50, stretch=True)
 
-        self.tree.bind('<Button-3>', self.show_content_menu)
+        self.tree.bind('<Button-3>', self.show_content_menu_all)
 
         # Buttons
         buttonsFrame = tk.Frame(self.root)
@@ -299,19 +299,17 @@ class MainGUI:
         self.root.mainloop()
 
     def get_ssh_ip_addresses(self, router) -> str:
-        ssh_ip = ''
-        ip_addresses = list(router.ssh_information.ip_addresses.values())
-        for i, ip in enumerate(ip_addresses):
-            ssh_ip += ip
-            if i != len(ip_addresses) - 1:
-                ssh_ip += '\n'
-        return ssh_ip
+        ssh_ips = ''
+        for i, ip_address in router.ssh_information.ip_addresses.items():
+            ssh_ips += ip_address + ', '
+        ssh_ips = ssh_ips.rstrip(', ')
+        return ssh_ips
 
-    def get_number_of_ssh_addresses(self, router)-> int:
+    def get_number_of_ssh_addresses(self, router) -> int:
         number_of_ips = len(router.ssh_information.ip_addresses)
         return number_of_ips
 
-    def show_content_menu(self, event):
+    def show_content_menu_all(self, event):
         item = self.tree.identify_row(event.y)
         if item:
             self.menu.post(event.x_root, event.y_root)
@@ -328,7 +326,6 @@ class MainGUI:
         return None
 
     def btnAddRouter_command(self):
-
         return None
 
     def btnAll_command(self) -> None:
@@ -362,18 +359,60 @@ class MainGUI:
 
     def btnRIP_command(self) -> None:
         self.clear_tree()
-
         return None
 
     def btnBGP_command(self) -> None:
         self.clear_tree()
-
         return None
 
     def btnOSPF_command(self) -> None:
         self.clear_tree()
+        treeColumns = ('No', 'Hostname', 'Areas', 'Router ID', 'Redistribution')
+        self.tree.configure(columns=treeColumns)
 
+        for i, (router_name, router) in enumerate(self.devices.items(), start=1):
+            ospf_areas = self.get_ospf_areas(router)
+            ospf_redistributions = self.get_ospf_redistribution(router)
+            values = (i, router.name, ospf_areas, router.ospf.router_id, ospf_redistributions)
+            self.tree.insert('', tk.END, values=values)
+
+        self.tree.configure(columns=treeColumns)
+
+        self.tree.heading(treeColumns[0], text='No')
+        self.tree.column(treeColumns[0], width=50)
+
+        self.tree.heading(treeColumns[1], text='Hostname')
+        self.tree.column(treeColumns[1], width=50)
+
+        self.tree.heading(treeColumns[2], text='Areas')
+        self.tree.column(treeColumns[2], width=50)
+
+        self.tree.heading(treeColumns[3], text='Router ID')
+        self.tree.column(treeColumns[3], width=50)
+
+        self.tree.heading(treeColumns[4], text='Redistribution')
+        self.tree.column(treeColumns[4], width=50)
         return None
+
+    def get_ospf_areas(self, router) -> str:
+        ospf_areas = ''
+        for area_id, ospf_area in router.ospf.areas.items():
+            ospf_areas += ospf_area.id + ', '
+        ospf_areas = ospf_areas.rstrip(', ')
+        return ospf_areas
+
+    def get_ospf_redistribution(self, router) -> str:
+        ospf_redistribution = ''
+        if router.ospf.redistribution.is_redistribute_static is True:
+            ospf_redistribution += 'Static, '
+        if router.ospf.redistribution.is_redistribute_connected is True:
+            ospf_redistribution += 'Connected, '
+        if router.ospf.redistribution.is_redistribute_rip is True:
+            ospf_redistribution += 'RIP, '
+        if router.ospf.redistribution.is_redistribute_bgp is True:
+            ospf_redistribution += 'BGP, '
+        ospf_redistribution = ospf_redistribution.rstrip(', ')
+        return ospf_redistribution
 
     def clear_tree(self) -> None:
         for item in self.tree.get_children():
