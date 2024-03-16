@@ -57,7 +57,7 @@ class MainGUI:
         self.root.columnconfigure(4, weight=1)
 
         self.root.rowconfigure(0, weight=1)
-        self.root.rowconfigure(1, weight=4)
+        self.root.rowconfigure(1, weight=1)
         self.root.rowconfigure(2, weight=4)
         self.root.rowconfigure(3, weight=4)
 
@@ -230,21 +230,54 @@ class MainGUI:
         slc_type: slice = slice(2, 3)
         slc_ssh_ip: slice = slice(4, 3, -1) # need fix
 
-        self.tree = ttk.Treeview(self.root, columns=treeColumns, show='headings')
-        self.tree.grid(column=0, row=1, padx=2, pady=2, columnspan=4, rowspan=4, sticky='NSWE')
+        treeFrame = tk.Frame(self.root)
+        treeFrame.grid(column=0, row=1, padx=2, pady=2, columnspan=4, rowspan=4, sticky='NSEW')
+        treeFrame.configure(bg=BG_COLOR)
+        treeFrame.grid_rowconfigure(0, weight=1)
+        treeFrame.grid_columnconfigure(0, weight=1)
 
-        # verticalScrollbar = ttk.Scrollbar(self.root, orient='vertical', command=self.tree.yview)
-        # horizontalScrollbar = ttk.Scrollbar(self.root, orient='horizontal', command=self.tree.xview)
-        # self.tree.configure(yscrollcommand=verticalScrollbar.set)
-        # self.tree.configure(xscrollcommand=horizontalScrollbar.set)
-        # horizontalScrollbar.grid(column=0, row=0, columnspan=4, sticky='EW')
-        # verticalScrollbar.grid(column=4, row=1, rowspan=4, sticky='NS')
+        verticalScrollbar = tk.Scrollbar(treeFrame, orient='vertical')
+        verticalScrollbar.grid(column=1, row=0, sticky='NS')
 
+        horizontalScrollbar = tk.Scrollbar(treeFrame, orient='horizontal')
+        horizontalScrollbar.grid(column=0, row=1, sticky='EW')
+
+        self.tree = ttk.Treeview(treeFrame, columns=treeColumns, show='headings', xscrollcommand=horizontalScrollbar.set,
+                                 yscrollcommand=verticalScrollbar.set)
+        self.tree.grid(column=0, row=0, sticky='NSEW')
+
+        verticalScrollbar.config(command=self.tree.yview)
+        horizontalScrollbar.config(command=self.tree.xview)
 
         for i, (router_name, router) in enumerate(self.devices.items(), start=1):
             ssh_ips = self.get_ssh_ip_addresses(router)
             values = (i, router.name, router.type, ssh_ips)
             self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+            self.tree.insert('', tk.END, values=values)
+
+
 
         self.tree.heading(treeColumns[slc_no], text='No')
         self.tree.column(treeColumns[slc_no], width=30, stretch=True)
@@ -278,20 +311,20 @@ class MainGUI:
         btnBGP.grid(column=3, row=1)
 
         btnAddRouter = tk.Button(self.root, text='Add Router', command=self.btnAddRouter_command)
-        btnAddRouter.grid(column=4, row=2, sticky='EW')
+        btnAddRouter.grid(column=5, row=2, sticky='EW')
 
         btnSSHPassword = tk.Button(self.root, text='SSH Password', padx=10, pady=2,
                                    command=ssh_password_gui.SSHPasswordGUI)
-        btnSSHPassword.grid(column=4, row=0, pady=10)
+        btnSSHPassword.grid(column=5, row=0, pady=10)
 
         btnLogOut = tk.Button(self.root, text='Log Out', command=self.btnLogOut_command)
-        btnLogOut.grid(column=4, row=3, sticky='EWS')
+        btnLogOut.grid(column=5, row=3, sticky='EWS')
 
         QUIT_ICON = Image.open(QUIT_ICON_PATH)
         QUIT_ICON = QUIT_ICON.resize((24, 24))
         quit_icon = ImageTk.PhotoImage(QUIT_ICON)
         btnQuit = tk.Button(self.root, text='Quit', image=quit_icon, compound=tk.RIGHT, command=self.root.destroy)
-        btnQuit.grid(column=4, row=4, sticky='EWS')
+        btnQuit.grid(column=5, row=4, sticky='EWS')
 
         self.menu = tk.Menu(self.root)
         self.menu.add_command(label='test', command=self.do_test)
