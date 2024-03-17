@@ -184,13 +184,17 @@ if __name__ == '__main__':
 
     conn = create_connection_to_router(router=r1, user=user)
     int_list = get_interfaces_name(conn)
+
     int_list.sort()
     r1.interfaces = {}
     for intf in int_list:
         r1.interfaces[intf]: RouterInterface = get_base_interface_information(connection=conn, interface_name=intf)
+        print(connection_enable_test(conn))
+        r1.interfaces[intf].ospf = get_interface_ospf_information(connection=conn, interface_name=intf)
 
     close_connection(connection=conn)
     v: RouterInterface
     for v in r1.interfaces.values():
-        print(v.statistics.information.mtu, v.ip_address, v.statistics.information.layer1_status, v.statistics.information.duplex)
+        if v.ospf is not None:
+            print(v.ospf.network_type, v.ip_address, v.statistics.information.layer1_status, v.statistics.information.duplex)
 

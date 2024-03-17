@@ -1,8 +1,10 @@
 import re
 import netmiko
+
+from resources.interfaces.InterfaceOSPFInformation import InterfaceOSPFInformation
 from resources.interfaces.RouterInterface import RouterInterface
 from resources.interfaces.InterfaceStatistics import InterfaceStatistics, InformationStatistics, ErrorsStatistics
-
+from resources.routing_protocols.ospf.OSPFTimers import OSPFTimers
 
 def get_interfaces_name(connection: netmiko.BaseConnection) -> list[str]:
     connection.enable()
@@ -14,7 +16,7 @@ def get_interfaces_name(connection: netmiko.BaseConnection) -> list[str]:
     return interfaces_name
 
 
-def get_interfaces_statistics_input_errors(sh_int_name_output: str) -> int | None:
+def get_interface_statistics_input_errors(sh_int_name_output: str) -> int | None:
     pattern: str = r'\d*( input errors)'
     match: re.Match = re.search(pattern, sh_int_name_output)
     if match:
@@ -23,7 +25,7 @@ def get_interfaces_statistics_input_errors(sh_int_name_output: str) -> int | Non
     return None
 
 
-def get_interfaces_statistics_output_errors(sh_int_name_output: str) -> int | None:
+def get_interface_statistics_output_errors(sh_int_name_output: str) -> int | None:
     pattern = r'\d*( output errors)'
     match = re.search(pattern, sh_int_name_output)
     if match:
@@ -32,7 +34,7 @@ def get_interfaces_statistics_output_errors(sh_int_name_output: str) -> int | No
     return None
 
 
-def get_interfaces_statistics_output_buffer_failures(sh_int_name_output: str) -> int | None:
+def get_interface_statistics_output_buffer_failures(sh_int_name_output: str) -> int | None:
     pattern = r'\d*( output buffer failures)'
     match = re.search(pattern, sh_int_name_output)
     if match:
@@ -41,7 +43,7 @@ def get_interfaces_statistics_output_buffer_failures(sh_int_name_output: str) ->
     return None
 
 
-def get_interfaces_statistics_runts(sh_int_name_output: str) -> int | None:
+def get_interface_statistics_runts(sh_int_name_output: str) -> int | None:
     pattern = r'\d*( runts)'
     match = re.search(pattern, sh_int_name_output)
     if match:
@@ -50,7 +52,7 @@ def get_interfaces_statistics_runts(sh_int_name_output: str) -> int | None:
     return None
 
 
-def get_interfaces_statistics_giants(sh_int_name_output: str) -> int | None:
+def get_interface_statistics_giants(sh_int_name_output: str) -> int | None:
     pattern = r'\d*( giants)'
     match = re.search(pattern, sh_int_name_output)
     if match:
@@ -59,7 +61,7 @@ def get_interfaces_statistics_giants(sh_int_name_output: str) -> int | None:
     return None
 
 
-def get_interfaces_statistics_throttles(sh_int_name_output: str) -> int | None:
+def get_interface_statistics_throttles(sh_int_name_output: str) -> int | None:
     pattern = r'\d*( throttles)'
     match = re.search(pattern, sh_int_name_output)
     if match:
@@ -68,7 +70,7 @@ def get_interfaces_statistics_throttles(sh_int_name_output: str) -> int | None:
     return None
 
 
-def get_interfaces_statistics_crc(sh_int_name_output: str) -> int | None:
+def get_interface_statistics_crc(sh_int_name_output: str) -> int | None:
     pattern = r'\d*( CRC)'
     match = re.search(pattern, sh_int_name_output)
     if match:
@@ -77,7 +79,7 @@ def get_interfaces_statistics_crc(sh_int_name_output: str) -> int | None:
     return None
 
 
-def get_interfaces_statistics_frame(sh_int_name_output: str) -> int | None:
+def get_interface_statistics_frame(sh_int_name_output: str) -> int | None:
     pattern = r'\d*( frame)'
     match = re.search(pattern, sh_int_name_output)
     if match:
@@ -86,7 +88,7 @@ def get_interfaces_statistics_frame(sh_int_name_output: str) -> int | None:
     return None
 
 
-def get_interfaces_statistics_overrun(sh_int_name_output: str) -> int | None:
+def get_interface_statistics_overrun(sh_int_name_output: str) -> int | None:
     pattern = r'\d*( overrun)'
     match = re.search(pattern, sh_int_name_output)
     if match:
@@ -95,7 +97,7 @@ def get_interfaces_statistics_overrun(sh_int_name_output: str) -> int | None:
     return None
 
 
-def get_interfaces_statistics_ignored(sh_int_name_output: str) -> int | None:
+def get_interface_statistics_ignored(sh_int_name_output: str) -> int | None:
     pattern = r'\d*( ignored)'
     match = re.search(pattern, sh_int_name_output)
     if match:
@@ -104,7 +106,7 @@ def get_interfaces_statistics_ignored(sh_int_name_output: str) -> int | None:
     return None
 
 
-def get_interfaces_statistics_collision(sh_int_name_output: str) -> int | None:
+def get_interface_statistics_collision(sh_int_name_output: str) -> int | None:
     pattern = r'\d*( collisions)'
     match = re.search(pattern, sh_int_name_output)
     if match:
@@ -113,7 +115,7 @@ def get_interfaces_statistics_collision(sh_int_name_output: str) -> int | None:
     return None
 
 
-def get_interfaces_statistics_late_collision(sh_int_name_output: str) -> int | None:
+def get_interface_statistics_late_collision(sh_int_name_output: str) -> int | None:
     pattern = r'\d*( late collision)'
     match = re.search(pattern, sh_int_name_output)
     if match:
@@ -122,7 +124,7 @@ def get_interfaces_statistics_late_collision(sh_int_name_output: str) -> int | N
     return None
 
 
-def get_interfaces_statistics_broadcast(sh_int_name_output: str) -> int | None:
+def get_interface_statistics_broadcast(sh_int_name_output: str) -> int | None:
     pattern = r'\d*( broadcasts)'
     match = re.search(pattern, sh_int_name_output)
     if match:
@@ -131,7 +133,7 @@ def get_interfaces_statistics_broadcast(sh_int_name_output: str) -> int | None:
     return None
 
 
-def get_interfaces_statistics_packets_input(sh_int_name_output: str) -> int | None:
+def get_interface_statistics_packets_input(sh_int_name_output: str) -> int | None:
     pattern = r'\d*( packets input)'
     match = re.search(pattern, sh_int_name_output)
     if match:
@@ -140,7 +142,7 @@ def get_interfaces_statistics_packets_input(sh_int_name_output: str) -> int | No
     return None
 
 
-def get_interfaces_statistics_packets_output(sh_int_name_output: str) -> int | None:
+def get_interface_statistics_packets_output(sh_int_name_output: str) -> int | None:
     pattern = r'\d*( packets output)'
     match = re.search(pattern, sh_int_name_output)
     if match:
@@ -149,7 +151,7 @@ def get_interfaces_statistics_packets_output(sh_int_name_output: str) -> int | N
     return None
 
 
-def get_interfaces_statistics_mtu(sh_int_name_output: str) -> int | None:
+def get_interface_statistics_mtu(sh_int_name_output: str) -> int | None:
     pattern = r'(MTU )\d*'
     match = re.search(pattern, sh_int_name_output)
     if match:
@@ -158,7 +160,7 @@ def get_interfaces_statistics_mtu(sh_int_name_output: str) -> int | None:
     return None
 
 
-def get_interfaces_statistics_dulpex(sh_int_name_output: str) -> str:
+def get_interface_statistics_dulpex(sh_int_name_output: str) -> str:
     if re.search(r'(Half-duplex)', sh_int_name_output):
         duplex = 'half'
     elif re.search(r'(Full-duplex)', sh_int_name_output):
@@ -168,7 +170,7 @@ def get_interfaces_statistics_dulpex(sh_int_name_output: str) -> str:
     return duplex
 
 
-def get_interfaces_statistics_speed(sh_int_name_output: str) -> str | None:
+def get_interface_statistics_speed(sh_int_name_output: str) -> str | None:
     if (re.search(r'(Auto-speed)', sh_int_name_output)
             or re.search(r'(Auto Speed)', sh_int_name_output)):
         speed = 'auto'
@@ -182,7 +184,7 @@ def get_interfaces_statistics_speed(sh_int_name_output: str) -> str | None:
     return None
 
 
-def get_interfaces_statistics_layer1_status(sh_int_name_output: str) -> str | None:
+def get_interface_statistics_layer1_status(sh_int_name_output: str) -> str | None:
     pattern = r'(is ).*(, line protocol)'
     match = re.search(pattern, sh_int_name_output)
     if match:
@@ -191,7 +193,7 @@ def get_interfaces_statistics_layer1_status(sh_int_name_output: str) -> str | No
     return None
 
 
-def get_interfaces_statistics_layer2_status(sh_int_name_output: str) -> str | None:
+def get_interface_statistics_layer2_status(sh_int_name_output: str) -> str | None:
     pattern = r'(line protocol is ).*'
     match = re.search(pattern, sh_int_name_output)
     if match:
@@ -200,7 +202,7 @@ def get_interfaces_statistics_layer2_status(sh_int_name_output: str) -> str | No
     return None
 
 
-def get_interfaces_statistics_encapsulation(sh_int_name_output: str) -> str | None:
+def get_interface_statistics_encapsulation(sh_int_name_output: str) -> str | None:
     pattern = r'(Encapsulation ).*(,)'
     match = re.search(pattern, sh_int_name_output)
     if match:
@@ -233,16 +235,16 @@ def get_interface_ip_address(sh_int_name_output: str) -> dict[str, str | int | N
 
 
 def get_interface_errors_statistics(sh_int_name_output: str) -> ErrorsStatistics:
-    input_errors: int = get_interfaces_statistics_input_errors(sh_int_name_output)
-    output_errors: int = get_interfaces_statistics_output_errors(sh_int_name_output)
-    output_buffer_failures: int = get_interfaces_statistics_output_buffer_failures(sh_int_name_output)
-    runts: int = get_interfaces_statistics_runts(sh_int_name_output)
-    giants: int = get_interfaces_statistics_giants(sh_int_name_output)
-    crc: int = get_interfaces_statistics_crc(sh_int_name_output)
-    frame: int = get_interfaces_statistics_frame(sh_int_name_output)
-    throttles: int = get_interfaces_statistics_throttles(sh_int_name_output)
-    overrun: int = get_interfaces_statistics_overrun(sh_int_name_output)
-    ignored: int = get_interfaces_statistics_ignored(sh_int_name_output)
+    input_errors: int = get_interface_statistics_input_errors(sh_int_name_output)
+    output_errors: int = get_interface_statistics_output_errors(sh_int_name_output)
+    output_buffer_failures: int = get_interface_statistics_output_buffer_failures(sh_int_name_output)
+    runts: int = get_interface_statistics_runts(sh_int_name_output)
+    giants: int = get_interface_statistics_giants(sh_int_name_output)
+    crc: int = get_interface_statistics_crc(sh_int_name_output)
+    frame: int = get_interface_statistics_frame(sh_int_name_output)
+    throttles: int = get_interface_statistics_throttles(sh_int_name_output)
+    overrun: int = get_interface_statistics_overrun(sh_int_name_output)
+    ignored: int = get_interface_statistics_ignored(sh_int_name_output)
 
     err_stat: ErrorsStatistics = ErrorsStatistics(input_errors=input_errors,
                                                   output_errors=output_errors,
@@ -258,17 +260,17 @@ def get_interface_errors_statistics(sh_int_name_output: str) -> ErrorsStatistics
 
 
 def get_interface_information_statistics(sh_int_name_output: str) -> InformationStatistics:
-    collision: int = get_interfaces_statistics_collision(sh_int_name_output)
-    late_collision: int = get_interfaces_statistics_late_collision(sh_int_name_output)
-    broadcast: int = get_interfaces_statistics_broadcast(sh_int_name_output)
-    packets_input: int = get_interfaces_statistics_packets_input(sh_int_name_output)
-    packets_output: int = get_interfaces_statistics_packets_output(sh_int_name_output)
-    duplex: str = get_interfaces_statistics_dulpex(sh_int_name_output)
-    speed: str = get_interfaces_statistics_speed(sh_int_name_output)
-    layer1_status: str = get_interfaces_statistics_layer1_status(sh_int_name_output)
-    layer2_status: str = get_interfaces_statistics_layer2_status(sh_int_name_output)
-    mtu: int = get_interfaces_statistics_mtu(sh_int_name_output)
-    encapsulation: str = get_interfaces_statistics_encapsulation(sh_int_name_output)
+    collision: int = get_interface_statistics_collision(sh_int_name_output)
+    late_collision: int = get_interface_statistics_late_collision(sh_int_name_output)
+    broadcast: int = get_interface_statistics_broadcast(sh_int_name_output)
+    packets_input: int = get_interface_statistics_packets_input(sh_int_name_output)
+    packets_output: int = get_interface_statistics_packets_output(sh_int_name_output)
+    duplex: str = get_interface_statistics_dulpex(sh_int_name_output)
+    speed: str = get_interface_statistics_speed(sh_int_name_output)
+    layer1_status: str = get_interface_statistics_layer1_status(sh_int_name_output)
+    layer2_status: str = get_interface_statistics_layer2_status(sh_int_name_output)
+    mtu: int = get_interface_statistics_mtu(sh_int_name_output)
+    encapsulation: str = get_interface_statistics_encapsulation(sh_int_name_output)
 
     info_stat: InformationStatistics = InformationStatistics(collision=collision,
                                                              late_collision=late_collision,
@@ -307,3 +309,127 @@ def get_base_interface_information(connection: netmiko.BaseConnection, interface
                                                         subnet=interface_ip_address['subnet'],
                                                         statistics=statistics)
     return router_interface
+
+
+def is_ospf_enabled(sh_ip_ospf_int_name_output: str) -> bool:
+    pattern = r'(OSPF not enabled)'
+    if re.search(pattern, sh_ip_ospf_int_name_output):
+        return False
+    return True
+
+
+def get_interface_ospf_network_type(sh_ip_ospf_int_name_output: str) -> str | None:
+    pattern = r'(Network Type ).*(,)'
+    match = re.search(pattern, sh_ip_ospf_int_name_output)
+    if match:
+        network_type = match.group()[len('Network Type '):-1].lower()
+        return network_type
+    return None
+
+
+def get_interface_ospf_cost(sh_ip_ospf_int_name_output: str) -> int | None:
+    pattern = r'(Cost: )\d*'
+    match = re.search(pattern, sh_ip_ospf_int_name_output)
+    if match:
+        cost = int(match.group()[len('Cost: '):])
+        return cost
+    return None
+
+
+def get_interface_ospf_state(sh_ip_ospf_int_name_output: str) -> str | None:
+    pattern = r'(State ).*(,)'
+    match = re.search(pattern, sh_ip_ospf_int_name_output)
+    if match:
+        state = match.group()[len('State '):-1]
+        return state
+    return None
+
+
+def get_interface_ospf_priority(sh_ip_ospf_int_name_output: str) -> int | None:
+    pattern = r'(Priority )\d*'
+    match = re.search(pattern, sh_ip_ospf_int_name_output)
+    if match:
+        priority = int(match.group()[len('Priority '):])
+        return priority
+    return None
+
+
+def get_interface_ospf_passive_interface(sh_ip_ospf_int_name_output: str) -> bool:
+    pattern = r'(Passive interface)'
+    if re.search(pattern, sh_ip_ospf_int_name_output):
+        return True
+    return False
+
+
+def get_interface_ospf_timer_hello(sh_ip_ospf_int_name_output: str) -> int | None:
+    pattern = r'(Hello )\d*'
+    match = re.search(pattern, sh_ip_ospf_int_name_output)
+    if match:
+        hello = int(match.group()[len('Hello '):])
+        return hello
+    return None
+
+
+def get_interface_ospf_timer_dead(sh_ip_ospf_int_name_output: str) -> int | None:
+    pattern = r'(Dead )\d*'
+    match = re.search(pattern, sh_ip_ospf_int_name_output)
+    if match:
+        dead = int(match.group()[len('Dead '):])
+        return dead
+    return None
+
+
+def get_interface_ospf_timer_wait(sh_ip_ospf_int_name_output: str) -> int | None:
+    pattern = r'(Wait )\d*'
+    match = re.search(pattern, sh_ip_ospf_int_name_output)
+    if match:
+        wait = int(match.group()[len('Wait '):])
+        return wait
+    return None
+
+
+def get_interface_ospf_timer_retransmit(sh_ip_ospf_int_name_output: str) -> int | None:
+    pattern = r'(Retransmit )\d*'
+    match = re.search(pattern, sh_ip_ospf_int_name_output)
+    if match:
+        retransmit = int(match.group()[len('Retransmit '):])
+        return retransmit
+    return None
+
+
+def get_interface_ospf_timers(sh_ip_ospf_int_name_output: str) -> OSPFTimers | None:
+    hello_timer: int = get_interface_ospf_timer_hello(sh_ip_ospf_int_name_output)
+    dead_timer: int = get_interface_ospf_timer_dead(sh_ip_ospf_int_name_output)
+    wait_timer: int = get_interface_ospf_timer_wait(sh_ip_ospf_int_name_output)
+    retransmit_timer: int = get_interface_ospf_timer_retransmit(sh_ip_ospf_int_name_output)
+
+    timers = OSPFTimers(hello_timer=hello_timer,
+                        dead_timer=dead_timer,
+                        wait_timer=wait_timer,
+                        retransmit_timer=retransmit_timer)
+
+    return timers
+
+
+def get_interface_ospf_information(connection: netmiko.BaseConnection, interface_name: str) -> InterfaceOSPFInformation | None:
+    connection.enable()
+    sh_ip_ospf_int_name_output: str = connection.send_command(f'show ip ospf interface {interface_name}')
+    connection.exit_enable_mode()
+
+    if not is_ospf_enabled(sh_ip_ospf_int_name_output):
+        return None
+
+    network_type: str = get_interface_ospf_network_type(sh_ip_ospf_int_name_output)
+    cost: int = get_interface_ospf_cost(sh_ip_ospf_int_name_output)
+    state: str = get_interface_ospf_state(sh_ip_ospf_int_name_output)
+    passive_interface: bool = get_interface_ospf_passive_interface(sh_ip_ospf_int_name_output)
+    priority: int = get_interface_ospf_priority(sh_ip_ospf_int_name_output)
+    timers: OSPFTimers = get_interface_ospf_timers(sh_ip_ospf_int_name_output)
+
+    ospf_info: InterfaceOSPFInformation = InterfaceOSPFInformation(network_type=network_type,
+                                                                   cost=cost,
+                                                                   state=state,
+                                                                   passive_interface=passive_interface,
+                                                                   priority=priority,
+                                                                   timers=timers)
+    return ospf_info

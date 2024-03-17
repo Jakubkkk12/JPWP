@@ -4,8 +4,12 @@ from resources.devices.Router import Router
 from resources.user.User import User
 
 
-def connection_test(connection: netmiko.BaseConnection) -> bool:
-    pass
+def connection_enable_test(connection: netmiko.BaseConnection) -> bool:
+    try:
+        connection.enable()
+    except Exception:
+        return False
+    return True
 
 
 def create_connection_to_router(router: Router, user: User) -> netmiko.BaseConnection:
