@@ -11,6 +11,9 @@ from resources.routing_protocols.ospf.OSPFTimers import OSPFTimers
 from resources.ssh.SSHInformation import SSHInformation
 from resources.user.User import User
 
+from resources.connections.configure_connection import *
+from resources.interfaces.getting_information import *
+
 if __name__ == '__main__':
     devices = {
         'R1': Router(name='R1',
@@ -58,7 +61,7 @@ if __name__ == '__main__':
                                                                                wait_timer=20,
                                                                                retransmit_timer=30
                                                                                )
-                                                             )
+                                                         )
                                                          )
                                  },
                      static_routes={'192.168.1.0/24': StaticRoute(network=Network(network='192.168.1.0',
@@ -137,7 +140,7 @@ if __name__ == '__main__':
                                                                                wait_timer=20,
                                                                                retransmit_timer=30
                                                                                )
-                                                             )
+                                                         )
                                                          )
                                  },
                      static_routes={'192.168.1.0/24': StaticRoute(network=Network(network='192.168.1.0',
@@ -173,3 +176,21 @@ if __name__ == '__main__':
                      )
     }
     user = User(username='admin12', ssh_password='ZAQ!2wsx')
+
+    r1 = Router(name='R1',
+                ssh_information=SSHInformation(ip_addresses={'0': '10.250.250.1'}),
+                type='cisco_ios',
+                enable_password='ZSEDCxzaqwe')
+
+    conn = create_connection_to_router(router=r1, user=user)
+    int_list = get_interfaces_name(conn)
+    int_list.sort()
+    r1.interfaces = {}
+    for intf in int_list:
+        r1.interfaces[intf]: RouterInterface = get_base_interface_information(connection=conn, interface_name=intf)
+
+    close_connection(connection=conn)
+    v: RouterInterface
+    for v in r1.interfaces.values():
+        print(v.statistics.information.mtu, v.ip_address, v.statistics.information.layer1_status, v.statistics.information.duplex)
+
