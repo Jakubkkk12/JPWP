@@ -1,18 +1,14 @@
-from resources.devices.Router import Router
-from resources.interfaces.InterfaceStatistics import *
-from resources.interfaces.RouterInterface import RouterInterface
-from resources.interfaces.InterfaceOSPFInformation import InterfaceOSPFInformation
+import re
+
 from resources.routing_protocols.Network import Network
 from resources.routing_protocols.Redistribution import Redistribution
 from resources.routing_protocols.StaticRoute import StaticRoute
 from resources.routing_protocols.ospf.OSPFArea import OSPFArea
 from resources.routing_protocols.ospf.OSPFInformation import OSPFInformation
-from resources.routing_protocols.ospf.OSPFTimers import OSPFTimers
 from resources.ssh.SSHInformation import SSHInformation
-from resources.user.User import User
 
 from resources.connections.configure_connection import *
-from resources.interfaces.getting_information import *
+from resources.cisco.getting_interface_information import *
 
 if __name__ == '__main__':
     devices = {
@@ -177,24 +173,37 @@ if __name__ == '__main__':
     }
     user = User(username='admin12', ssh_password='ZAQ!2wsx')
 
+
+
     r1 = Router(name='R1',
                 ssh_information=SSHInformation(ip_addresses={'0': '10.250.250.1'}),
                 type='cisco_ios',
                 enable_password='ZSEDCxzaqwe')
 
     conn = create_connection_to_router(router=r1, user=user)
-    int_list = get_interfaces_name(conn)
-
-    int_list.sort()
-    r1.interfaces = {}
-    for intf in int_list:
-        r1.interfaces[intf]: RouterInterface = get_base_interface_information(connection=conn, interface_name=intf)
-        print(connection_enable_test(conn))
-        r1.interfaces[intf].ospf = get_interface_ospf_information(connection=conn, interface_name=intf)
-
+    from resources.cisco.getting_ospf_information import get_ospf_information
+    ospf: OSPFInformation = get_ospf_information(connection=conn)
     close_connection(connection=conn)
-    v: RouterInterface
-    for v in r1.interfaces.values():
-        if v.ospf is not None:
-            print(v.ospf.network_type, v.ip_address, v.statistics.information.layer1_status, v.statistics.information.duplex)
+
+    for k,v in ospf.areas.items():
+        for kk,vv in v.networks.items():
+            print(vv.network)
+
+    # conn = create_connection_to_router(router=r1, user=user)
+    # int_list = get_interfaces_name(conn)
+    #
+    # int_list.sort()
+    # r1.interfaces = {}
+    # for intf in int_list:
+    #     r1.interfaces[intf]: RouterInterface = get_base_interface_information(connection=conn, interface_name=intf)
+    #     print(connection_enable_test(conn))
+    #     r1.interfaces[intf].ospf = get_interface_ospf_information(connection=conn, interface_name=intf)
+    #
+    # close_connection(connection=conn)
+    # print(r1)
+    # v: RouterInterface
+    # for v in r1.interfaces.values():
+    #     if v.ospf is not None:
+    #         print(v.ospf.network_type, v.ip_address, v.statistics.information.layer1_status, v.statistics.information.duplex)
+
 
