@@ -7,9 +7,8 @@
     <list default="true" id="e870a829-9e29-4f5d-ac07-59c3619aaa72" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/TEST.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/TEST.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/interfaces/getting_information.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/cisco/getting_interface_information.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/routing_protocols/Network.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/routing_protocols/Network.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/routing_protocols/ospf/OSPFArea.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/routing_protocols/ospf/OSPFArea.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/cisco/getting_ospf_information.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/cisco/getting_ospf_information.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/resources/routing_protocols/bgp/BGPInformation.py" beforeDir="false" afterPath="$PROJECT_DIR$/resources/routing_protocols/bgp/BGPInformation.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,7 +105,7 @@
       <workItem from="1710503870293" duration="79000" />
       <workItem from="1710503958362" duration="10525000" />
       <workItem from="1710537856693" duration="1440000" />
-      <workItem from="1710681194751" duration="32061000" />
+      <workItem from="1710681194751" duration="39305000" />
     </task>
     <servers />
   </component>
@@ -114,6 +113,6 @@
     <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/L3_Automation$TEST.coverage" NAME="TEST Coverage Results" MODIFIED="1710770446093" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/resources" />
+    <SUITE FILE_PATH="coverage/L3_Automation$TEST.coverage" NAME="TEST Coverage Results" MODIFIED="1710775830629" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/resources" />
   </component>
 </project>

@@ -5,6 +5,9 @@ from resources.routing_protocols.ospf.OSPFInformation import OSPFInformation
 from resources.routing_protocols.Network import Network
 from resources.routing_protocols.Redistribution import Redistribution
 from resources.cisco.getting_redistribution import get_routing_protocol_redistribution
+from resources.cisco.getting_routing_protocol_information import (get_routing_protocol_distance,
+                                                                  get_routing_protocol_default_information_originate,
+                                                                  get_routing_protocol_default_metric_of_redistributed_routes)
 
 
 def is_ospf_enabled(sh_run_sec_ospf_output: str) -> bool:
@@ -39,31 +42,6 @@ def get_ospf_auto_cost_reference_bandwidth(sh_run_sec_ospf_output: str) -> int:
         auto_cost_reference_bandwidth = int(match.group()[len('auto-cost reference-bandwidth '):])
         return auto_cost_reference_bandwidth
     return 100
-
-
-def get_ospf_default_information_originate(sh_run_sec_ospf_output: str) -> bool:
-    pattern = r'(default-information originate)'
-    if re.search(pattern, sh_run_sec_ospf_output):
-        return True
-    return False
-
-
-def get_ospf_default_metric_of_redistributed_routes(sh_run_sec_ospf_output: str) -> int:
-    pattern = r'(default-metric )\d*'
-    match = re.search(pattern, sh_run_sec_ospf_output)
-    if match:
-        default_metric_of_redistributed_routes = int(match.group()[len('default-metric '):])
-        return default_metric_of_redistributed_routes
-    return 10
-
-
-def get_ospf_distance(sh_run_sec_ospf_output: str) -> int:
-    pattern = r'(distance )\d*'
-    match = re.search(pattern, sh_run_sec_ospf_output)
-    if match:
-        distance = int(match.group()[len('distance '):])
-        return distance
-    return 110
 
 
 def get_ospf_maximum_paths(sh_run_sec_ospf_output: str) -> int:
@@ -125,14 +103,14 @@ def get_ospf_area_networks(area_id: str, sh_run_sec_ospf_output: str) -> dict[st
     return networks
 
 
-def get_ospf_area_information(area_id: str ,sh_run_sec_ospf_output: str) -> OSPFArea:
+def get_ospf_area_information(area_id: str, sh_run_sec_ospf_output: str) -> OSPFArea:
     is_authentication_message_digest: bool = get_ospf_area_authentication_message_digest(area_id, sh_run_sec_ospf_output)
-    type: str = get_ospf_area_type(area_id, sh_run_sec_ospf_output)
+    area_type: str = get_ospf_area_type(area_id, sh_run_sec_ospf_output)
     networks: dict[str, Network] = get_ospf_area_networks(area_id, sh_run_sec_ospf_output)
 
     area_info = OSPFArea(id=area_id,
                          is_authentication_message_digest=is_authentication_message_digest,
-                         type=type,
+                         type=area_type,
                          networks=networks)
     return area_info
 
@@ -150,9 +128,10 @@ def get_ospf_information(connection: netmiko.BaseConnection) -> OSPFInformation 
     process_id: int = get_ospf_process_id(sh_run_sec_ospf_output)
     router_id: str = get_ospf_router_id(sh_ip_ospf_database_output)
     auto_cost_reference_bandwidth: int = get_ospf_auto_cost_reference_bandwidth(sh_run_sec_ospf_output)
-    default_information_originate: bool = get_ospf_default_information_originate(sh_run_sec_ospf_output)
-    default_metric_of_redistributed_routes: int = get_ospf_default_metric_of_redistributed_routes(sh_run_sec_ospf_output)
-    distance: int = get_ospf_distance(sh_run_sec_ospf_output)
+    default_information_originate: bool = get_routing_protocol_default_information_originate(sh_run_sec_ospf_output)
+    default_metric_of_redistributed_routes: int = (
+        get_routing_protocol_default_metric_of_redistributed_routes('ospf', sh_run_sec_ospf_output))
+    distance: int = get_routing_protocol_distance('ospf', sh_run_sec_ospf_output)
     maximum_paths: int = get_ospf_maximum_paths(sh_run_sec_ospf_output)
     passive_interface_default: bool = get_ospf_passive_interface_default(sh_run_sec_ospf_output)
     redistribution: Redistribution = get_routing_protocol_redistribution(sh_run_sec_ospf_output)
