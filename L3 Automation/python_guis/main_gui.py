@@ -240,7 +240,7 @@ class MainGUI:
         slc_ssh_ip: slice = slice(4, 3, -1) # need fix
 
         treeFrame = tk.Frame(self.root)
-        treeFrame.grid(column=0, row=1, padx=2, pady=2, columnspan=4, rowspan=4, sticky='NSEW')
+        treeFrame.grid(column=0, row=0, padx=2, pady=2, columnspan=4, rowspan=5, sticky='NSEW')
         treeFrame.configure(bg=BG_COLOR)
         treeFrame.grid_rowconfigure(0, weight=1)
         treeFrame.grid_columnconfigure(0, weight=1)
@@ -254,6 +254,11 @@ class MainGUI:
         self.tree = ttk.Treeview(treeFrame, columns=treeColumns, show='headings',
                                  xscrollcommand=horizontalScrollbar.set, yscrollcommand=verticalScrollbar.set)
         self.tree.grid(column=0, row=0, sticky='NSEW')
+
+        style = ttk.Style()
+        style.configure('Custom.Treeview', font=('Segoe UI', 12))
+        style.configure('Treeview.Heading', font=('Segoe UI', 12))
+        self.tree.configure(style='Custom.Treeview')
 
         verticalScrollbar.config(command=self.tree.yview)
         horizontalScrollbar.config(command=self.tree.xview)
@@ -285,7 +290,7 @@ class MainGUI:
         self.tree.heading(treeColumns[3], text='SSH Addresses', anchor='w')
         self.tree.column(treeColumns[3], minwidth=90, stretch=True)
 
-        # Pop up menu
+        # Pop up menu for all view
         def show_all_menu(event):
             item = self.tree.identify_row(event.y)
             hostname = self.tree.item(item)['values'][1]
@@ -298,38 +303,40 @@ class MainGUI:
 
         self.tree.bind('<Button-3>', show_all_menu)
 
-        # Buttons
-        buttonsFrame = tk.Frame(self.root)
-        buttonsFrame.grid(column=0, row=0, sticky='EW')
-        buttonsFrame.configure(bg=BG_COLOR)
+        # MenuBar
+        menubar = tk.Menu(self.root)
+        viewmenu = tk.Menu(menubar, tearoff=False)
+        viewmenu.add_command(label='All', command=self.btnAll_command)
+        viewmenu.add_command(label='RIP', command=self.btnRIP_command)
+        viewmenu.add_command(label='OSPF', command=self.btnOSPF_command)
+        viewmenu.add_command(label='BGP', command=self.btnBGP_command)
+        menubar.add_cascade(label='View', menu=viewmenu)
 
-        btnAll = tk.Button(buttonsFrame, text='All', padx=10, command=self.btnAll_command)
-        btnAll.grid(column=0, row=1)
+        self.root.config(menu=menubar)
 
-        btnRIP = tk.Button(buttonsFrame, text='RIP', padx=10, command=self.btnRIP_command)
-        btnRIP.grid(column=1, row=1)
+        # Frame containing SSH Button and Add Router
+        btnFrameAddSSH = tk.Frame(self.root)
+        btnFrameAddSSH.grid(column=5, row=0, padx=10)
+        btnAddRouter = tk.Button(btnFrameAddSSH, text='Add Router', command=self.btnAddRouter_command)
+        btnAddRouter.grid(column=0, row=0, sticky='EW')
 
-        btnOSPF = tk.Button(buttonsFrame, text='OSPF', padx=10, command=self.btnOSPF_command)
-        btnOSPF.grid(column=2, row=1)
-
-        btnBGP = tk.Button(buttonsFrame, text='BGP', padx=10, command=self.btnBGP_command)
-        btnBGP.grid(column=3, row=1)
-
-        btnAddRouter = tk.Button(self.root, text='Add Router', command=self.btnAddRouter_command)
-        btnAddRouter.grid(column=5, row=2, sticky='EW')
-
-        btnSSHPassword = tk.Button(self.root, text='SSH Password', padx=10, pady=2,
+        btnSSHPassword = tk.Button(btnFrameAddSSH, text='SSH Password', padx=2, pady=2,
                                    command=ssh_password_gui.SSHPasswordGUI)
-        btnSSHPassword.grid(column=5, row=0, pady=10)
+        btnSSHPassword.grid(column=0, row=1)
 
-        btnLogOut = tk.Button(self.root, text='Log Out', command=self.btnLogOut_command)
-        btnLogOut.grid(column=5, row=3, sticky='EWS')
+        # Frame containing Logout and Quit buttons
+        btnFrameLogoutQuit = tk.Frame(self.root)
+        btnFrameLogoutQuit.grid(column=5, row=4, sticky='NESW', padx=10)
+        btnFrameLogoutQuit.configure(bg=BG_COLOR)
+        btnLogOut = tk.Button(btnFrameLogoutQuit, text='Log Out', command=self.btnLogOut_command)
+        btnLogOut.grid(column=0, row=0, sticky='EWS')
 
         QUIT_ICON = Image.open(QUIT_ICON_PATH)
         QUIT_ICON = QUIT_ICON.resize((24, 24))
         quit_icon = ImageTk.PhotoImage(QUIT_ICON)
-        btnQuit = tk.Button(self.root, text='Quit', image=quit_icon, compound=tk.RIGHT, command=self.root.destroy)
-        btnQuit.grid(column=5, row=4, sticky='EWS')
+        btnQuit = tk.Button(btnFrameLogoutQuit, text='Quit', image=quit_icon, compound=tk.RIGHT,
+                            command=self.root.destroy)
+        btnQuit.grid(column=0, row=1, sticky='EWS')
 
         self.root.mainloop()
 
