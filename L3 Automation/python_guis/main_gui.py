@@ -1,11 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
+from PIL import Image, ImageTk
 
-import resources.TEST
 import ssh_password_gui
 from gui_resources import config
 from login_gui import LoginGUI
-from PIL import Image, ImageTk
 
 from resources.devices.Router import Router
 from resources.interfaces.InterfaceOSPFInformation import InterfaceOSPFInformation
@@ -139,7 +138,16 @@ class MainGUI:
                                                                                                 wildcard='0.0.255.255'
                                                                                                 )
                                                                          }
-                                                               )
+                                                               ),
+                                                 '1': OSPFArea(id='1',
+                                                               is_authentication_message_digest=False,
+                                                               type='NSSA',
+                                                               networks={'10.0.0.0/16': Network(network='10.0.0.0',
+                                                                                                mask=16,
+                                                                                                wildcard='0.0.255.255'
+                                                                                                )
+                                                                         }
+                                                               ),
                                                  }
                                           ),
                      ),
@@ -242,56 +250,52 @@ class MainGUI:
         horizontalScrollbar = tk.Scrollbar(treeFrame, orient='horizontal')
         horizontalScrollbar.grid(column=0, row=1, sticky='EW')
 
-        self.tree = ttk.Treeview(treeFrame, columns=treeColumns, show='headings', xscrollcommand=horizontalScrollbar.set,
-                                 yscrollcommand=verticalScrollbar.set)
+        self.tree = ttk.Treeview(treeFrame, columns=treeColumns, show='headings',
+                                 xscrollcommand=horizontalScrollbar.set, yscrollcommand=verticalScrollbar.set)
         self.tree.grid(column=0, row=0, sticky='NSEW')
 
         verticalScrollbar.config(command=self.tree.yview)
         horizontalScrollbar.config(command=self.tree.xview)
 
+        # data insert
+        iid = 0
         for i, (router_name, router) in enumerate(self.devices.items(), start=1):
-            ssh_ips = self.get_ssh_ip_addresses(router)
-            values = (i, router.name, router.type, ssh_ips)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
-            self.tree.insert('', tk.END, values=values)
+            ssh_ip = router.ssh_information.ip_addresses['0']
+            values = (i, router.name, router.type, ssh_ip)
+            self.tree.insert('', tk.END, values=values, iid=iid)
 
+            # inserting as sub values additional ssh ips
+            if len(router.ssh_information.ip_addresses) > 1:
+                for j, ip in router.ssh_information.ip_addresses.items():
+                    if j != '0':
+                        ssh_ips = ('', '', '', ip)
+                        self.tree.insert(iid, tk.END, values=ssh_ips)
+            iid += 1
 
+        self.tree.heading(treeColumns[slc_no], text='No', anchor='w')
+        self.tree.column(treeColumns[slc_no], width=30, minwidth=30, stretch=False)
 
-        self.tree.heading(treeColumns[slc_no], text='No')
-        self.tree.column(treeColumns[slc_no], width=30, stretch=True)
+        self.tree.heading(treeColumns[slc_name], text='Hostname', anchor='w')
+        self.tree.column(treeColumns[slc_name], minwidth=70, width=70, stretch=True)
 
-        self.tree.heading(treeColumns[slc_name], text='Hostname')
-        self.tree.column(treeColumns[slc_name], width=50, stretch=True)
+        self.tree.heading(treeColumns[slc_type], text='Type', anchor='w')
+        self.tree.column(treeColumns[slc_type], minwidth=50, width=50, stretch=True)
 
-        self.tree.heading(treeColumns[slc_type], text='Type')
-        self.tree.column(treeColumns[slc_type], width=50, stretch=True)
+        self.tree.heading(treeColumns[3], text='SSH Addresses', anchor='w')
+        self.tree.column(treeColumns[3], minwidth=90, stretch=True)
 
-        self.tree.heading(treeColumns[3], text='SSH Addresses')
-        self.tree.column(treeColumns[3], width=50, stretch=True)
+        # Pop up menu
+        def show_all_menu(event):
+            item = self.tree.identify_row(event.y)
+            hostname = self.tree.item(item)['values'][1]
+            if item:
+                menu.post(event.x_root, event.y_root)
+                menu.entryconfigure('Interfaces', command=lambda: self.show_interfaces_details(hostname))
 
-        self.tree.bind('<Button-3>', self.show_content_menu_all)
+        menu = tk.Menu(self.root, tearoff=False)
+        menu.add_command(label='Interfaces', command=self.show_interfaces_details)
+
+        self.tree.bind('<Button-3>', show_all_menu)
 
         # Buttons
         buttonsFrame = tk.Frame(self.root)
@@ -326,32 +330,7 @@ class MainGUI:
         btnQuit = tk.Button(self.root, text='Quit', image=quit_icon, compound=tk.RIGHT, command=self.root.destroy)
         btnQuit.grid(column=5, row=4, sticky='EWS')
 
-        self.menu = tk.Menu(self.root)
-        self.menu.add_command(label='test', command=self.do_test)
-
         self.root.mainloop()
-
-    def get_ssh_ip_addresses(self, router) -> str:
-        ssh_ips = ''
-        for i, ip_address in router.ssh_information.ip_addresses.items():
-            ssh_ips += ip_address + ', '
-        ssh_ips = ssh_ips.rstrip(', ')
-        return ssh_ips
-
-    def get_number_of_ssh_addresses(self, router) -> int:
-        number_of_ips = len(router.ssh_information.ip_addresses)
-        return number_of_ips
-
-    def show_content_menu_all(self, event):
-        item = self.tree.identify_row(event.y)
-        if item:
-            self.menu.post(event.x_root, event.y_root)
-
-    def do_test(self):
-        selected_item = self.tree.selection()
-        if selected_item:
-            item_text = self.tree.item(selected_item)['values']
-            print(f'do something: {item_text}')
 
     def btnLogOut_command(self) -> None:
         self.root.destroy()
@@ -366,28 +345,38 @@ class MainGUI:
         treeColumns = ('No', 'Hostname', 'Type', 'SSH Address')
         self.tree.configure(columns=treeColumns)
 
-        max_height = 1
+        iid = 0
         for i, (router_name, router) in enumerate(self.devices.items(), start=1):
-            ssh_ips = self.get_ssh_ip_addresses(router)
-            values = (i, router.name, router.type, ssh_ips)
-            self.tree.insert('', tk.END, values=values, iid=i)
+            ssh_ip = router.ssh_information.ip_addresses['0']
+            values = (i, router.name, router.type, ssh_ip)
+            self.tree.insert('', tk.END, values=values, iid=iid)
 
-            if self.get_number_of_ssh_addresses(router) > max_height:
-                max_height = self.get_number_of_ssh_addresses(router)
+            # inserting as sub values additional ssh ips
+            if len(router.ssh_information.ip_addresses) > 1:
+                for j, ip in router.ssh_information.ip_addresses.items():
+                    if j != '0':
+                        ssh_ips = ('', '', '', ip)
+                        self.tree.insert(iid, tk.END, values=ssh_ips)
+            iid += 1
 
         self.tree.configure(columns=treeColumns)
 
-        self.tree.heading(treeColumns[0], text='No')
-        self.tree.column(treeColumns[0], width=30)
+        self.tree.heading(treeColumns[0], text='No', anchor='w')
+        self.tree.column(treeColumns[0], minwidth=30, width=30, stretch=False)
 
-        self.tree.heading(treeColumns[1], text='Hostname')
-        self.tree.column(treeColumns[1], width=80)
+        self.tree.heading(treeColumns[1], text='Hostname', anchor='w')
+        self.tree.column(treeColumns[1], minwidth=70, width=70, stretch=False)
 
-        self.tree.heading(treeColumns[2], text='Type')
-        self.tree.column(treeColumns[2], width=50)
+        self.tree.heading(treeColumns[2], text='Type', anchor='w')
+        self.tree.column(treeColumns[2], minwidth=50, width=50, stretch=False)
 
-        self.tree.heading(treeColumns[3], text='SSH Address')
-        self.tree.column(treeColumns[3], width=50)
+        self.tree.heading(treeColumns[3], text='SSH Addresses', anchor='w')
+        self.tree.column(treeColumns[3], minwidth=90, stretch=False)
+        return None
+
+    def show_interfaces_details(self, hostname):
+        if hostname:
+            print(hostname)
         return None
 
     def btnRIP_command(self) -> None:
@@ -400,39 +389,36 @@ class MainGUI:
 
     def btnOSPF_command(self) -> None:
         self.clear_tree()
-        treeColumns = ('No', 'Hostname', 'Areas', 'Router ID', 'Redistribution')
+        treeColumns = ('No', 'Hostname', 'Areas', 'Router ID', 'Networks', 'Redistribution')
         self.tree.configure(columns=treeColumns)
 
-        for i, (router_name, router) in enumerate(self.devices.items(), start=1):
-            ospf_areas = self.get_ospf_areas(router)
+        for iid, (router_name, router) in enumerate(self.devices.items(), start=1):
             ospf_redistributions = self.get_ospf_redistribution(router)
-            values = (i, router.name, ospf_areas, router.ospf.router_id, ospf_redistributions)
-            self.tree.insert('', tk.END, values=values)
+            ospf_area = router.ospf.areas['0'].id
+            values = (iid, router.name, ospf_area, router.ospf.router_id, ospf_redistributions)
+            self.tree.insert('', tk.END, values=values, iid=iid)
 
-        self.tree.configure(columns=treeColumns)
+            if len(router.ospf.areas) > 1:
+                for j, area in router.ospf.areas.items():
+                    if j != '0':
+                        values = ('', '', area.id, '', '')
+                        self.tree.insert(iid, tk.END, values=values)
 
-        self.tree.heading(treeColumns[0], text='No')
-        self.tree.column(treeColumns[0], width=50)
+        self.tree.heading(treeColumns[0], text='No', anchor='w')
+        self.tree.column(treeColumns[0], minwidth=30, width=30, stretch=False)
 
-        self.tree.heading(treeColumns[1], text='Hostname')
-        self.tree.column(treeColumns[1], width=50)
+        self.tree.heading(treeColumns[1], text='Hostname', anchor='w')
+        self.tree.column(treeColumns[1], minwidth=70, stretch=False)
 
-        self.tree.heading(treeColumns[2], text='Areas')
-        self.tree.column(treeColumns[2], width=50)
+        self.tree.heading(treeColumns[2], text='Areas', anchor='w')
+        self.tree.column(treeColumns[2], minwidth=50, stretch=False)
 
-        self.tree.heading(treeColumns[3], text='Router ID')
-        self.tree.column(treeColumns[3], width=50)
+        self.tree.heading(treeColumns[3], text='Router ID', anchor='w')
+        self.tree.column(treeColumns[3], minwidth=50, stretch=False)
 
-        self.tree.heading(treeColumns[4], text='Redistribution')
-        self.tree.column(treeColumns[4], width=50)
+        self.tree.heading(treeColumns[4], text='Redistribution', anchor='w')
+        self.tree.column(treeColumns[4], minwidth=70, stretch=False)
         return None
-
-    def get_ospf_areas(self, router) -> str:
-        ospf_areas = ''
-        for area_id, ospf_area in router.ospf.areas.items():
-            ospf_areas += ospf_area.id + ', '
-        ospf_areas = ospf_areas.rstrip(', ')
-        return ospf_areas
 
     def get_ospf_redistribution(self, router) -> str:
         ospf_redistribution = ''
