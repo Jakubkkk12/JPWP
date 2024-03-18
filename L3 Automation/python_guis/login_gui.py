@@ -74,6 +74,7 @@ class LoginGUI:
         sshPassword = self.entrySSHPassword.get()
         self.root.destroy()
 
+        # import has to be there to avoid circular imports
         from main_gui import MainGUI
         MainGUI()
 
