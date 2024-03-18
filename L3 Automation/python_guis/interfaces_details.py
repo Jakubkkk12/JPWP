@@ -15,15 +15,9 @@ from resources.routing_protocols.ospf.OSPFTimers import OSPFTimers
 from resources.ssh.SSHInformation import SSHInformation
 
 
-APPNAME = config.APPNAME
-VERSION = config.VERSION
-BG_COLOR = config.BG_COLOR
-WINDOW_ICON_PATH = 'gui_resources/APP_ICON_512.png'
-QUIT_ICON_PATH = 'gui_resources/QUIT_512.png'
-
-
 class InterfacesDetails:
     def __init__(self, hostname):
+
         devices = {
             'R1': Router(name='R1',
                          ssh_information=SSHInformation(ip_addresses={'0': '10.250.250.1',
@@ -198,7 +192,7 @@ class InterfacesDetails:
         root = tk.Tk()
         # ######## WINDOW PARAMETERS ######## #
         # title
-        root.title(APPNAME + ' ' + VERSION + ' Interfaces Details')
+        root.title(config.APPNAME + ' ' + config.VERSION + ' Interfaces Details')
 
         # size parameters
         width = 300
@@ -213,7 +207,7 @@ class InterfacesDetails:
 
         # Frame containing treeview and scrollbars
         treeFrame = tk.Frame(root)
-        treeFrame.configure(bg=BG_COLOR)
+        treeFrame.configure(bg=config.BG_COLOR)
         treeFrame.pack(fill='both', expand=True)
 
         verticalScrollbar = ttk.Scrollbar(treeFrame, orient='vertical')
@@ -231,18 +225,19 @@ class InterfacesDetails:
         verticalScrollbar.config(command=tree.yview)
         horizontalScrollbar.config(command=tree.xview)
 
-        # Button is part of root, not treeFrame
+        # Button is a child of root, not treeFrame
         btnQuit = tk.Button(root, text='Quit', command=root.destroy)
         btnQuit.pack(side='bottom')
 
-        # data insert
+        # Data insert
         data_router = devices.get(hostname)
         interfaces = data_router.interfaces
-        i=1
+
+        i = 1
         for k, interface in interfaces.items():
             values = (i, interface.name, interface.ip_address, interface.subnet)
             tree.insert('', tk.END, iid=i-1, values=values)
-            i+=1
+            i += 1
 
         tree.heading(treeColumns[0], text='No', anchor='w')
         tree.column(treeColumns[0], width=30)
