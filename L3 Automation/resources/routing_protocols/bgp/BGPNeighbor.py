@@ -17,6 +17,7 @@ class BGPNeighbor:
     """
     ip_address: str
     remote_as: int
+    state: str
     ebgp_multihop: int = None
     next_hop_self: bool = None
     shutdown: bool = None
