@@ -2,6 +2,9 @@ import tkinter as tk
 import tkinter.ttk
 from tkinter import ttk
 from gui_resources import config
+from python_guis.edit_interface_gui import EditInterfaceGUI
+from python_guis.interface_errors_gui import InterfaceErrorsGUI
+from python_guis.interface_statistics_gui import InterfaceStatisticsGUI
 from resources.devices.Router import Router
 from resources.interfaces.InterfaceOSPFInformation import InterfaceOSPFInformation
 from resources.interfaces.InterfaceStatistics import InterfaceStatistics, InformationStatistics, ErrorsStatistics
@@ -17,6 +20,8 @@ from resources.ssh.SSHInformation import SSHInformation
 
 class InterfacesDetails:
     def __init__(self, hostname):
+        self.hostname = hostname
+        self.int_name = ''
 
         devices = {
             'R1': Router(name='R1',
@@ -253,3 +258,37 @@ class InterfacesDetails:
 
         tree.heading(treeColumns[3], text='Subnet', anchor='w')
         tree.column(treeColumns[3], width=30)
+
+        def show_menu_interfaces(event) -> None:
+            item = tree.identify_row(event.y)
+            tree.selection_set(item)
+            if item:
+                try:
+                    self.int_name = tree.item(item)['values'][1]
+                    menu.post(event.x_root, event.y_root)
+                except IndexError():
+                    pass
+
+        def edit_interface() -> None:
+            router_interface = devices.get(self.hostname).interfaces.get(self.int_name)
+            EditInterfaceGUI(router_interface)
+            return None
+
+        # Pop-up menu configuration
+        menu = tk.Menu(root, tearoff=False)
+        menu.add_command(label='Edit', command=edit_interface)
+
+        sub_details_menu = tk.Menu(menu, tearoff=False)
+        sub_details_menu.add_command(label='Statistics', command=self.show_interface_statistics)
+        sub_details_menu.add_command(label='Errors', command=self.show_interface_errors)
+        menu.add_cascade(label='Details', menu=sub_details_menu)
+
+        tree.bind('<Button-3>', show_menu_interfaces)
+
+    def show_interface_statistics(self) -> None:
+        InterfaceStatisticsGUI(self.hostname, self.int_name)
+        return None
+
+    def show_interface_errors(self) -> None:
+        InterfaceErrorsGUI(self.hostname, self.int_name)
+        return None

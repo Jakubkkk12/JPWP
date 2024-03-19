@@ -330,21 +330,25 @@ class MainGUI:
         self.tree.column(treeColumns[0], minwidth=30, width=30, stretch=False)
 
         self.tree.heading(treeColumns[1], text='Hostname', anchor='w')
-        self.tree.column(treeColumns[1], minwidth=70, width=70, stretch=False)
+        self.tree.column(treeColumns[1], minwidth=70, width=70, stretch=True)
 
         self.tree.heading(treeColumns[2], text='Type', anchor='w')
-        self.tree.column(treeColumns[2], minwidth=50, width=50, stretch=False)
+        self.tree.column(treeColumns[2], minwidth=50, width=50, stretch=True)
 
         self.tree.heading(treeColumns[3], text='SSH Addresses', anchor='w')
-        self.tree.column(treeColumns[3], minwidth=90, stretch=False)
+        self.tree.column(treeColumns[3], minwidth=90, stretch=True)
 
         # This function defines pop-up menu for 'all' view
         def show_menu_all(event):
             item = self.tree.identify_row(event.y)
-            hostname = self.tree.item(item)['values'][1]
+            self.tree.selection_set(item)
             if item:
-                menu.post(event.x_root, event.y_root)
-                menu.entryconfigure('Interfaces', command=lambda: show_interfaces_details(hostname))
+                try:
+                    hostname = self.tree.item(item)['values'][1]
+                    menu.post(event.x_root, event.y_root)
+                    menu.entryconfigure('Interfaces', command=lambda: show_interfaces_details(hostname))
+                except IndexError():
+                    pass
 
         # This function launches InterfacesDetails window when 'Interfaces' is clicked from menu on <MB-3>
         def show_interfaces_details(hostname):
@@ -355,8 +359,6 @@ class MainGUI:
         menu = tk.Menu(self.root, tearoff=False)
         menu.add_command(label='Interfaces', command=show_interfaces_details)
         self.tree.bind('<Button-3>', show_menu_all)
-
-
 
         return None
 
