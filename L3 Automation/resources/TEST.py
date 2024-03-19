@@ -5,6 +5,7 @@ from resources.routing_protocols.Redistribution import Redistribution
 from resources.routing_protocols.StaticRoute import StaticRoute
 from resources.routing_protocols.ospf.OSPFArea import OSPFArea
 from resources.routing_protocols.ospf.OSPFInformation import OSPFInformation
+from resources.routing_protocols.bgp.BGPInformation import BGPInformation
 from resources.ssh.SSHInformation import SSHInformation
 
 from resources.connections.configure_connection import *
@@ -184,29 +185,28 @@ if __name__ == '__main__':
                 ssh_information=SSHInformation(ip_addresses={'0': '10.250.250.2'}),
                 type='cisco_ios',
                 enable_password='ZSEDCxzaqwe')
+    from resources.cisco.getting_bgp_information import get_bgp_information
+    from resources.cisco.getting_ospf_information import get_ospf_information
+    for router in [r1, r2]:
+        conn = create_connection_to_router(router=router, user=user)
+
+        ospf_information = get_ospf_information(conn)
+        close_connection(connection=conn)
+        print(ospf_information)
 
     # for router in [r1, r2]:
     #     conn = create_connection_to_router(router=router, user=user)
-    #     from resources.cisco.getting_ospf_information import get_ospf_information
-    #     ospf: OSPFInformation = get_ospf_information(connection=conn)
+    #     int_list = get_interfaces_name(conn)
+    #
+    #     int_list.sort()
+    #     r1.interfaces = {}
+    #     for intf in int_list:
+    #         r1.interfaces[intf]: RouterInterface = get_base_interface_information(connection=conn, interface_name=intf)
+    #         r1.interfaces[intf].ospf = get_interface_ospf_information(connection=conn, interface_name=intf)
+    #
     #     close_connection(connection=conn)
-    #     print(ospf)
-
-    for router in [r1, r2]:
-        conn = create_connection_to_router(router=router, user=user)
-        int_list = get_interfaces_name(conn)
-
-        int_list.sort()
-        r1.interfaces = {}
-        for intf in int_list:
-            r1.interfaces[intf]: RouterInterface = get_base_interface_information(connection=conn, interface_name=intf)
-            r1.interfaces[intf].ospf = get_interface_ospf_information(connection=conn, interface_name=intf)
-
-        close_connection(connection=conn)
-        print(r1)
-        v: RouterInterface
-        for v in r1.interfaces.values():
-            if v.ospf is not None:
-                print(v.ospf.network_type, v.ip_address, v.statistics.information.layer1_status, v.statistics.information.duplex)
-
-
+    #     print(r1)
+    #     v: RouterInterface
+    #     for v in r1.interfaces.values():
+    #         if v.ospf is not None:
+    #             print(v.ospf.network_type, v.ip_address, v.statistics.information.layer1_status, v.statistics.information.duplex)

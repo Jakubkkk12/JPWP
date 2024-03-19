@@ -8,6 +8,7 @@ from resources.cisco.getting_redistribution import get_routing_protocol_redistri
 from resources.cisco.getting_routing_protocol_information import (get_routing_protocol_distance,
                                                                   get_routing_protocol_default_information_originate,
                                                                   get_routing_protocol_default_metric_of_redistributed_routes)
+from resources.routing_protocols.ospf.OSPFNeighbor import OSPFNeighbor
 
 
 def is_ospf_enabled(sh_run_sec_ospf_output: str) -> bool:
@@ -86,11 +87,11 @@ def get_ospf_area_type(area_id: str, sh_run_sec_ospf_output: str) -> str:
     return 'standard'
 
 
-def get_ospf_area_networks(area_id: str, sh_run_sec_ospf_output: str) -> dict[str, Network]:
+def get_ospf_area_networks(area_id: str, sh_run_sec_ospf_output: str) -> dict[str, Network] | None:
     pattern = f'(network .* area {area_id})'
     match = re.findall(pattern, sh_run_sec_ospf_output)
     if not match:
-        return {}
+        return None
 
     list_of_networks: list[str] = [line[len('network '):-len(f' area {area_id}')] for line in match]
 
@@ -115,11 +116,45 @@ def get_ospf_area_information(area_id: str, sh_run_sec_ospf_output: str) -> OSPF
     return area_info
 
 
+def get_ospf_areas(sh_ip_ospf_output: str, sh_run_sec_ospf_output: str) -> dict[str, OSPFArea] | None:
+    list_of_areas_id = get_ospf_area_ids(sh_ip_ospf_output)
+    if list_of_areas_id is None:
+        return None
+
+    areas: dict[str, OSPFArea] = {}
+    for area_id in list_of_areas_id:
+        areas[area_id] = get_ospf_area_information(area_id, sh_run_sec_ospf_output)
+    return areas
+
+
+def get_ospf_neighbors(sh_ip_ospf_neighbors_output: str) -> dict[str, OSPFNeighbor] | None:
+    pattern = r'(Neighbor ID)'
+    match = re.findall(pattern, sh_ip_ospf_neighbors_output)
+    if not match:
+        return None
+
+    neighbors: dict[str, OSPFNeighbor] = {}
+    output_in_lines: list[str] = sh_ip_ospf_neighbors_output.splitlines()[2:]
+    for output_line in output_in_lines:
+        split_line = output_line.split()
+        # ['192.168.1.1', '1', 'FULL/DR', '00:00:37', '192.168.1.1', 'FastEthernet0/1']
+        neighbor_id: str = split_line[0]
+        state: str = split_line[2]
+        ip_address: str = split_line[-2]
+        interface: str = split_line[-1]
+        neighbors[neighbor_id] = OSPFNeighbor(neighbor_id=neighbor_id,
+                                              state=state,
+                                              ip_address=ip_address,
+                                              interface=interface)
+    return neighbors
+
+
 def get_ospf_information(connection: netmiko.BaseConnection) -> OSPFInformation | None:
     connection.enable()
     sh_run_sec_ospf_output: str = connection.send_command("show run | sec ospf")
     sh_ip_ospf_database_output: str = connection.send_command("show ip ospf database")
     sh_ip_ospf_output: str = connection.send_command("show ip ospf")
+    sh_ip_ospf_neighbors_output: str = connection.send_command("show ip ospf neighbor")
     connection.exit_enable_mode()
 
     if not is_ospf_enabled(sh_run_sec_ospf_output):
@@ -135,11 +170,8 @@ def get_ospf_information(connection: netmiko.BaseConnection) -> OSPFInformation 
     maximum_paths: int = get_ospf_maximum_paths(sh_run_sec_ospf_output)
     passive_interface_default: bool = get_ospf_passive_interface_default(sh_run_sec_ospf_output)
     redistribution: Redistribution = get_routing_protocol_redistribution(sh_run_sec_ospf_output)
-
-    list_of_areas_id = get_ospf_area_ids(sh_ip_ospf_output)
-    areas: dict[str, OSPFArea] = {}
-    for area_id in list_of_areas_id:
-        areas[area_id] = get_ospf_area_information(area_id, sh_run_sec_ospf_output)
+    areas: dict[str, OSPFArea] = get_ospf_areas(sh_ip_ospf_output, sh_run_sec_ospf_output)
+    neighbors: dict[str, OSPFNeighbor] = get_ospf_neighbors(sh_ip_ospf_neighbors_output)
 
     ospf_info = OSPFInformation(process_id=process_id,
                                 router_id=router_id,
@@ -150,5 +182,6 @@ def get_ospf_information(connection: netmiko.BaseConnection) -> OSPFInformation 
                                 maximum_paths=maximum_paths,
                                 passive_interface_default=passive_interface_default,
                                 redistribution=redistribution,
-                                areas=areas)
+                                areas=areas,
+                                neighbors=neighbors)
     return ospf_info

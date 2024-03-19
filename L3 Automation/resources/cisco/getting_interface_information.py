@@ -6,11 +6,12 @@ from resources.interfaces.RouterInterface import RouterInterface
 from resources.interfaces.InterfaceStatistics import InterfaceStatistics, InformationStatistics, ErrorsStatistics
 from resources.routing_protocols.ospf.OSPFTimers import OSPFTimers
 
+
 def get_interfaces_name(connection: netmiko.BaseConnection) -> list[str]:
     connection.enable()
-    output: str = connection.send_command("show ip int br")
+    sh_ip_int_br_output: str = connection.send_command("show ip int br")
     connection.exit_enable_mode()
-    interfaces_name: list[str] = [line.split()[0] for line in output.splitlines()]
+    interfaces_name: list[str] = [line.split()[0] for line in sh_ip_int_br_output.splitlines()]
     except_first: slice = slice(1, len(interfaces_name))
     interfaces_name = [int_name for int_name in interfaces_name[except_first] if not int_name.startswith('Vlan')]
     return interfaces_name
