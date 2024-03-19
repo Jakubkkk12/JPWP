@@ -189,13 +189,17 @@ class InterfacesDetails:
                          )
         }
 
-        root = tk.Tk()
+        root = tk.Toplevel()
         # ######## WINDOW PARAMETERS ######## #
         # title
-        root.title(config.APPNAME + ' ' + config.VERSION + ' Interfaces Details')
+        root.title(config.APPNAME + ' ' + config.VERSION + ' ' + hostname + ' Interfaces Details')
+
+        # window icon, using conversion to iso, cause tkinter doesn't accept jpg
+        icon = tk.PhotoImage(file=config.WINDOW_ICON_PATH)
+        root.wm_iconphoto(False, icon)
 
         # size parameters
-        width = 300
+        width = 400
         height = 300
         screenwidth = root.winfo_screenwidth()
         screenheight = root.winfo_screenheight()
@@ -232,7 +236,6 @@ class InterfacesDetails:
         # Data insert
         data_router = devices.get(hostname)
         interfaces = data_router.interfaces
-
         i = 1
         for k, interface in interfaces.items():
             values = (i, interface.name, interface.ip_address, interface.subnet)
