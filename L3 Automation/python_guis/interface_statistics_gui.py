@@ -17,8 +17,6 @@ from resources.ssh.SSHInformation import SSHInformation
 
 class InterfaceStatisticsGUI:
     def __init__(self, hostname, int_name):
-        print('hostname' + hostname)
-        print(int_name)
         devices = {
             'R1': Router(name='R1',
                          ssh_information=SSHInformation(ip_addresses={'0': '10.250.250.1',
