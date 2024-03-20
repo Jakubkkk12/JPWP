@@ -63,6 +63,7 @@ class MainGUI:
                          type='cisco',
                          enable_password='ZSEDCxzaqwe',
                          interfaces={'f0/0': RouterInterface(name='f0/0',
+                                                             description='test1',
                                                              statistics=InterfaceStatistics(
                                                                  information=InformationStatistics(
                                                                      collision=1,
@@ -151,6 +152,7 @@ class MainGUI:
                          type='cisco',
                          enable_password='ZSEDCxzaqwe',
                          interfaces={'f0/0': RouterInterface(name='f0/0',
+                                                             description='test',
                                                              statistics=InterfaceStatistics(
                                                                  information=InformationStatistics(
                                                                      collision=1,
@@ -345,15 +347,16 @@ class MainGUI:
             if item:
                 try:
                     hostname = self.tree.item(item)['values'][1]
+                    selected_router = self.devices.get(hostname)
                     menu.post(event.x_root, event.y_root)
-                    menu.entryconfigure('Interfaces', command=lambda: show_interfaces_details(hostname))
+                    menu.entryconfigure('Interfaces', command=lambda: show_interfaces_details(selected_router))
                 except IndexError():
                     pass
 
         # This function launches InterfacesDetails window when 'Interfaces' is clicked from menu on <MB-3>
-        def show_interfaces_details(hostname):
-            if hostname:
-                InterfacesDetails(hostname)
+        def show_interfaces_details(router: Router):
+            if router:
+                InterfacesDetails(router)
             return None
 
         menu = tk.Menu(self.root, tearoff=False)
