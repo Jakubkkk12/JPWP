@@ -271,6 +271,7 @@ class InterfacesDetails:
 
         def edit_interface() -> None:
             router_interface = devices.get(self.hostname).interfaces.get(self.int_name)
+            print(router_interface)
             EditInterfaceGUI(router_interface)
             return None
 

@@ -5,7 +5,7 @@ from PIL import Image, ImageTk
 import ssh_password_gui
 from gui_resources import config
 from login_gui import LoginGUI
-from python_guis.interfaces_details import InterfacesDetails
+from python_guis.interfaces_details_gui import InterfacesDetails
 
 from resources.devices.Router import Router
 from resources.interfaces.InterfaceOSPFInformation import InterfaceOSPFInformation

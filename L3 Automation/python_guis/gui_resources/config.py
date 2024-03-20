@@ -3,7 +3,7 @@ VERSION = '0.0.1'
 
 BG_COLOR = 'grey'
 FONT = 'Segoe UI'
-FONTSIZE = 12
+FONTSIZE = 10
 
 WIDTH = 800
 HEIGHT = 800
