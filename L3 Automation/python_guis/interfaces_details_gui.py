@@ -2,6 +2,7 @@ import tkinter as tk
 import tkinter.ttk
 from tkinter import ttk
 from gui_resources import config
+from python_guis.edit_interface_gui import EditInterfaceGUI
 from python_guis.interface_errors_gui import InterfaceErrorsGUI
 from python_guis.interface_statistics_gui import InterfaceStatisticsGUI
 from resources.devices.Router import Router
@@ -87,14 +88,9 @@ class InterfacesDetails:
                 except IndexError():
                     pass
 
-        def edit_interface() -> None:
-            # router_interface = devices.get(self.hostname).interfaces.get(self.int_name)
-            # print(router_interface)
-            return None
-
         # Pop-up menu configuration
         menu = tk.Menu(root, tearoff=False)
-        menu.add_command(label='Edit', command=edit_interface)
+        menu.add_command(label='Edit', command=self.edit_interface)
 
         sub_details_menu = tk.Menu(menu, tearoff=False)
         sub_details_menu.add_command(label='Statistics', command=self.show_interface_statistics)
@@ -102,6 +98,10 @@ class InterfacesDetails:
         menu.add_cascade(label='Details', menu=sub_details_menu)
 
         tree.bind('<Button-3>', show_menu_interfaces)
+
+    def edit_interface(self) -> None:
+        EditInterfaceGUI(self.selected_router, self.int_name)
+        return None
 
     def show_interface_statistics(self) -> None:
         InterfaceStatisticsGUI(self.selected_router, self.int_name)
