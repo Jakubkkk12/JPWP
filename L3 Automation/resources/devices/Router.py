@@ -40,7 +40,8 @@ class Router(NetworkDevice):
         Returns:
             str: JSON string representing the Router instance.
         """
-        attributes_to_json: dict = {'name': self.name,
+        attributes_to_json: dict = {'class': 'Router',
+                                    'name': self.name,
                                     'type': self.type,
                                     'ssh_information': {'ip_addresses': self.ssh_information.ip_addresses,
                                                         'port': self.ssh_information.port}
