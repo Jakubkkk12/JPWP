@@ -16,5 +16,5 @@ class RouterInterface(Interface):
         ospf (InterfaceOSPFInformation, optional): OSPF (Open Shortest Path First) configuration information specific to the interface. Defaults to None.
     """
     ip_address: str
-    subnet: int
+    subnet: int = None
     ospf: InterfaceOSPFInformation = None

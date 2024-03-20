@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from resources.routing_protocols.Redistribution import Redistribution
 from resources.routing_protocols.ospf.OSPFArea import OSPFArea
+from resources.routing_protocols.ospf.OSPFNeighbor import OSPFNeighbor
 
 
 @dataclass(slots=True, kw_only=True)
@@ -19,6 +20,7 @@ class OSPFInformation:
         passive_interface_default (bool, optional): Indicates whether interfaces are passive by default. Defaults to None.
         redistribution (Redistribution, optional): Redistribution settings for OSPF. Defaults to None.
         areas (dict[str, OSPFArea], optional): A dictionary of OSPF areas where keys are area IDs and values are OSPFArea objects. Defaults to None.
+        neighbors (dict[str, OSPFNeighbor], optional): A dictionary of active neighbors where keys are neighbor IDs. Defaults to None
     """
     process_id: int = None
     router_id: str = None
@@ -30,4 +32,5 @@ class OSPFInformation:
     passive_interface_default: bool = None
     redistribution: Redistribution = None
     areas: dict[str, OSPFArea] = None
+    neighbors: dict[str, OSPFNeighbor] = None
 

@@ -10,7 +10,7 @@ class OSPFArea:
     Attributes:
         id (str): The identifier of the OSPF area.
         is_authentication_message_digest (bool, optional): Indicates whether authentication is enabled for OSPF messages within this area. Defaults to None.
-        type (str, optional): The type of OSPF area (e.g., backbone, standard, NSSA). Defaults to None.
+        type (str, optional): The type of OSPF area (e.g., stub, standard, NSSA). Defaults to None.
         networks (dict[str, Network], optional): A dictionary of networks within this OSPF area, where keys are network IDs and values are Network objects. Defaults to None.
     """
     id: str
