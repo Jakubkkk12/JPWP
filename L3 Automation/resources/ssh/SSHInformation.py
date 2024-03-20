@@ -13,7 +13,7 @@ class SSHInformation:
     ip_addresses: dict[str, str]
     port: int = 22
 
-    def __str__(self):
+    def __str__(self) -> str:
         """
                Returns a string representation of the SSH information.
 

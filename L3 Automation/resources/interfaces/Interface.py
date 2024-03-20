@@ -12,4 +12,5 @@ class Interface:
         statistics (InterfaceStatistics, optional): Statistics related to the interface. Defaults to None.
     """
     name: str
+    description: str = None
     statistics: InterfaceStatistics = None
