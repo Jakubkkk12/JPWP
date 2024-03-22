@@ -34,3 +34,48 @@ class OSPFInformation:
     areas: dict[str, OSPFArea] = None
     neighbors: dict[str, OSPFNeighbor] = None
 
+    def is_router_id_different(self, new_router_id_value: str) -> bool:
+        if self.router_id == new_router_id_value:
+            return False
+        return True
+
+    def is_auto_cost_reference_bandwidth_different(self, new_auto_cost_reference_bandwidth_value: int) -> bool:
+        if self.auto_cost_reference_bandwidth == new_auto_cost_reference_bandwidth_value:
+            return False
+        return True
+
+    def is_default_information_originate_different(self, new_default_information_originate_value: bool) -> bool:
+        if self.default_information_originate == new_default_information_originate_value:
+            return False
+        return True
+
+    def is_default_metric_of_redistributed_routes_different(self, new_default_metric_of_redistributed_routes: int) -> bool:
+        if self.default_metric_of_redistributed_routes == new_default_metric_of_redistributed_routes:
+            return False
+        return True
+
+    def is_distance_different(self, new_distance_value: int) -> bool:
+        if self.distance == new_distance_value:
+            return False
+        return True
+
+    def is_maximum_paths_different(self, new_maximum_paths_value: int) -> bool:
+        if self.maximum_paths == new_maximum_paths_value:
+            return False
+        return True
+
+    def is_passive_interface_default_different(self, new_passive_interface_default: bool) -> bool:
+        if self.passive_interface_default == new_passive_interface_default:
+            return False
+        return True
+
+    def is_area_in_areas(self, area_id: str) -> bool:
+        if area_id in self.areas.keys():
+            return True
+        return False
+
+    def add_area(self, area: OSPFArea) -> None:
+        if self.is_area_in_areas(area.id):
+            raise Exception('Area already exists')
+        self.areas[area.id] = area
+        return None
