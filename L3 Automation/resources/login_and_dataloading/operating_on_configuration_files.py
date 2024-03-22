@@ -85,3 +85,9 @@ def open_project(file_path: str, aes_key: str) -> dict[str, NetworkDevice]:
                                              device=device,
                                              ssh_ip_addresses=ssh_ip_addresses)
     return devices
+
+
+def add_new_user(username: str, hash_password: str) -> None:
+    with open('../../app_conf_files/username.txt', 'at') as file:
+        file.write(f'{username} {hash_password}')
+    return None
