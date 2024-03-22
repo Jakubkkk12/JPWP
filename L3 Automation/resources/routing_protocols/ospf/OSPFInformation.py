@@ -79,3 +79,8 @@ class OSPFInformation:
             raise Exception('Area already exists')
         self.areas[area.id] = area
         return None
+
+    def remove_area(self, area_id: str) -> None:
+        if self.is_area_in_areas(area_id):
+            self.areas.pop(area_id)
+        return None

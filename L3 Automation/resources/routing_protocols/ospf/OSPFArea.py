@@ -40,3 +40,8 @@ class OSPFArea:
         self.networks[network_id] = network
         return None
 
+    def remove_network(self, network_id: str) -> None:
+        if self.is_network_in_networks(network_id):
+            self.networks.pop(network_id)
+        return None
+
