@@ -24,6 +24,10 @@ class SSHInformation:
         self.ip_addresses[ip_address_key] = ip_address
         return None
 
+    def remove_ip_address(self, ip_address_key: str) -> None:
+        if self.is_ip_address_in_ip_address(ip_address_key):
+            self.ip_addresses.pop(ip_address_key)
+
     def __str__(self) -> str:
         """
                Returns a string representation of the SSH information.
