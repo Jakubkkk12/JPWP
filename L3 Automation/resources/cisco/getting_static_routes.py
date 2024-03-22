@@ -2,7 +2,7 @@ import netmiko
 import re
 from resources.routing_protocols.StaticRoute import StaticRoute
 from resources.routing_protocols.Network import Network
-from resources.constants import NETWORK_MASK_REVERSED
+from resources.constants import NETWORK_MASK_REVERSED, NETWORK_MASK
 
 
 def get_all_static_route_info(sh_run_sec_ip_route_output: str) -> list[str] | None:
@@ -55,3 +55,20 @@ def get_static_routes(connection: netmiko.BaseConnection) -> list[StaticRoute] |
         static_routes.append(get_static_route(static_route_info))
 
     return static_routes
+
+
+def get_conf_command(network: str, network_mask: int, route_distance: int = 1, next_hop: str = None,
+                     interface_name: str = None) -> str:
+
+    if next_hop is None and interface_name is None:
+        raise ValueError('next_hop and interface_name are None')
+    network_mask: str = NETWORK_MASK[network_mask]
+    if next_hop is None:
+        return f'ip route {network} {network_mask} {interface_name} {route_distance}'
+    if interface_name is None:
+        return f'ip route {network} {network_mask} {next_hop} {route_distance}'
+    return f'ip route {network} {network_mask} {interface_name} {next_hop} {route_distance}'
+
+
+def get_no_conf_command(network: str, network_mask: int) -> str:
+    return f'no ip route {network} {NETWORK_MASK[network_mask]}'
