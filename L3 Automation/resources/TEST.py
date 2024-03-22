@@ -61,13 +61,13 @@ if __name__ == '__main__':
                                                          )
                                                          )
                                  },
-                     static_routes={'192.168.1.0/24': StaticRoute(network=Network(network='192.168.1.0',
+                     static_routes=[StaticRoute(network=Network(network='192.168.1.0',
                                                                                   mask=24,
                                                                                   wildcard='0.0.0.255'
                                                                                   ),
                                                                   next_hop='12.345.32.1',
                                                                   interface='f0/0')
-                                    },
+                                    ],
                      ospf=OSPFInformation(router_id='1.1.1.1',
                                           auto_cost_reference_bandwidth=1000,
                                           default_information_originate=False,
@@ -140,13 +140,13 @@ if __name__ == '__main__':
                                                          )
                                                          )
                                  },
-                     static_routes={'192.168.1.0/24': StaticRoute(network=Network(network='192.168.1.0',
+                     static_routes=[StaticRoute(network=Network(network='192.168.1.0',
                                                                                   mask=24,
                                                                                   wildcard='0.0.0.255'
                                                                                   ),
                                                                   next_hop='12.345.32.1',
                                                                   interface='f0/0')
-                                    },
+                                    ],
                      ospf=OSPFInformation(router_id='1.1.1.1',
                                           auto_cost_reference_bandwidth=1000,
                                           default_information_originate=False,
@@ -185,6 +185,7 @@ if __name__ == '__main__':
                 ssh_information=SSHInformation(ip_addresses={'0': '10.250.250.2'}),
                 type='cisco_ios',
                 enable_password='ZSEDCxzaqwe')
+
     from resources.cisco.getting_bgp_information import get_bgp_information
     from resources.cisco.getting_ospf_information import get_ospf_information
     for router in [r1, r2]:
