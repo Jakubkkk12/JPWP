@@ -13,6 +13,21 @@ class SSHInformation:
     ip_addresses: dict[str, str]
     port: int = 22
 
+    def is_ip_address_in_ip_address(self, ip_address_key: str) -> bool:
+        if ip_address_key in self.ip_addresses.keys():
+            return True
+        return False
+
+    def add_ip_address(self, ip_address: str, ip_address_key: str) -> None:
+        if self.is_ip_address_in_ip_address(ip_address_key):
+            raise Exception('IP address already exists')
+        self.ip_addresses[ip_address_key] = ip_address
+        return None
+
+    def remove_ip_address(self, ip_address_key: str) -> None:
+        if self.is_ip_address_in_ip_address(ip_address_key):
+            self.ip_addresses.pop(ip_address_key)
+
     def __str__(self) -> str:
         """
                Returns a string representation of the SSH information.
