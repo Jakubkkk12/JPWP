@@ -13,6 +13,7 @@ class InterfacesDetails:
         self.selected_router = router
         self.hostname = router.name
         self.int_name = ''
+        self.selected_router_iid = None
 
         root = tk.Toplevel()
         # ######## WINDOW PARAMETERS ######## #
@@ -45,14 +46,14 @@ class InterfacesDetails:
         horizontalScrollbar = ttk.Scrollbar(treeFrame, orient='horizontal')
         horizontalScrollbar.pack(side='bottom', fill='x')
 
-        treeColumns = ('No', 'Name', 'IP', 'Subnet')
-        tree = tk.ttk.Treeview(treeFrame, columns=treeColumns, show='headings')
-        tree.pack(side='top', expand=True, fill='both')
-        tree.configure(yscrollcommand=verticalScrollbar.set)
-        tree.configure(xscrollcommand=horizontalScrollbar.set)
+        treeColumns = ('No', 'Name', 'IP', 'Subnet', 'Description')
+        self.tree = tk.ttk.Treeview(treeFrame, columns=treeColumns, show='headings')
+        self.tree.pack(side='top', expand=True, fill='both')
+        self.tree.configure(yscrollcommand=verticalScrollbar.set)
+        self.tree.configure(xscrollcommand=horizontalScrollbar.set)
 
-        verticalScrollbar.config(command=tree.yview)
-        horizontalScrollbar.config(command=tree.xview)
+        verticalScrollbar.config(command=self.tree.yview)
+        horizontalScrollbar.config(command=self.tree.xview)
 
         # Button is a child of root, not treeFrame
         btnQuit = tk.Button(root, text='Quit', command=root.destroy)
@@ -62,29 +63,33 @@ class InterfacesDetails:
         interfaces = router.interfaces
         i = 1
         for k, interface in interfaces.items():
-            values = (i, interface.name, interface.ip_address, interface.subnet)
-            tree.insert('', tk.END, iid=i-1, values=values)
+            values = (i, interface.name, interface.ip_address, interface.subnet, interface.description)
+            self.tree.insert('', tk.END, iid=i-1, values=values)
             i += 1
 
-        tree.heading(treeColumns[0], text='No', anchor='w')
-        tree.column(treeColumns[0], width=30)
+        self.tree.heading(treeColumns[0], text='No', anchor='w')
+        self.tree.column(treeColumns[0], width=30)
 
-        tree.heading(treeColumns[1], text='Name', anchor='w')
-        tree.column(treeColumns[1], width=30)
+        self.tree.heading(treeColumns[1], text='Name', anchor='w')
+        self.tree.column(treeColumns[1], width=30)
 
-        tree.heading(treeColumns[2], text='IP', anchor='w')
-        tree.column(treeColumns[2], width=30)
+        self.tree.heading(treeColumns[2], text='IP', anchor='w')
+        self.tree.column(treeColumns[2], width=30)
 
-        tree.heading(treeColumns[3], text='Subnet', anchor='w')
-        tree.column(treeColumns[3], width=30)
+        self.tree.heading(treeColumns[3], text='Subnet', anchor='w')
+        self.tree.column(treeColumns[3], width=30)
+
+        self.tree.heading(treeColumns[4], text='Description', anchor='w')
+        self.tree.column(treeColumns[4], width=50)
 
         def show_menu_interfaces(event) -> None:
-            item = tree.identify_row(event.y)
-            tree.selection_set(item)
+            item = self.tree.identify_row(event.y)
+            self.tree.selection_set(item)
             if item:
                 try:
-                    self.int_name = tree.item(item)['values'][1]
+                    self.int_name = self.tree.item(item)['values'][1]
                     menu.post(event.x_root, event.y_root)
+                    self.selected_router_iid = self.tree.item(item)['values'][0]
                 except IndexError():
                     pass
 
@@ -97,10 +102,10 @@ class InterfacesDetails:
         sub_details_menu.add_command(label='Errors', command=self.show_interface_errors)
         menu.add_cascade(label='Details', menu=sub_details_menu)
 
-        tree.bind('<Button-3>', show_menu_interfaces)
+        self.tree.bind('<Button-3>', show_menu_interfaces)
 
     def edit_interface(self) -> None:
-        EditInterfaceGUI(self.selected_router, self.int_name)
+        EditInterfaceGUI(self.selected_router, self.int_name, self.selected_router_iid, self)
         return None
 
     def show_interface_statistics(self) -> None:
@@ -109,4 +114,9 @@ class InterfacesDetails:
 
     def show_interface_errors(self) -> None:
         InterfaceErrorsGUI(self.selected_router, self.int_name)
+        return None
+
+    # idk how but it works, i love gpt
+    def update_interface_details(self, iid, name, ip, subnet, description) -> None:
+        self.tree.item(iid-1, values=(self.tree.item(iid-1, 'values')[0], name, ip, subnet, description))
         return None

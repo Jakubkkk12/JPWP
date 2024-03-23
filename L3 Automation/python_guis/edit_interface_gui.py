@@ -1,13 +1,15 @@
 import tkinter as tk
 from tkinter import messagebox
 
+
 from resources.devices.Router import Router
 from gui_resources import config
 
 
 class EditInterfaceGUI:
-    def __init__(self, router: Router, int_name: str):
+    def __init__(self, router: Router, int_name: str, id: int, interfaces_details_gui):
         root = tk.Toplevel()
+        self.interfaces_details_gui = interfaces_details_gui
 
         # title
         root.title(config.APPNAME + ' ' + config.VERSION + ' ' + router.name + ' ' + ' Edit Interface ' + int_name)
@@ -63,6 +65,9 @@ class EditInterfaceGUI:
 
         def get_mtu() -> int:
             return int(entryMTU.get())
+
+        def get_description() -> str:
+            return entryDescritpion.get()
 
         def refill_with_current_ip():
             ip_entries = [entryIPAddressFirst, entryIPAddressSecond, entryIPAddressThird, entryIPAddressFourth]
@@ -162,6 +167,11 @@ class EditInterfaceGUI:
                 router.interfaces[int_name].statistics.information.mtu = get_mtu()
                 router.interfaces[int_name].statistics.information.duplex = duplexVariable.get()
                 router.interfaces[int_name].statistics.information.speed = speedVariable.get()
+                router.interfaces[int_name].description = get_description()
+
+                self.interfaces_details_gui.update_interface_details(id, int_name, get_ip_address(), get_mask(),
+                                                                     get_description())
+
                 root.destroy()
 
         btnFrame = tk.Frame(root, pady=10)
