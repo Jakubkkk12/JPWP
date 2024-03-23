@@ -6,6 +6,7 @@ import ssh_password_gui
 from gui_resources import config
 from login_gui import LoginGUI
 from python_guis.interfaces_details_gui import InterfacesDetails
+from python_guis.ospf_interface_details_gui import OSPFInterfaceDetailsGUI
 
 from resources.devices.Router import Router
 from resources.interfaces.InterfaceOSPFInformation import InterfaceOSPFInformation
@@ -54,6 +55,7 @@ class MainGUI:
         self.root.rowconfigure(1, weight=1)
         self.root.rowconfigure(2, weight=4)
         self.root.rowconfigure(3, weight=4)
+        self.root.rowconfigure(5, weight=4)
 
         # Sample data:
         self.devices = {
@@ -132,6 +134,10 @@ class MainGUI:
                                                                    networks={'10.0.0.0/16': Network(network='10.0.0.0',
                                                                                                     mask=16,
                                                                                                     wildcard='0.0.255.255'
+                                                                                                    ),
+                                                                             '20.0.0.0/16': Network(network='20.0.0.0',
+                                                                                                    mask=16,
+                                                                                                    wildcard='0.0.255.255'
                                                                                                     )
                                                                              }
                                                                    ),
@@ -139,6 +145,10 @@ class MainGUI:
                                                                    is_authentication_message_digest=False,
                                                                    type='NSSA',
                                                                    networks={'10.0.0.0/16': Network(network='10.0.0.0',
+                                                                                                    mask=16,
+                                                                                                    wildcard='0.0.255.255'
+                                                                                                    ),
+                                                                             '30.0.0.0/16': Network(network='30.0.0.0',
                                                                                                     mask=16,
                                                                                                     wildcard='0.0.255.255'
                                                                                                     )
@@ -283,7 +293,7 @@ class MainGUI:
         btnFrameLogoutQuit = tk.Frame(self.root)
         btnFrameLogoutQuit.grid(column=5, row=4, sticky='NESW', padx=10)
         btnFrameLogoutQuit.configure(bg=config.BG_COLOR)
-        btnLogOut = tk.Button(btnFrameLogoutQuit, text='Log Out', command=self.btnLogOut_command)
+        btnLogOut = tk.Button(btnFrameLogoutQuit, text='Log Out', command=self.log_out)
         btnLogOut.grid(column=0, row=0, sticky='EWS')
 
         QUIT_ICON = Image.open(config.QUIT_ICON_PATH)
@@ -293,11 +303,15 @@ class MainGUI:
                             command=self.root.destroy)
         btnQuit.grid(column=0, row=1, sticky='EWS')
 
+        self.consoleLabel = tk.Label(self.root, text='1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n',
+                                     anchor='w')
+        self.consoleLabel.grid(column=0, row=5, sticky='NESW', padx=2, columnspan=4)
+
         self.show_view_all()  # For first data insert load 'all' view
         self.root.mainloop()
 
     # This function exits 'main_gui' view and launches loginGUI
-    def btnLogOut_command(self) -> None:
+    def log_out(self) -> None:
         self.root.destroy()
         LoginGUI()
         return None
@@ -323,7 +337,7 @@ class MainGUI:
                 for j, ip in router.ssh_information.ip_addresses.items():
                     if j != '0':
                         ssh_ips = ('', '', '', ip)
-                        self.tree.insert(iid, tk.END, values=ssh_ips)
+                        self.tree.insert(iid, tk.END, values=ssh_ips)  # this need to be fixed so it skips first item
             iid += 1
 
         self.tree.configure(columns=treeColumns)
@@ -354,9 +368,9 @@ class MainGUI:
                     pass
 
         # This function launches InterfacesDetails window when 'Interfaces' is clicked from menu on <MB-3>
-        def show_interfaces_details(router: Router):
-            if router:
-                InterfacesDetails(router)
+        def show_interfaces_details(selected_router: Router):
+            if selected_router:
+                InterfacesDetails(selected_router)
             return None
 
         menu = tk.Menu(self.root, tearoff=False)
@@ -377,51 +391,65 @@ class MainGUI:
     def show_view_ospf(self) -> None:
         self.clear_tree()
 
-        treeColumns = ('No', 'Hostname', 'Areas', 'Router ID', 'Networks', 'Redistribution')
+        treeColumns = ('No', 'Hostname', 'Router ID', 'Areas', 'Networks', 'Redistribution')
         self.tree.configure(columns=treeColumns)
 
+        # Data insert
         for iid, (router_name, router) in enumerate(self.devices.items(), start=1):
-            ospf_redistributions = self.get_ospf_redistribution(router)
             ospf_area = router.ospf.areas['0'].id
-            values = (iid, router.name, ospf_area, router.ospf.router_id, ospf_redistributions)
+            ospf_networks = list(router.ospf.areas[ospf_area].networks.keys())
+            ospf_redistributions = self.get_ospf_redistribution(router)
+
+            values = (iid, router.name, router.ospf.router_id, ospf_area, ospf_networks, ospf_redistributions)
             self.tree.insert('', tk.END, values=values, iid=iid)
 
             if len(router.ospf.areas) > 1:
                 for j, area in router.ospf.areas.items():
                     if j != '0':
-                        values = ('', '', area.id, '', '')
+                        values = ('', '', '', area.id, list(router.ospf.areas[area.id].networks.keys()), '')
                         self.tree.insert(iid, tk.END, values=values)
 
         self.tree.heading(treeColumns[0], text='No', anchor='w')
         self.tree.column(treeColumns[0], minwidth=30, width=30, stretch=False)
 
         self.tree.heading(treeColumns[1], text='Hostname', anchor='w')
-        self.tree.column(treeColumns[1], minwidth=70, stretch=False)
+        self.tree.column(treeColumns[1], minwidth=70, width=70, stretch=False)
 
-        self.tree.heading(treeColumns[2], text='Areas', anchor='w')
-        self.tree.column(treeColumns[2], minwidth=50, stretch=False)
+        self.tree.heading(treeColumns[2], text='Router ID', anchor='w')
+        self.tree.column(treeColumns[2], minwidth=70, width=70, stretch=False)
 
-        self.tree.heading(treeColumns[3], text='Router ID', anchor='w')
-        self.tree.column(treeColumns[3], minwidth=50, stretch=False)
+        self.tree.heading(treeColumns[3], text='Areas', anchor='w')
+        self.tree.column(treeColumns[3], minwidth=50, width=50, stretch=False)
 
-        self.tree.heading(treeColumns[4], text='Redistribution', anchor='w')
-        self.tree.column(treeColumns[4], minwidth=70, stretch=False)
+        self.tree.heading(treeColumns[4], text='Networks', anchor='w')
+        self.tree.column(treeColumns[4], minwidth=50, stretch=False)
+
+        self.tree.heading(treeColumns[5], text='Redistribution', anchor='w')
+        self.tree.column(treeColumns[5], minwidth=70, stretch=False)
 
         # This function shows menu when <MB-3> is clicked with treeview item selected
         def show_menu_ospf(event):
             item = self.tree.identify_row(event.y)
-            hostname = self.tree.item(item)['values'][1]
+            self.tree.selection_set(item)
             if item:
-                menu.post(event.x_root, event.y_root)
+                try:
+                    hostname = self.tree.item(item)['values'][1]
+                    selected_router = self.devices.get(hostname)
+                    menu.post(event.x_root, event.y_root)
+                    menu.entryconfigure('Interfaces', command=lambda: show_interfaces_details(selected_router))
+                except IndexError():
+                    pass
+
+        def show_interfaces_details(selected_router: Router) -> None:
+            if selected_router:
+                OSPFInterfaceDetailsGUI(selected_router)
+            return None
 
         menu = tk.Menu(self.root, tearoff=False)
-        menu.add_command(label='OSPF Information', command=self.show_ospf_details)
+        menu.add_command(label='Interfaces', command=OSPFInterfaceDetailsGUI)
         self.tree.bind('<Button-3>', show_menu_ospf)
 
         return None
-
-    def show_ospf_details(self):
-        print('dupa')
 
     def get_ospf_redistribution(self, router) -> str:
         ospf_redistribution = ''
@@ -442,7 +470,10 @@ class MainGUI:
             self.tree.delete(item)
         treeColumns = ()
         self.tree.configure(columns=treeColumns)
+        return None
 
+    def console_commands(self, text: str) -> None:
+        self.consoleLabel.configure(text=text)
         return None
 
 
