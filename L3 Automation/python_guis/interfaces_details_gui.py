@@ -2,7 +2,7 @@ import tkinter as tk
 import tkinter.ttk
 from tkinter import ttk
 from gui_resources import config
-from python_guis.edit_interface_gui import EditInterfaceGUI
+from python_guis.edit_interface_all_gui import EditInterfaceGUI
 from python_guis.interface_errors_gui import InterfaceErrorsGUI
 from python_guis.interface_statistics_gui import InterfaceStatisticsGUI
 from resources.devices.Router import Router
@@ -116,7 +116,7 @@ class InterfacesDetails:
         InterfaceErrorsGUI(self.selected_router, self.int_name)
         return None
 
-    # idk how but it works, i love gpt
+    # IDK how but it works, I love gpt
     def update_interface_details(self, iid, name, ip, subnet, description) -> None:
-        self.tree.item(iid-1, values=(self.tree.item(iid-1, 'values')[0], name, ip, subnet, description))
+        self.tree.item(iid-1, values=(iid, name, ip, subnet, description))
         return None
