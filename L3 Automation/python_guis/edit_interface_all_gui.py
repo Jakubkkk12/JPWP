@@ -1,13 +1,12 @@
 import tkinter as tk
 from tkinter import messagebox
 
-
 from resources.devices.Router import Router
 from gui_resources import config
 
 
 class EditInterfaceGUI:
-    def __init__(self, router: Router, int_name: str, id: int, interfaces_details_gui):
+    def __init__(self, router: Router, int_name: str, iid: int, interfaces_details_gui):
         root = tk.Toplevel()
         self.interfaces_details_gui = interfaces_details_gui
 
@@ -109,7 +108,6 @@ class EditInterfaceGUI:
                 return ['100 Mb/s', '10 Mb/s']
 
         speedOptions = get_speed_options()
-        speedOptions.remove(router.interfaces[int_name].statistics.information.speed)
         speedVariable = tk.StringVar(root)
         speedVariable.set(router.interfaces[int_name].statistics.information.speed)
         optionMenuSpeed = tk.OptionMenu(root, speedVariable, *speedOptions)
@@ -169,7 +167,7 @@ class EditInterfaceGUI:
                 router.interfaces[int_name].statistics.information.speed = speedVariable.get()
                 router.interfaces[int_name].description = get_description()
 
-                self.interfaces_details_gui.update_interface_details(id, int_name, get_ip_address(), get_mask(),
+                self.interfaces_details_gui.update_interface_details(iid, int_name, get_ip_address(), get_mask(),
                                                                      get_description())
 
                 root.destroy()
@@ -183,8 +181,3 @@ class EditInterfaceGUI:
         btnFrame.grid(column=0, row=6, columnspan=2, sticky='s')
 
         root.mainloop()
-
-
-
-
-
