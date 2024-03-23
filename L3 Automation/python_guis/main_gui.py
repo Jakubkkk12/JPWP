@@ -307,7 +307,8 @@ class MainGUI:
                                      anchor='w')
         self.consoleLabel.grid(column=0, row=5, sticky='NESW', padx=2, columnspan=4)
 
-        self.show_view_all()  # For first data insert load 'all' view
+        # For first data insert load 'all' view
+        self.show_view_all()
         self.root.mainloop()
 
     # This function exits 'main_gui' view and launches loginGUI
