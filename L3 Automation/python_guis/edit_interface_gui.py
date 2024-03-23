@@ -110,11 +110,17 @@ class EditInterfaceGUI:
         optionMenuSpeed = tk.OptionMenu(root, speedVariable, *speedOptions)
         optionMenuSpeed.grid(column=1, row=3)
 
-        lblMTU = tk.Label(root, text='MTU:')
+        lblMTU = tk.Label(root, text='MTU (bytes):')
         lblMTU.grid(column=0, row=4)
         entryMTU = tk.Entry(root)
         entryMTU.insert(0, str(router.interfaces[int_name].statistics.information.mtu))
         entryMTU.grid(column=1, row=4)
+
+        lblDescription = tk.Label(root, text='Description:')
+        lblDescription.grid(column=0, row=5)
+        entryDescritpion = tk.Entry(root)
+        entryDescritpion.insert(0, router.interfaces[int_name].description)
+        entryDescritpion.grid(column=1, row=5)
 
         def validate_changes() -> bool:
             ip_entries = [entryIPAddressFirst, entryIPAddressSecond, entryIPAddressThird, entryIPAddressFourth]
@@ -164,7 +170,7 @@ class EditInterfaceGUI:
 
         btnCancel = tk.Button(btnFrame, text='Cancel', command=root.destroy, width=30)
         btnCancel.pack()
-        btnFrame.grid(column=0, row=5, columnspan=2, sticky='s')
+        btnFrame.grid(column=0, row=6, columnspan=2, sticky='s')
 
         root.mainloop()
 
