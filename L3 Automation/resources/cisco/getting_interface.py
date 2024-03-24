@@ -490,3 +490,71 @@ def get_interface_ospf_information(connection: netmiko.BaseConnection,
                                                                    priority=priority,
                                                                    timers=timers)
     return ospf_info
+
+
+def get_ospf_conf_command_network_type(network_type: str) -> str:
+    return f'ip ospf network {network_type}'
+
+
+def get_ospf_conf_command_cost(cost: int) -> str:
+    return f'ip ospf cost {cost}'
+
+
+def get_ospf_conf_priority(priority: int) -> str:
+    return f'ip ospf priority {priority}'
+
+
+def get_ospf_conf_authentication_message_digest(authentication_message_digest: bool, authentication_password: str) -> list[str]:
+    if authentication_message_digest is True:
+        return ['ip ospf authentication message-digest', f'ip ospf message-digest-key 1 md5 {authentication_password}']
+    return ['no ip ospf authentication', f'no ip ospf message-digest-key 1 md5']
+
+
+def get_ospf_conf_hello_timer(hello_timer: int) -> str:
+    return f'ip ospf hello-interval {hello_timer}'
+
+
+def get_ospf_conf_dead_timer(dead_timer: int) -> str:
+    return f'ip ospf dead-interval {dead_timer}'
+
+
+def get_ospf_conf_retransmit_timer(retransmit_timer: int) -> str:
+    return f'ip ospf retransmit-interval {retransmit_timer}'
+
+
+def get_ospf_conf_commands_for_update_as_list(ospf_info: InterfaceOSPFInformation, network_type: str, cost: int,
+                                              priority: int, authentication_message_digest: bool,
+                                              authentication_password: str, hello_timer: int, dead_timer: int,
+                                              retransmit_timer: int) -> list[str] | None:
+    list_of_commands: list[str] = []
+    if ospf_info.is_network_type_different(new_network_type_value=network_type):
+        list_of_commands.append(get_ospf_conf_command_network_type(network_type))
+
+    if ospf_info.is_cost_different(new_cost_value=cost):
+        list_of_commands.append(get_ospf_conf_command_cost(cost))
+
+    if ospf_info.is_priority_different(new_priority_value=priority):
+        list_of_commands.append(get_ospf_conf_priority(priority))
+
+    if ospf_info.is_authentication_message_digest_different(
+            new_authentication_message_digest_value=authentication_message_digest):
+        list_of_commands.extend(get_ospf_conf_authentication_message_digest(authentication_message_digest,
+                                                                            authentication_password))
+
+    if ospf_info.timers.is_hello_timer_different(new_hello_timer_value=hello_timer):
+        list_of_commands.append(get_ospf_conf_hello_timer(hello_timer))
+
+    if ospf_info.timers.is_dead_timer_different(new_dead_timer_value=dead_timer):
+        list_of_commands.append(get_ospf_conf_dead_timer(dead_timer))
+
+    if ospf_info.timers.is_retransmit_timer_different(new_retransmit_timer_value=retransmit_timer):
+        list_of_commands.append(get_ospf_conf_retransmit_timer(retransmit_timer))
+
+    if len(list_of_commands) > 0:
+        return list_of_commands
+    return None
+
+
+
+
+
