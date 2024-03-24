@@ -10,9 +10,9 @@ class RIPInformation:
     default_metric_of_redistributed_routes: int = None
     distance: int = None
     maximum_paths: int = None
+    version: int = None
     redistribution: Redistribution = None
     networks: dict[str, Network] = None
-    version: int = None
 
     def is_auto_summary_different(self, new_auto_summary_value: bool) -> bool:
         if self.auto_summary == new_auto_summary_value:

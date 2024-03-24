@@ -5,10 +5,10 @@ from resources.routing_protocols.ospf.OSPFInformation import OSPFInformation
 from resources.routing_protocols.Network import Network
 from resources.routing_protocols.Redistribution import Redistribution
 from resources.cisco.getting_redistribution import get_routing_protocol_redistribution
-from resources.cisco.getting_routing_protocol_information import (get_routing_protocol_distance,
-                                                                  get_routing_protocol_default_information_originate,
-                                                                  get_routing_protocol_maximum_paths,
-                                                                  get_routing_protocol_default_metric_of_redistributed_routes)
+from resources.cisco.getting_routing_protocol import (get_routing_protocol_distance,
+                                                      get_routing_protocol_default_information_originate,
+                                                      get_routing_protocol_maximum_paths,
+                                                      get_routing_protocol_default_metric_of_redistributed_routes)
 from resources.routing_protocols.ospf.OSPFNeighbor import OSPFNeighbor
 
 

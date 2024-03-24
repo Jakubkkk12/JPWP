@@ -6,9 +6,9 @@ from resources.routing_protocols.bgp.BGPInformation import BGPInformation
 from resources.routing_protocols.Redistribution import Redistribution
 from resources.routing_protocols.Network import Network
 from resources.cisco.getting_redistribution import get_routing_protocol_redistribution
-from resources.cisco.getting_routing_protocol_information import (get_routing_protocol_distance,
-                                                                  get_routing_protocol_default_information_originate,
-                                                                  get_routing_protocol_default_metric_of_redistributed_routes)
+from resources.cisco.getting_routing_protocol import (get_routing_protocol_distance,
+                                                      get_routing_protocol_default_information_originate,
+                                                      get_routing_protocol_default_metric_of_redistributed_routes)
 from resources.constants import NETWORK_MASK_REVERSED
 
 

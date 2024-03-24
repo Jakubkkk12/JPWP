@@ -62,8 +62,8 @@ def get_routing_protocol_redistribution(sh_run_sec_routing_protocol_output: str)
                           is_redistribute_connected=is_redistribute_connected)
 
 
-def get_conf_command_as_list(redistribution: Redistribution, ospf: bool, rip: bool, bgp: bool, static: bool,
-                             connected: bool, bgp_as: int = None, ospf_proces: int = None, subnets_on: bool = False) -> list[str] | None:
+def get_conf_commands_as_list(redistribution: Redistribution, ospf: bool, rip: bool, bgp: bool, static: bool,
+                              connected: bool, bgp_as: int = None, ospf_proces: int = None, subnets_on: bool = False) -> list[str] | None:
 
     list_of_commands: list[str] = []
     subnets: str = ''
