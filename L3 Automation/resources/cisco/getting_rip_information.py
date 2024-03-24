@@ -72,20 +72,20 @@ def get_rip_information(connection: netmiko.BaseConnection) -> RIPInformation | 
     return rip_info
 
 
-def get_conf_command_auto_summary(auto_summary: bool) -> str:
+def get_rip_conf_command_auto_summary(auto_summary: bool) -> str:
     if auto_summary is True:
         return 'auto-summary'
     return 'no auto-summary'
 
 
-def get_conf_basic_commands_for_update_as_list(rip: RIPInformation, auto_summary: bool,
+def get_rip_conf_basic_commands_for_update_as_list(rip: RIPInformation, auto_summary: bool,
                                                default_information_originate: bool,
                                                default_metric_of_redistributed_routes: int, distance: int,
                                                maximum_paths: int, version: int) -> list[str] | None:
 
     list_of_commands: list[str] = []
     if rip.is_auto_summary_different(new_auto_summary_value=auto_summary):
-        list_of_commands.append(get_conf_command_auto_summary(auto_summary))
+        list_of_commands.append(get_rip_conf_command_auto_summary(auto_summary))
 
     if rip.is_default_information_originate_different(
             new_default_information_originate_value=default_information_originate):
@@ -110,23 +110,23 @@ def get_conf_basic_commands_for_update_as_list(rip: RIPInformation, auto_summary
     return None
 
 
-def get_conf_networks_commands_as_list(rip: RIPInformation, list_of_networks: list[str]) -> list[str] | None:
+def get_rip_conf_networks_commands_as_list(list_of_networks: list[str]) -> list[str] | None:
     list_of_commands: list[str] = []
 
     for network_id in list_of_networks:
-        if not rip.is_network_in_networks(network_id=network_id):
-            list_of_commands.append(f'network {network_id}')
+        list_of_commands.append(f'network {network_id}')
+
     if len(list_of_commands) > 0:
         return list_of_commands
     return None
 
 
-def get_no_conf_networks_commands_as_list(rip: RIPInformation, list_of_networks: list[str]) -> list[str] | None:
+def get_rip_no_conf_networks_commands_as_list(list_of_networks: list[str]) -> list[str] | None:
     list_of_commands: list[str] = []
 
     for network_id in list_of_networks:
-        if not rip.is_network_in_networks(network_id=network_id):
-            list_of_commands.append(f'no network {network_id}')
+        list_of_commands.append(f'no network {network_id}')
+
     if len(list_of_commands) > 0:
         return list_of_commands
     return None
