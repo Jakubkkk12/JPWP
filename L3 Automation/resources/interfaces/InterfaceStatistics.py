@@ -60,6 +60,21 @@ class InformationStatistics:
     mtu: int = None
     encapsulation: str = None
 
+    def is_duplex_different(self, new_duplex_value: str) -> bool:
+        if self.duplex == new_duplex_value:
+            return False
+        return True
+
+    def is_speed_different(self, new_speed_value: str) -> bool:
+        if self.speed == new_speed_value:
+            return False
+        return True
+
+    def is_mtu_different(self, new_mtu_value: int) -> bool:
+        if self.mtu == new_mtu_value:
+            return False
+        return True
+
 
 @dataclass(slots=True, kw_only=True)
 class InterfaceStatistics:

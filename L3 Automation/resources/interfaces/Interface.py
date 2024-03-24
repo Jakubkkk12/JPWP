@@ -15,3 +15,8 @@ class Interface:
     name: str
     description: str = None
     statistics: InterfaceStatistics = None
+
+    def is_description_different(self, new_description_value: str) -> bool:
+        if self.description == new_description_value:
+            return False
+        return True
