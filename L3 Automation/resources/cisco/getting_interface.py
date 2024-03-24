@@ -343,8 +343,8 @@ def get_conf_command_interface_mtu(mtu: int) -> str:
     return f'mtu {mtu}'
 
 
-def get_base_conf_commands_as_list(router_interface: RouterInterface, description: str, ip_address: str, subnet: int,
-                                   duplex: str, speed: str, mtu: int) -> list[str] | None:
+def get_base_conf_commands_for_update_as_list(router_interface: RouterInterface, description: str, ip_address: str,
+                                              subnet: int, duplex: str, speed: str, mtu: int) -> list[str] | None:
     list_of_commands: list[str] = []
     if router_interface.is_description_different(new_description_value=description):
         list_of_commands.append(get_conf_command_interface_description(description))

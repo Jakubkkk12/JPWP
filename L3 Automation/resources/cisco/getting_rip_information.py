@@ -78,9 +78,10 @@ def get_conf_command_auto_summary(auto_summary: bool) -> str:
     return 'no auto-summary'
 
 
-def get_conf_basic_commands_as_list(rip: RIPInformation, auto_summary: bool, default_information_originate: bool,
-                                    default_metric_of_redistributed_routes: int, distance: int, maximum_paths: int,
-                                    version: int) -> list[str] | None:
+def get_conf_basic_commands_for_update_as_list(rip: RIPInformation, auto_summary: bool,
+                                               default_information_originate: bool,
+                                               default_metric_of_redistributed_routes: int, distance: int,
+                                               maximum_paths: int, version: int) -> list[str] | None:
 
     list_of_commands: list[str] = []
     if rip.is_auto_summary_different(new_auto_summary_value=auto_summary):
