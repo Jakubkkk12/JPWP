@@ -1,5 +1,7 @@
 import netmiko
 import re
+
+from resources.devices.Router import Router
 from resources.routing_protocols.ospf.OSPFArea import OSPFArea
 from resources.routing_protocols.ospf.OSPFInformation import OSPFInformation
 from resources.routing_protocols.Network import Network
@@ -8,7 +10,11 @@ from resources.cisco.getting_redistribution import get_routing_protocol_redistri
 from resources.cisco.getting_routing_protocol import (get_routing_protocol_distance,
                                                       get_routing_protocol_default_information_originate,
                                                       get_routing_protocol_maximum_paths,
-                                                      get_routing_protocol_default_metric_of_redistributed_routes)
+                                                      get_routing_protocol_default_metric_of_redistributed_routes,
+                                                      get_conf_command_default_metric_of_redistributed_routes,
+                                                      get_conf_command_default_information_originate,
+                                                      get_conf_command_maximum_paths,
+                                                      get_conf_command_distance)
 from resources.routing_protocols.ospf.OSPFNeighbor import OSPFNeighbor
 
 
@@ -177,3 +183,132 @@ def get_ospf_information(connection: netmiko.BaseConnection) -> OSPFInformation 
                                 areas=areas,
                                 neighbors=neighbors)
     return ospf_info
+
+
+def get_ospf_conf_command_passive_interface(interface_name: str, passive_interface: bool) -> str:
+    if passive_interface is True:
+        return f'passive-interface {interface_name}'
+    return f'no passive-interface {interface_name}'
+
+
+def get_ospf_conf_commands_for_update_passive_interface_as_list(router: Router,
+                                                                interfaces_names_and_passive_interface: list[list[str, bool]]) -> list[str] | None:
+    list_of_commands: list[str] = []
+    for interface_name, passive_interface in interfaces_names_and_passive_interface:
+        if router.interfaces[interface_name].ospf.is_passive_interface_different(passive_interface):
+            list_of_commands.append(get_ospf_conf_command_passive_interface(interface_name, passive_interface))
+
+    if len(list_of_commands) > 0:
+        return list_of_commands
+    return None
+
+
+def get_ospf_command_router_id(router_id: str) -> str:
+    return f'router-id {router_id}'
+
+
+def get_ospf_command_auto_cost_reference_bandwidth(auto_cost_reference_bandwidth: int) -> str:
+    return f'auto-cost reference-bandwidth {auto_cost_reference_bandwidth}'
+
+
+def get_ospf_command_passive_interface_default(passive_interface_default: bool) -> str:
+    if passive_interface_default is True:
+        return 'passive-interface default'
+    return 'no passive-interface default'
+
+
+def get_ospf_base_conf_commands_for_update_as_list(ospf: OSPFInformation, router_id: str,
+                                                   auto_cost_reference_bandwidth: int,
+                                                   default_information_originate: bool,
+                                                   default_metric_of_redistributed_routes: int, distance: int,
+                                                   maximum_paths: int, passive_interface_default: bool) -> list[str] | None:
+    list_of_commands: list[str] = []
+    if ospf.is_router_id_different(new_router_id_value=router_id):
+        list_of_commands.append(get_ospf_command_router_id(router_id))
+
+    if ospf.is_auto_cost_reference_bandwidth_different(
+            new_auto_cost_reference_bandwidth_value=auto_cost_reference_bandwidth):
+        list_of_commands.append(get_ospf_command_auto_cost_reference_bandwidth(auto_cost_reference_bandwidth))
+
+    if ospf.is_default_information_originate_different(
+            new_default_information_originate_value=default_information_originate):
+        list_of_commands.append(get_conf_command_default_information_originate(default_information_originate))
+
+    if ospf.is_default_metric_of_redistributed_routes_different(
+            new_default_metric_of_redistributed_routes=default_metric_of_redistributed_routes):
+        list_of_commands.append(get_conf_command_default_metric_of_redistributed_routes(
+            default_metric_of_redistributed_routes))
+
+    if ospf.is_distance_different(new_distance_value=distance):
+        list_of_commands.append(get_conf_command_distance(distance))
+
+    if ospf.is_maximum_paths_different(new_maximum_paths_value=maximum_paths):
+        list_of_commands.append(get_conf_command_maximum_paths(maximum_paths))
+
+    if ospf.is_passive_interface_default_different(new_passive_interface_default=passive_interface_default):
+        list_of_commands.append(get_ospf_command_passive_interface_default(passive_interface_default))
+
+    if len(list_of_commands) > 0:
+        return list_of_commands
+    return None
+
+
+def get_ospf_area_base_conf_command_authentication_message_digest(area_id: str,
+                                                                  authentication_message_digest: bool) -> str:
+    if authentication_message_digest is True:
+        return f'area {area_id} authentication message-digest'
+    return f'no area {area_id} authentication message-digest'
+
+
+def get_ospf_area_base_conf_command_type_as_list(area_id: str, current_type: str, new_type: str) -> list[str]:
+    list_of_commands: list[str] = []
+    if current_type == 'stub':
+        list_of_commands.append(f'no area {area_id} stub')
+    elif current_type == 'nssa':
+        list_of_commands.append(f'no area {area_id} nssa')
+
+    if new_type == 'stub':
+        list_of_commands.append(f'area {area_id} stub')
+    elif new_type == 'nssa':
+        list_of_commands.append(f'area {area_id} nssa')
+
+    return list_of_commands
+
+
+def get_ospf_area_base_conf_commands_for_update_as_list(area: OSPFArea, authentication_message_digest: bool,
+                                                        type: str) -> list[str] | None:
+    list_of_commands: list[str] = []
+    if area.is_authentication_message_digest_different(
+            new_is_authentication_message_digest_value=authentication_message_digest):
+        list_of_commands.append(get_ospf_area_base_conf_command_authentication_message_digest(
+            area_id=area.id, authentication_message_digest=authentication_message_digest))
+
+    if area.is_type_different(new_type_value=type):
+        list_of_commands.extend(
+            get_ospf_area_base_conf_command_type_as_list(area_id=area.id, current_type=area.type, new_type=type))
+
+    if len(list_of_commands) > 0:
+        return list_of_commands
+    return None
+
+
+def get_ospf_area_conf_networks_commands_as_list(area_id: str, network_and_wildcard: list[list[str]]) -> list[str] | None:
+    list_of_commands: list[str] = []
+
+    for network, wildcard in network_and_wildcard:
+        list_of_commands.append(f'network {network} {wildcard} area {area_id}')
+
+    if len(list_of_commands) > 0:
+        return list_of_commands
+    return None
+
+
+def get_ospf_area_no_conf_networks_commands_as_list(area_id: str, network_and_wildcard: list[list[str]]) -> list[str] | None:
+    list_of_commands: list[str] = []
+
+    for network, wildcard in network_and_wildcard:
+        list_of_commands.append(f'no network {network} {wildcard} area {area_id}')
+
+    if len(list_of_commands) > 0:
+        return list_of_commands
+    return None
