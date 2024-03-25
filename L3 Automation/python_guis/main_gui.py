@@ -7,6 +7,7 @@ from gui_resources import config
 from login_gui import LoginGUI
 from python_guis.interfaces_details_gui import InterfacesDetails
 from python_guis.ospf_interface_details_gui import OSPFInterfaceDetailsGUI
+from python_guis.static_routes_gui import StaticRoutesGUI
 
 from resources.devices.Router import Router
 from resources.interfaces.InterfaceOSPFInformation import InterfaceOSPFInformation
@@ -113,6 +114,7 @@ class MainGUI:
                                                                                       mask=24,
                                                                                       wildcard='0.0.0.255'
                                                                                       ),
+                                                                      #todo: distance
                                                                       next_hop='12.345.32.1',
                                                                       interface='f0/0')
                                         },
@@ -303,9 +305,19 @@ class MainGUI:
                             command=self.root.destroy)
         btnQuit.grid(column=0, row=1, sticky='EWS')
 
-        self.consoleLabel = tk.Label(self.root, text='1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n14\n15\n16\n17\n18\n',
-                                     anchor='w')
-        self.consoleLabel.grid(column=0, row=5, sticky='NESW', padx=2, columnspan=4)
+        consoleFrame = tk.Frame(self.root)
+        consoleScrollbar = tk.Scrollbar(consoleFrame, orient='vertical')
+        consoleScrollbar.pack(side='right', fill='y')
+
+        self.consoleBox = tk.Listbox(consoleFrame)
+        self.consoleBox.pack(side='left', fill='both', expand=True)
+        self.consoleBox.config(yscrollcommand=consoleScrollbar.set)
+
+        consoleScrollbar.config(command=self.consoleBox.yview)
+        consoleFrame.grid(column=0, row=5, sticky='NESW', padx=2, columnspan=4)
+
+        for i in range(1, 100):
+            self.console_command('test' + str(i))
 
         # For first data insert load 'all' view
         self.show_view_all()
@@ -354,7 +366,6 @@ class MainGUI:
 
         self.tree.heading(treeColumns[3], text='SSH Addresses', anchor='w')
         self.tree.column(treeColumns[3], minwidth=90, stretch=True)
-
         # This function defines pop-up menu for 'all' view
         def show_menu_all(event):
             item = self.tree.identify_row(event.y)
@@ -365,6 +376,7 @@ class MainGUI:
                     selected_router = self.devices.get(hostname)
                     menu.post(event.x_root, event.y_root)
                     menu.entryconfigure('Interfaces', command=lambda: show_interfaces_details(selected_router))
+                    menu.entryconfigure('Static routes', command=lambda: show_static_routes(selected_router))
                 except IndexError():
                     pass
 
@@ -374,8 +386,14 @@ class MainGUI:
                 InterfacesDetails(selected_router)
             return None
 
+        def show_static_routes(selected_router: Router) -> None:
+            if selected_router:
+                StaticRoutesGUI(selected_router)
+            return None
+
         menu = tk.Menu(self.root, tearoff=False)
         menu.add_command(label='Interfaces', command=show_interfaces_details)
+        menu.add_command(label='Static routes', command=show_static_routes)
         self.tree.bind('<Button-3>', show_menu_all)
 
         return None
@@ -450,6 +468,8 @@ class MainGUI:
         menu.add_command(label='Interfaces', command=OSPFInterfaceDetailsGUI)
         self.tree.bind('<Button-3>', show_menu_ospf)
 
+        self.console_command('test')
+
         return None
 
     def get_ospf_redistribution(self, router) -> str:
@@ -473,8 +493,8 @@ class MainGUI:
         self.tree.configure(columns=treeColumns)
         return None
 
-    def console_commands(self, text: str) -> None:
-        self.consoleLabel.configure(text=text)
+    def console_command(self, text: str) -> None:
+        self.consoleBox.insert(tk.END, text)
         return None
 
 
