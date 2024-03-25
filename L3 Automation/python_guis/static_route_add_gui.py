@@ -17,7 +17,7 @@ class StaticRouteAddGUI:
         root = tk.Toplevel()
         # ######## WINDOW PARAMETERS ######## #
         # title
-        root.title(config.APPNAME + ' ' + config.VERSION + ' ' + self.hostname + ' Add route')
+        root.title(config.APPNAME + ' ' + config.VERSION + ' ' + self.hostname + ' Add Route')
 
         # window icon, using conversion to iso, cause tkinter doesn't accept jpg
         icon = tk.PhotoImage(file=config.WINDOW_ICON_PATH)
@@ -86,6 +86,29 @@ class StaticRouteAddGUI:
         lblNextHop.pack()
         nexthopFrame.pack()
 
+
+        interfaceSelectFrame = tk.Frame(root)
+        lblInterface = tk.Label(interfaceSelectFrame, text='Interface (optional):')
+        lblInterface.pack(side='left')
+
+        interfaceVariable = tk.StringVar(root, 'None')
+        interfaces = []
+        for k, interface in router.interfaces.items():
+            interfaces.append(interface.name)
+        interfacesMenu = tk.OptionMenu(interfaceSelectFrame, interfaceVariable, *interfaces)
+        interfacesMenu.pack(side='right')
+
+        for k, interface in router.interfaces.items():
+            print(interface.name)
+        interfaceSelectFrame.pack()
+
+        distanceFrame = tk.Frame(root)
+        lblDistance = tk.Label(distanceFrame, text='Distance (optional):')
+        lblDistance.pack(side='left')
+        entryDistance = tk.Entry(distanceFrame, width=10)
+        entryDistance.pack(side='right')
+        entryDistance.insert(0, '1')
+        distanceFrame.pack()
         def get_destination() -> str:
             return (entryIPDestinationFirst.get() + '.' + entryIPDestinationSecond.get() + '.' +
                     entryIPDestinationThird.get() + '.' + entryIPDestinationFourth.get())
@@ -123,25 +146,32 @@ class StaticRouteAddGUI:
                 messagebox.showerror('Error', 'Incorrect Mask Value', parent=root)
                 entryMask.delete(0, 'end')
                 return False
-
+            if not entryDistance.get().isdigit() or not (1 <= int(entryDistance.get()) <= 255):
+                messagebox.showerror('Error', 'Incorrect distance value', parent=root)
+                entryDistance.delete(0, 'end')
             return True
+
+        def clean_entries() -> None:
+            ip_entries = [entryIPDestinationFirst, entryIPDestinationSecond, entryIPDestinationThird,
+                          entryIPDestinationFourth,
+                          entryIPNextHopFirst, entryIPNextHopSecond, entryIPNextHopThird, entryIPNextHopFourth]
+            for entry in ip_entries:
+                entry.delete(0, 'end')
+
+            entryMask.delete(0, 'end')
 
         def apply_route():
             if validate_route():
                 destination = get_destination()
                 next_hop = get_next_hop()
                 mask = get_mask()
-                wildcard = '0.0.0.255'  #function to do it
-                staticroute = {
-                    destination: StaticRoute(network=Network(network=destination,
-                                                             mask=mask,
-                                                             wildcard=wildcard
-                                                             ),
-                                             next_hop=next_hop,
-                                             interface=self.int_name)
-                }
-                print(staticroute)
-                self.static_routes_gui.insert_route(staticroute[destination])
+                staticroute = StaticRoute(network=Network(network=destination, mask=mask),
+                                          next_hop=next_hop,
+                                          interface=self.int_name)
+                clean_entries()
+                messagebox.showinfo('Route Added', 'Route Added', parent=root)
+
+                self.static_routes_gui.insert_route(staticroute)
 
         btnApply = tk.Button(root, text='Apply', command=apply_route)
         btnApply.pack(pady=5)

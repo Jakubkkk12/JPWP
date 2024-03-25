@@ -114,7 +114,7 @@ class MainGUI:
                                                                                       mask=24,
                                                                                       wildcard='0.0.0.255'
                                                                                       ),
-                                                                      #todo: distance
+                                                                      distance=1,
                                                                       next_hop='12.345.32.1',
                                                                       interface='f0/0')
                                         },
@@ -366,6 +366,7 @@ class MainGUI:
 
         self.tree.heading(treeColumns[3], text='SSH Addresses', anchor='w')
         self.tree.column(treeColumns[3], minwidth=90, stretch=True)
+
         # This function defines pop-up menu for 'all' view
         def show_menu_all(event):
             item = self.tree.identify_row(event.y)

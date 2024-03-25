@@ -42,7 +42,7 @@ class StaticRoutesGUI:
         scrollbar = tk.Scrollbar(treeFrame, orient='vertical')
         scrollbar.pack(side='right', fill='y')
 
-        treeColumns = ('No', 'Destination', 'Mask', 'Next hop')
+        treeColumns = ('No', 'Destination', 'Mask', 'Next hop', 'Interface', 'Distance')
         self.tree = tk.ttk.Treeview(treeFrame, columns=treeColumns, show='headings')
         self.tree.configure(yscrollcommand=scrollbar.set)
         self.tree.pack(side='left', fill='both', expand=True)
@@ -63,9 +63,15 @@ class StaticRoutesGUI:
         self.tree.heading(treeColumns[3], text='Next hop', anchor='w')
         self.tree.column(treeColumns[3], width=50)
 
+        self.tree.heading(treeColumns[4], text='Interface', anchor='w')
+        self.tree.column(treeColumns[4], width=50)
+
+        self.tree.heading(treeColumns[5], text='Distance', anchor='w')
+        self.tree.column(treeColumns[5], width=50)
+
         i = 1
         for k, route in router.static_routes.items():
-            values = (i, route.network.network, route.network.mask, route.next_hop)
+            values = (i, route.network.network, route.network.mask, route.next_hop, route.interface, route.)
             self.tree.insert('', tk.END, iid=i-1, values=values)
             i += 1
 
