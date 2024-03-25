@@ -18,3 +18,30 @@ class OSPFArea:
     type: str = None
     networks: dict[str, Network] = None
 
+    def is_authentication_message_digest_different(self, new_is_authentication_message_digest_value: bool) -> bool:
+        if self.is_authentication_message_digest == new_is_authentication_message_digest_value:
+            return False
+        return True
+
+    def is_type_different(self, new_type_value: str) -> bool:
+        if self.type == new_type_value:
+            return False
+        return True
+
+    def is_network_in_networks(self, network_id: str) -> bool:
+        if network_id in self.networks.keys():
+            return True
+        return False
+
+    def add_network(self, network: Network) -> None:
+        network_id: str = f'{network.network} {network.wildcard}'
+        if self.is_network_in_networks(network_id):
+            raise Exception('Network already exists')
+        self.networks[network_id] = network
+        return None
+
+    def remove_network(self, network_id: str) -> None:
+        if self.is_network_in_networks(network_id):
+            self.networks.pop(network_id)
+        return None
+

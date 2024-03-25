@@ -7,6 +7,7 @@ from resources.routing_protocols.Redistribution import Redistribution
 from resources.cisco.getting_redistribution import get_routing_protocol_redistribution
 from resources.cisco.getting_routing_protocol_information import (get_routing_protocol_distance,
                                                                   get_routing_protocol_default_information_originate,
+                                                                  get_routing_protocol_maximum_paths,
                                                                   get_routing_protocol_default_metric_of_redistributed_routes)
 from resources.routing_protocols.ospf.OSPFNeighbor import OSPFNeighbor
 
@@ -43,15 +44,6 @@ def get_ospf_auto_cost_reference_bandwidth(sh_run_sec_ospf_output: str) -> int:
         auto_cost_reference_bandwidth = int(match.group()[len('auto-cost reference-bandwidth '):])
         return auto_cost_reference_bandwidth
     return 100
-
-
-def get_ospf_maximum_paths(sh_run_sec_ospf_output: str) -> int:
-    pattern = r'(maximum-paths )\d*'
-    match = re.search(pattern, sh_run_sec_ospf_output)
-    if match:
-        maximum_paths = int(match.group()[len('maximum-paths '):])
-        return maximum_paths
-    return 4
 
 
 def get_ospf_passive_interface_default(sh_run_sec_ospf_output: str) -> bool:
@@ -167,7 +159,7 @@ def get_ospf_information(connection: netmiko.BaseConnection) -> OSPFInformation 
     default_metric_of_redistributed_routes: int = (
         get_routing_protocol_default_metric_of_redistributed_routes('ospf', sh_run_sec_ospf_output))
     distance: int = get_routing_protocol_distance('ospf', sh_run_sec_ospf_output)
-    maximum_paths: int = get_ospf_maximum_paths(sh_run_sec_ospf_output)
+    maximum_paths: int = get_routing_protocol_maximum_paths('ospf', sh_run_sec_ospf_output)
     passive_interface_default: bool = get_ospf_passive_interface_default(sh_run_sec_ospf_output)
     redistribution: Redistribution = get_routing_protocol_redistribution(sh_run_sec_ospf_output)
     areas: dict[str, OSPFArea] = get_ospf_areas(sh_ip_ospf_output, sh_run_sec_ospf_output)

@@ -12,7 +12,9 @@ class StaticRoute:
         next_hop (str): The next hop IP address or gateway for reaching the destination network.
         interface (str, optional): The interface through which traffic for the destination network is forwarded.
             Defaults to None.
+        distance (int, optional): The distance between the 1 and 255. Defaults is 1.
     """
     network: Network
     next_hop: str
-    interface: str = None
+    interface: str
+    distance: int = 1
