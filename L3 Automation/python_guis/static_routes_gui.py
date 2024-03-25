@@ -30,7 +30,7 @@ class StaticRoutesGUI:
         root.geometry(alignstr)
         root.resizable(width=True, height=True)
 
-        root.minsize(300, 300)
+        root.minsize(500, 400)
 
         # Tree widget
         treeFrame = tk.Frame(root)
@@ -70,8 +70,8 @@ class StaticRoutesGUI:
         self.tree.column(treeColumns[5], width=50)
 
         i = 1
-        for k, route in router.static_routes.items():
-            values = (i, route.network.network, route.network.mask, route.next_hop, route.interface, route.)
+        for route in router.static_routes:
+            values = (i, route.network.network, route.network.mask, route.next_hop, route.interface, route.distance)
             self.tree.insert('', tk.END, iid=i-1, values=values)
             i += 1
 
@@ -94,7 +94,7 @@ class StaticRoutesGUI:
         btnRemove.pack()
         btnQuit = tk.Button(buttonFrame, text='Quit', command=root.destroy)
         btnQuit.pack()
-        buttonFrame.pack(side='right', fill='y')
+        buttonFrame.pack(side='right', fill='y', padx=2)
 
         root.mainloop()
 
@@ -102,5 +102,6 @@ class StaticRoutesGUI:
         last_item = self.tree.get_children()[-1]
         last_index = self.tree.index(last_item)
         no = last_index + 2
-        values = (no, staticroute.network.network, staticroute.network.mask, staticroute.next_hop)
+        values = (no, staticroute.network.network, staticroute.network.mask, staticroute.next_hop, staticroute.interface,
+                  staticroute.distance)
         self.tree.insert('', tk.END, values=values)
