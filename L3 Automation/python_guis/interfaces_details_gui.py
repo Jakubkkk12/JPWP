@@ -116,7 +116,7 @@ class InterfacesDetails:
         InterfaceErrorsGUI(self.selected_router, self.int_name)
         return None
 
-    # IDK how but it works, I love gpt
-    def update_interface_details(self, iid, name, ip, subnet, description) -> None:
-        self.tree.item(iid-1, values=(iid, name, ip, subnet, description))
+    def update_interface_details(self, iid, interface) -> None:
+        self.tree.item(iid-1, values=(iid, interface.name, interface.ip_address, interface.subnet,
+                                      interface.description))
         return None
