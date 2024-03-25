@@ -20,7 +20,7 @@ class Router(NetworkDevice):
         type (str): The type of the router.
         enable_password (str, optional): The enable password for accessing privileged mode. Defaults to None.
         interfaces (dict[str, RouterInterface], optional): Dictionary of router interfaces, where keys are interface names and values are RouterInterface objects. Defaults to None.
-        static_routes (dict[str, StaticRoute], optional): Dictionary of static routes, where keys are route names and values are StaticRoute objects. Defaults to None.
+        static_routes (list[StaticRoute], optional): List of static routes, where values are StaticRoute objects. Defaults to None.
         ospf (OSPFInformation, optional): OSPF (Open Shortest Path First) configuration information for the router. Defaults to None.
         rip (RIPInformation, optional): RIP (Routing Information Protocol) configuration information for the router. Defaults to None.
         bgp (BGPInformation, optional): BGP (Border Gateway Protocol) configuration information for the router. Defaults to None.
@@ -28,7 +28,7 @@ class Router(NetworkDevice):
     type: str
     enable_password: str = None
     interfaces: dict[str, RouterInterface] = None
-    static_routes: dict[str, StaticRoute] = None
+    static_routes: list[StaticRoute] = None
     ospf: OSPFInformation = None
     rip: RIPInformation = None
     bgp: BGPInformation = None
@@ -40,7 +40,8 @@ class Router(NetworkDevice):
         Returns:
             str: JSON string representing the Router instance.
         """
-        attributes_to_json: dict = {'name': self.name,
+        attributes_to_json: dict = {'class': 'Router',
+                                    'name': self.name,
                                     'type': self.type,
                                     'ssh_information': {'ip_addresses': self.ssh_information.ip_addresses,
                                                         'port': self.ssh_information.port}

@@ -9,6 +9,7 @@ class Interface:
 
     Attributes:
         name (str): The name of the interface.
+        description (str, optional): The description of the interface. Defaults to None.
         statistics (InterfaceStatistics, optional): Statistics related to the interface. Defaults to None.
     """
     name: str
