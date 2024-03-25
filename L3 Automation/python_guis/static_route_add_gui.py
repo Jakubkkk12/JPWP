@@ -91,15 +91,13 @@ class StaticRouteAddGUI:
         lblInterface = tk.Label(interfaceSelectFrame, text='Interface (optional):')
         lblInterface.pack(side='left')
 
-        interfaceVariable = tk.StringVar(root, 'None')
+        interfaceVariable = tk.StringVar(root, '-')
         interfaces = []
         for k, interface in router.interfaces.items():
             interfaces.append(interface.name)
         interfacesMenu = tk.OptionMenu(interfaceSelectFrame, interfaceVariable, *interfaces)
         interfacesMenu.pack(side='right')
 
-        for k, interface in router.interfaces.items():
-            print(interface.name)
         interfaceSelectFrame.pack()
 
         distanceFrame = tk.Frame(root)
@@ -120,36 +118,50 @@ class StaticRouteAddGUI:
             return (entryIPNextHopFirst.get() + '.' + entryIPNextHopSecond.get() + '.' +
                     entryIPNextHopThird.get() + '.' + entryIPNextHopFourth.get())
 
+        def get_distance() -> int:
+            return int(entryDistance.get())
+
         def validate_route() -> bool:
-            ip_entries = [entryIPDestinationFirst, entryIPDestinationSecond, entryIPDestinationThird,
-                          entryIPDestinationFourth,
-                          entryIPNextHopFirst, entryIPNextHopSecond, entryIPNextHopThird, entryIPNextHopFourth]
-
-            for entry in ip_entries:
-                value = entry.get()
-                if not value.isdigit() or not (0 <= int(value) <= 255):
-                    messagebox.showerror('Error', 'Incorrect IP Format', parent=root)
-                    for entry in ip_entries:
-                        entry.delete(0, 'end')
+            if interfaceVariable.get() == '-':
+                ip_entries = [entryIPDestinationFirst, entryIPDestinationSecond, entryIPDestinationThird,
+                              entryIPDestinationFourth,
+                              entryIPNextHopFirst, entryIPNextHopSecond, entryIPNextHopThird, entryIPNextHopFourth]
+                for entry in ip_entries:
+                    value = entry.get()
+                    if not value.isdigit() or not (0 <= int(value) <= 255):
+                        messagebox.showerror('Error', 'Incorrect IP Format', parent=root)
+                        for entry in ip_entries:
+                            entry.delete(0, 'end')
+                        return False
+                try:
+                    if int(entryIPDestinationFirst.get()) == 0 or int(entryIPNextHopFirst.get()) == 0:
+                        messagebox.showerror('Error', 'Incorrect IP Format', parent=root)
+                        for entry in ip_entries:
+                            entry.delete(0, 'end')
+                        return False
+                except ValueError:
                     return False
-            try:
-                if int(entryIPDestinationFirst.get()) == 0 or int(entryIPNextHopFirst.get()) == 0:
-                    messagebox.showerror('Error', 'Incorrect IP Format', parent=root)
-                    for entry in ip_entries:
-                        entry.delete(0, 'end')
-                    return False
-            except ValueError:
-                return False
 
-            mask_value = entryMask.get()
-            if not mask_value.isdigit() or not (0 <= int(mask_value) <= 32):
-                messagebox.showerror('Error', 'Incorrect Mask Value', parent=root)
-                entryMask.delete(0, 'end')
-                return False
-            if not entryDistance.get().isdigit() or not (1 <= int(entryDistance.get()) <= 255):
-                messagebox.showerror('Error', 'Incorrect distance value', parent=root)
-                entryDistance.delete(0, 'end')
-            return True
+                mask_value = entryMask.get()
+                if not mask_value.isdigit() or not (0 <= int(mask_value) <= 32):
+                    messagebox.showerror('Error', 'Incorrect Mask Value', parent=root)
+                    entryMask.delete(0, 'end')
+                    return False
+                if not entryDistance.get().isdigit() or not (1 <= int(entryDistance.get()) <= 255):
+                    messagebox.showerror('Error', 'Incorrect distance value', parent=root)
+                    entryDistance.delete(0, 'end')
+                return True
+            else:
+                ip_entries = [entryIPDestinationFirst, entryIPDestinationSecond, entryIPDestinationThird,
+                              entryIPDestinationFourth]
+                for entry in ip_entries:
+                    value = entry.get()
+                    if not value.isdigit() or not (0 <= int(value) <= 255):
+                        messagebox.showerror('Error', 'Incorrect IP Format', parent=root)
+                        for entry in ip_entries:
+                            entry.delete(0, 'end')
+                        return False
+                return True
 
         def clean_entries() -> None:
             ip_entries = [entryIPDestinationFirst, entryIPDestinationSecond, entryIPDestinationThird,
@@ -163,15 +175,27 @@ class StaticRouteAddGUI:
         def apply_route():
             if validate_route():
                 destination = get_destination()
-                next_hop = get_next_hop()
                 mask = get_mask()
-                staticroute = StaticRoute(network=Network(network=destination, mask=mask),
-                                          next_hop=next_hop,
-                                          interface=self.int_name)
-                clean_entries()
-                messagebox.showinfo('Route Added', 'Route Added', parent=root)
+                next_hop = get_next_hop()
+                int_name = interfaceVariable.get()
+                distance = get_distance()
 
-                self.static_routes_gui.insert_route(staticroute)
+                if int_name == '-':
+                    staticroute = StaticRoute(network=Network(network=destination, mask=mask),
+                                              next_hop=next_hop,
+                                              interface='',
+                                              distance=distance)
+                    clean_entries()
+                    messagebox.showinfo('Route Added', 'Route Added', parent=root)
+                    self.static_routes_gui.insert_route(staticroute)
+                else:
+                    staticroute = StaticRoute(network=Network(network=destination, mask=mask),
+                                              next_hop='',
+                                              interface=int_name,
+                                              distance=distance)
+                    clean_entries()
+                    messagebox.showinfo('Route Added', 'Route Added', parent=root)
+                    self.static_routes_gui.insert_route(staticroute)
 
         btnApply = tk.Button(root, text='Apply', command=apply_route)
         btnApply.pack(pady=5)
