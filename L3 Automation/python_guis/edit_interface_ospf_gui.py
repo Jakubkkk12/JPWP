@@ -75,64 +75,66 @@ class EditInterfaceOSPFGUI:
         entryDeadTimer.insert(0, str(router.interfaces[int_name].ospf.timers.dead_timer))
         entryDeadTimer.grid(column=1, row=5)
 
-        lblWaitTimer = tk.Label(root, text='Wait timer:')
-        lblWaitTimer.grid(column=0, row=6)
-        entryWaitTimer = tk.Entry(root)
-        entryWaitTimer.insert(0, str(router.interfaces[int_name].ospf.timers.wait_timer))
-        entryWaitTimer.grid(column=1, row=6)
-
         lblRetransmitTimer = tk.Label(root, text='Retransmit timer:')
-        lblRetransmitTimer.grid(column=0, row=7)
+        lblRetransmitTimer.grid(column=0, row=6)
         entryRetransmitTimer = tk.Entry(root)
         entryRetransmitTimer.insert(0, str(router.interfaces[int_name].ospf.timers.retransmit_timer))
-        entryRetransmitTimer.grid(column=1, row=7)
+        entryRetransmitTimer.grid(column=1, row=6)
 
         def get_network_type() -> str:
             return typeVariable.get()
 
         def get_cost() -> int:
-            return int(entryCost.get())
+            try:
+                return int(entryCost.get())
+            except ValueError:
+                pass
 
         def get_passive_interface() -> bool:
             return chckbtnVar
 
         def get_priority() -> int:
-            return int(entryPriority.get())
+            try:
+                return int(entryPriority.get())
+            except ValueError:
+                pass
 
         def get_hello_timer() -> int:
-            return int(entryHelloTimer.get())
+            try:
+                return int(entryHelloTimer.get())
+            except ValueError:
+                pass
 
         def get_dead_timer() -> int:
-            return int(entryDeadTimer.get())
-
-        def get_wait_timer() -> int:
-            return int(entryWaitTimer.get())
+            try:
+                return int(entryDeadTimer.get())
+            except ValueError:
+                pass
 
         def get_retransmit_timer() -> int:
-            return int(entryRetransmitTimer.get())
+            try:
+                return int(entryRetransmitTimer.get())
+            except ValueError:
+                pass
 
         def validate_changes() -> bool:
-            if not entryCost.get().isdigit() or not (0 <= int(entryCost.get())):
+            if not entryCost.get().isdigit() or not (0 < int(entryCost.get()) <= 65535):
                 messagebox.showerror('Error', 'Incorrect cost size', parent=root)
                 entryCost.delete(0, 'end')
                 return False
-            if not entryPriority.get().isdigit() or not (0 <= int(entryPriority.get())):
+            if not entryPriority.get().isdigit() or not (0 <= int(entryPriority.get()) <= 255):
                 messagebox.showerror('Error', 'Incorrect priority size', parent=root)
                 entryPriority.delete(0, 'end')
                 return False
-            if not entryHelloTimer.get().isdigit() or not (0 <= int(entryHelloTimer.get())):
+            if not entryHelloTimer.get().isdigit() or not (0 < int(entryHelloTimer.get()) <= 65535):
                 messagebox.showerror('Error', 'Incorrect hello timer', parent=root)
                 entryHelloTimer.delete(0, 'end')
                 return False
-            if not entryDeadTimer.get().isdigit() or not (0 <= int(entryDeadTimer.get())):
+            if not entryDeadTimer.get().isdigit() or not (0 < int(entryDeadTimer.get()) <= 65535):
                 messagebox.showerror('Error', 'Incorrect dead timer', parent=root)
                 entryDeadTimer.delete(0, 'end')
                 return False
-            if not entryWaitTimer.get().isdigit() or not (0 <= int(entryWaitTimer.get())):
-                messagebox.showerror('Error', 'Incorrect wait timer', parent=root)
-                entryWaitTimer.delete('Error', 'Incorrect wait timer')
-                return False
-            if not entryRetransmitTimer.get().isdigit() or not (0 <= int(entryRetransmitTimer.get())):
+            if not entryRetransmitTimer.get().isdigit() or not (0 < int(entryRetransmitTimer.get()) <= 65535):
                 messagebox.showerror('Error', 'Incorrect retransmit timer', parent=root)
                 entryRetransmitTimer.delete(0, 'end')
                 return False
@@ -140,19 +142,16 @@ class EditInterfaceOSPFGUI:
 
         def apply_changes() -> None:
             if validate_changes():
+
                 router.interfaces[int_name].ospf.network_type = get_network_type()
                 router.interfaces[int_name].ospf.cost = get_cost()
                 router.interfaces[int_name].ospf.passive_interface = get_passive_interface()
                 router.interfaces[int_name].ospf.priority = get_priority()
                 router.interfaces[int_name].ospf.timers.hello_timer = get_hello_timer()
                 router.interfaces[int_name].ospf.timers.dead_timer = get_dead_timer()
-                router.interfaces[int_name].ospf.timers.wait_timer = get_wait_timer()
                 router.interfaces[int_name].ospf.timers.retransmit_timer = get_retransmit_timer()
 
-            self.ospf_interfaces_details_gui.update_interface_details(iid, int_name, get_network_type(), get_cost(),
-                                                                      get_passive_interface(), get_priority(),
-                                                                      get_hello_timer(), get_dead_timer(),
-                                                                      get_wait_timer(), get_retransmit_timer())
+            self.ospf_interfaces_details_gui.update_interface_details(iid, int_name, router.interfaces[int_name].ospf)
             root.destroy()
 
         btnFrame = tk.Frame(root, pady=10)
