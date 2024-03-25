@@ -2,10 +2,7 @@ import tkinter as tk
 import tkinter.ttk
 from tkinter import ttk
 from gui_resources import config
-from python_guis.edit_interface_all_gui import EditInterfaceGUI
 from python_guis.edit_interface_ospf_gui import EditInterfaceOSPFGUI
-from python_guis.interface_errors_gui import InterfaceErrorsGUI
-from python_guis.interface_statistics_gui import InterfaceStatisticsGUI
 from resources.devices.Router import Router
 
 
@@ -48,7 +45,7 @@ class OSPFInterfaceDetailsGUI:
         horizontalScrollbar.pack(side='bottom', fill='x')
 
         treeColumns = ('No', 'Name', 'Network type', 'Cost', 'State', 'Passive', 'Priority', 'Hello timer', 'Dead timer',
-                       'Wait timer', 'Retransmit timer')
+                       'Retransmit timer')
         self.tree = tk.ttk.Treeview(treeFrame, columns=treeColumns, show='headings')
         self.tree.pack(side='top', expand=True, fill='both')
         self.tree.configure(yscrollcommand=verticalScrollbar.set)
@@ -61,6 +58,9 @@ class OSPFInterfaceDetailsGUI:
         btnQuit = tk.Button(root, text='Quit', command=root.destroy)
         btnQuit.pack(side='bottom')
 
+        # todo: redistribution after router id
+        # remove non-broadcast
+
         # Data insert
         interfaces = router.interfaces
         i = 1
@@ -68,7 +68,6 @@ class OSPFInterfaceDetailsGUI:
             values = (i, interface.name, interface.ospf.network_type, interface.ospf.cost,
                       interface.ospf.state, interface.ospf.passive_interface, interface.ospf.priority,
                       interface.ospf.timers.hello_timer, interface.ospf.timers.dead_timer,
-                      interface.ospf.timers.wait_timer,
                       interface.ospf.timers.retransmit_timer)
             self.tree.insert('', tk.END, iid=i-1, values=values)
             i += 1
@@ -100,11 +99,8 @@ class OSPFInterfaceDetailsGUI:
         self.tree.heading(treeColumns[8], text='Dead timer', anchor='w')
         self.tree.column(treeColumns[8], width=80, stretch=False)
 
-        self.tree.heading(treeColumns[9], text='Wait timer', anchor='w')
-        self.tree.column(treeColumns[9], width=80, stretch=False)
-
-        self.tree.heading(treeColumns[10], text='Retransmit timer', anchor='w')
-        self.tree.column(treeColumns[10], width=105, stretch=False)
+        self.tree.heading(treeColumns[9], text='Retransmit timer', anchor='w')
+        self.tree.column(treeColumns[9], width=105, stretch=False)
 
         def show_menu_interfaces(event) -> None:
             item = self.tree.identify_row(event.y)
@@ -127,10 +123,8 @@ class OSPFInterfaceDetailsGUI:
         EditInterfaceOSPFGUI(self.selected_router, self.int_name, self.selected_router_iid, self)
         return None
 
-    # IDK how but it works, I love gpt
-    def update_interface_details(self, iid, name, network_type, cost, passive_interface,
-                                 priority, hello_timer, dead_timer, wait_timer, retransmit_timer) -> None:
-        self.tree.item(iid-1, values=(iid, name, network_type, cost, self.tree.item(iid-1, 'values')[2],
-                                      passive_interface, priority, hello_timer, dead_timer, wait_timer,
-                                      retransmit_timer))
+    def update_interface_details(self, iid: int, name: str, ospf) -> None:
+        self.tree.item(iid-1, values=(iid, name, ospf.network_type, ospf.cost, self.tree.item(iid-1, 'values')[2],
+                                      ospf.passive_interface, ospf.priority, ospf.timers.hello_timer,
+                                      ospf.timers.dead_timer, ospf.timers.retransmit_timer))
         return None
