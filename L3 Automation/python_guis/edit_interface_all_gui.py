@@ -153,8 +153,8 @@ class EditInterfaceGUI:
                 return False
 
             mtu_value = entryMTU.get()
-            if not mtu_value.isdigit() or not (1 <= int(mtu_value) <= 1500):
-                messagebox.showerror('Error', 'Incorrect MTU Size (max 1500)', parent=root)
+            if not mtu_value.isdigit() or not (1500 <= int(mtu_value) <= 10240):
+                messagebox.showerror('Error', 'Incorrect MTU Size (1500 - 10240)', parent=root)
                 entryMTU.delete(0, 'end')
                 return False
 
