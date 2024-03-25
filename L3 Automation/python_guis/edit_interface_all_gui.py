@@ -66,7 +66,7 @@ class EditInterfaceGUI:
             return int(entryMTU.get())
 
         def get_description() -> str:
-            return entryDescritpion.get()
+            return entryDescription.get()
 
         def refill_with_current_ip():
             ip_entries = [entryIPAddressFirst, entryIPAddressSecond, entryIPAddressThird, entryIPAddressFourth]
@@ -99,13 +99,15 @@ class EditInterfaceGUI:
         lblSpeed = tk.Label(root, text='Speed:')
         lblSpeed.grid(column=0, row=3)
 
-        def get_speed_options() -> list:
-            if 'GigabitEthernet' in int_name:
-                return ['1 Gb/s', '100 Mb/s', '10 Mb/s']
-            if 'FastEthernet' in int_name:
-                return ['100 Mb/s', '10 Mb/s']
-            if 'f' in int_name:
-                return ['100 Mb/s', '10 Mb/s']
+        def get_speed_options() -> list[str]:
+            if router.type == 'cisco':
+                if 'GigabitEthernet' in int_name:
+                    return ['1000 Mbps', '100 Mbps', '10 Mbps']
+                if 'FastEthernet' in int_name:
+                    return ['100 Mbps', '10 Mbps']
+                if 'f' in int_name:
+                    return ['100 Mbps', '10 Mbps']
+            # todo: add other types
 
         speedOptions = get_speed_options()
         speedVariable = tk.StringVar(root)
@@ -121,9 +123,9 @@ class EditInterfaceGUI:
 
         lblDescription = tk.Label(root, text='Description:')
         lblDescription.grid(column=0, row=5)
-        entryDescritpion = tk.Entry(root)
-        entryDescritpion.insert(0, router.interfaces[int_name].description)
-        entryDescritpion.grid(column=1, row=5)
+        entryDescription = tk.Entry(root)
+        entryDescription.insert(0, router.interfaces[int_name].description)
+        entryDescription.grid(column=1, row=5)
 
         def validate_changes() -> bool:
             ip_entries = [entryIPAddressFirst, entryIPAddressSecond, entryIPAddressThird, entryIPAddressFourth]
@@ -167,8 +169,7 @@ class EditInterfaceGUI:
                 router.interfaces[int_name].statistics.information.speed = speedVariable.get()
                 router.interfaces[int_name].description = get_description()
 
-                self.interfaces_details_gui.update_interface_details(iid, int_name, get_ip_address(), get_mask(),
-                                                                     get_description())
+                self.interfaces_details_gui.update_interface_details(iid, router.interfaces[int_name])
 
                 root.destroy()
 
