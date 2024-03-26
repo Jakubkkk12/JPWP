@@ -249,7 +249,7 @@ def update_ospf(router: Router, user: User, router_id: str, auto_cost_reference_
     return True, output
 
 
-def update_ospf_area(router: Router, user: User, area: OSPFArea, authentication_message_digest: bool, area_type: str) -> tuple[bool, str]
+def update_ospf_area(router: Router, user: User, area: OSPFArea, authentication_message_digest: bool, area_type: str) -> tuple[bool, str | None]:
     commands: list[str] = get_ospf_area_base_conf_commands_for_update_as_list(area, authentication_message_digest,
                                                                               area_type)
     if commands is None:

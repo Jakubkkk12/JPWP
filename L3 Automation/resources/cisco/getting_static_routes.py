@@ -21,7 +21,6 @@ def get_all_static_route_info(sh_run_sec_ip_route_output: str) -> list[str] | No
 
 def get_static_route(static_route_info: list[str]) -> StaticRoute:
     # [10.20.1.0, 255.255.255.0, FastEthernet0/1, 10.0.1.1, 56] allways 3 items
-    print(static_route_info)
     network_ip_address: str = static_route_info[0]
     network_mask: int = NETWORK_MASK_REVERSED[static_route_info[1]]
     network: Network = Network(network=network_ip_address, mask=network_mask)

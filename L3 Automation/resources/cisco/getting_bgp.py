@@ -57,6 +57,15 @@ def get_bgp_networks(sh_run_sec_bgp_output: str) -> dict[str, Network] | None:
     networks_list: list[list[str]] = [[line.split(' ')[1], line.split(' ')[-1]] for line in match]
     networks: dict[str, Network] = {}
     for net in networks_list:
+        if net[0] == net[1]:
+            f_octet: int = int(net[0].split('.')[1])
+            if 0 < f_octet <= 127:
+                net[1] = '255.0.0.0'
+            elif 128 < f_octet <= 191:
+                net[1] = '255.255.0.0'
+            else:
+                net[1] = '255.255.255.0'
+
         networks[f"{net[0]} {net[1]}"] = Network(network=net[0],
                                                  mask=NETWORK_MASK_REVERSED[net[1]])
     return networks
@@ -116,7 +125,7 @@ def get_bgp_neighbor_ebgp_multihop(neighbor: str, sh_run_sec_bgp_output: str) ->
     pattern = f'(neighbor {neighbor} ebgp-multihop .*)'
     match = re.search(pattern, sh_run_sec_bgp_output)
     if match:
-        ebgp_multihop = int(match.group()[len(f'(neighbor {neighbor} remote-as)'):])
+        ebgp_multihop = int(match.group()[len(f'neighbor {neighbor} ebgp-multihop '):])
         return ebgp_multihop
     return 1
 
