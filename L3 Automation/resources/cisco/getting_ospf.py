@@ -150,14 +150,8 @@ def get_ospf_neighbors(sh_ip_ospf_neighbors_output: str) -> dict[str, OSPFNeighb
     return neighbors
 
 
-def get_ospf_information(connection: netmiko.BaseConnection) -> OSPFInformation | None:
-    connection.enable()
-    sh_run_sec_ospf_output: str = connection.send_command("show run | sec ospf")
-    sh_ip_ospf_database_output: str = connection.send_command("show ip ospf database")
-    sh_ip_ospf_output: str = connection.send_command("show ip ospf")
-    sh_ip_ospf_neighbors_output: str = connection.send_command("show ip ospf neighbor")
-    connection.exit_enable_mode()
-
+def get_ospf_information(sh_run_sec_ospf_output: str, sh_ip_ospf_database_output: str, sh_ip_ospf_output: str,
+                         sh_ip_ospf_neighbors_output: str) -> OSPFInformation | None:
     if not is_ospf_enabled(sh_run_sec_ospf_output):
         return None
 
@@ -282,16 +276,16 @@ def get_ospf_area_base_conf_command_type_as_list(area_id: str, current_type: str
 
 
 def get_ospf_area_base_conf_commands_for_update_as_list(area: OSPFArea, authentication_message_digest: bool,
-                                                        type: str) -> list[str] | None:
+                                                        area_type: str) -> list[str] | None:
     list_of_commands: list[str] = []
     if area.is_authentication_message_digest_different(
             new_is_authentication_message_digest_value=authentication_message_digest):
         list_of_commands.append(get_ospf_area_base_conf_command_authentication_message_digest(
             area_id=area.id, authentication_message_digest=authentication_message_digest))
 
-    if area.is_type_different(new_type_value=type):
+    if area.is_type_different(new_type_value=area_type):
         list_of_commands.extend(
-            get_ospf_area_base_conf_command_type_as_list(area_id=area.id, current_type=area.type, new_type=type))
+            get_ospf_area_base_conf_command_type_as_list(area_id=area.id, current_type=area.type, new_type=area_type))
 
     if len(list_of_commands) > 0:
         return list_of_commands

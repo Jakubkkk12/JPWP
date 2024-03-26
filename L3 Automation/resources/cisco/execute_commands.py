@@ -24,7 +24,7 @@ from resources.devices.Router import Router
 from resources.user.User import User
 from resources.routing_protocols.StaticRoute import StaticRoute
 from resources.routing_protocols.rip import RIPInformation
-from resources.routing_protocols.ospf import OSPFInformation
+from resources.routing_protocols.ospf import OSPFInformation, OSPFArea
 from resources.routing_protocols.bgp import BGPInformation
 
 ########################################################################################################################
@@ -164,13 +164,14 @@ def get_rip(connection: BaseConnection | None, router: Router = None, user: User
 
 def update_rip(router: Router, user: User, auto_summary: bool, default_information_originate: bool,
                default_metric_of_redistributed_routes: int, distance: int, maximum_paths: int, version: int) -> tuple[bool, str | None]:
-    commands = get_rip_conf_basic_commands_for_update_as_list(router.rip, auto_summary, default_information_originate,
-                                                              default_metric_of_redistributed_routes, distance,
-                                                              maximum_paths, version)
+    commands: list[str] = get_rip_conf_basic_commands_for_update_as_list(router.rip, auto_summary,
+                                                                         default_information_originate,
+                                                                         default_metric_of_redistributed_routes,
+                                                                         distance, maximum_paths, version)
     if commands is None:
         return False, None
 
-    commands.insert(0, f'router rip')
+    commands.insert(0, 'router rip')
     connection = create_connection_to_router(router, user)
     connection.enable()
     output: str = connection.send_config_set(commands)
@@ -184,7 +185,7 @@ def add_rip_networks(router: Router, user: User, networks: list[str]) -> tuple[b
     if commands is None:
         return False, None
 
-    commands.insert(0, f'router rip')
+    commands.insert(0, 'router rip')
     connection = create_connection_to_router(router, user)
     connection.enable()
     output: str = connection.send_config_set(commands)
@@ -198,7 +199,7 @@ def remove_rip_networks(router: Router, user: User, networks: list[str]) -> tupl
     if commands is None:
         return False, None
 
-    commands.insert(0, f'router rip')
+    commands.insert(0, 'router rip')
     connection = create_connection_to_router(router, user)
     connection.enable()
     output: str = connection.send_config_set(commands)
@@ -206,4 +207,83 @@ def remove_rip_networks(router: Router, user: User, networks: list[str]) -> tupl
     return True, output
 
 ########################################################################################################################
+# Section OSPF
+
+
+def get_ospf(connection: BaseConnection | None, router: Router = None, user: User = None) -> OSPFInformation:
+    was_connection_given = False if connection is None else True
+    if not was_connection_given:
+        connection = create_connection_to_router(router, user)
+        connection.enable()
+
+    sh_run_sec_ospf_output: str = connection.send_command("show run | sec ospf")
+    sh_ip_ospf_database_output: str = connection.send_command("show ip ospf database")
+    sh_ip_ospf_output: str = connection.send_command("show ip ospf")
+    sh_ip_ospf_neighbors_output: str = connection.send_command("show ip ospf neighbor")
+
+    if not was_connection_given:
+        close_connection(connection)
+
+    return get_ospf_information(sh_run_sec_ospf_output, sh_ip_ospf_database_output, sh_ip_ospf_output,
+                                sh_ip_ospf_neighbors_output)
+
+
+def update_ospf(router: Router, user: User, router_id: str, auto_cost_reference_bandwidth: int,
+                default_information_originate: bool, default_metric_of_redistributed_routes: int, distance: int,
+                maximum_paths: int, passive_interface_default: bool) -> tuple[bool, str | None]:
+    commands: list[str] = get_ospf_base_conf_commands_for_update_as_list(router.ospf, router_id,
+                                                                         auto_cost_reference_bandwidth,
+                                                                         default_information_originate,
+                                                                         default_metric_of_redistributed_routes, distance,
+                                                                         maximum_paths, passive_interface_default)
+    if commands is None:
+        return False, None
+
+    commands.insert(0, f'router ospf {router.ospf.process_id}')
+    connection = create_connection_to_router(router, user)
+    connection.enable()
+    output: str = connection.send_config_set(commands)
+    close_connection(connection)
+    return True, output
+
+
+def update_ospf_area(router: Router, user: User, area: OSPFArea, authentication_message_digest: bool, area_type: str) -> tuple[bool, str]
+    commands: list[str] = get_ospf_area_base_conf_commands_for_update_as_list(area, authentication_message_digest,
+                                                                              area_type)
+    if commands is None:
+        return False, None
+
+    commands.insert(0, f'router ospf {router.ospf.process_id}')
+    connection = create_connection_to_router(router, user)
+    connection.enable()
+    output: str = connection.send_config_set(commands)
+    close_connection(connection)
+    return True, output
+
+def add_ospf_area_networks(router: Router, user: User, area: OSPFArea, network_and_wildcard: list[list[str]]) -> tuple[bool, str | None]:
+    commands: list[str] = get_ospf_area_conf_networks_commands_as_list(area.id, network_and_wildcard)
+
+    if commands is None:
+        return False, None
+
+    commands.insert(0, f'router ospf {router.ospf.process_id}')
+    connection = create_connection_to_router(router, user)
+    connection.enable()
+    output: str = connection.send_config_set(commands)
+    close_connection(connection)
+    return True, output
+
+
+def remove_ospf_area_networks(router: Router, user: User, area: OSPFArea, network_and_wildcard: list[list[str]]) -> tuple[bool, str | None]:
+    commands: list[str] = get_ospf_area_no_conf_networks_commands_as_list(area.id, network_and_wildcard)
+
+    if commands is None:
+        return False, None
+
+    commands.insert(0, f'router ospf {router.ospf.process_id}')
+    connection = create_connection_to_router(router, user)
+    connection.enable()
+    output: str = connection.send_config_set(commands)
+    close_connection(connection)
+    return True, output
 
