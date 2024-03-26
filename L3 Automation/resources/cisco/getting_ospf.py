@@ -17,6 +17,9 @@ from resources.cisco.getting_routing_protocol import (get_routing_protocol_dista
                                                       get_conf_command_distance)
 from resources.routing_protocols.ospf.OSPFNeighbor import OSPFNeighbor
 
+########################################################################################################################
+# Parsing functions:
+
 
 def is_ospf_enabled(sh_run_sec_ospf_output: str) -> bool:
     pattern = r'(router ospf)'
@@ -183,6 +186,9 @@ def get_ospf_information(connection: netmiko.BaseConnection) -> OSPFInformation 
                                 areas=areas,
                                 neighbors=neighbors)
     return ospf_info
+
+########################################################################################################################
+# Configure functions:
 
 
 def get_ospf_conf_command_passive_interface(interface_name: str, passive_interface: bool) -> str:

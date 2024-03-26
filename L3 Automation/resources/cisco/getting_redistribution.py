@@ -3,6 +3,10 @@ from resources.routing_protocols.Redistribution import Redistribution
 from resources.devices.Router import Router
 
 
+########################################################################################################################
+# Parsing functions:
+
+
 def is_any_redistribution(sh_run_sec_routing_protocol_output: str) -> bool:
     pattern = r'(redistribute)'
     if re.search(pattern, sh_run_sec_routing_protocol_output):
@@ -62,6 +66,10 @@ def get_routing_protocol_redistribution(sh_run_sec_routing_protocol_output: str)
                           is_redistribute_connected=is_redistribute_connected)
 
 
+########################################################################################################################
+# Configure functions:
+
+
 def get_conf_command_for_ospf(ospf: bool, ospf_proces: int, subnets: str) -> str:
     if ospf is True:
         return f'redistribute ospf {ospf_proces} {subnets}'
@@ -92,9 +100,9 @@ def get_conf_command_for_connected(connected: bool, subnets: str) -> str:
     return f'no redistribute connected'
 
 
-def get_conf_commands_as_list(redistribution: Redistribution, ospf: bool, rip: bool, bgp: bool, static: bool,
-                              connected: bool, bgp_as: int = None, ospf_proces: int = None, subnets_on: bool = False) -> list[str] | None:
-
+def get_redistribution_conf_commands_as_list(redistribution: Redistribution, ospf: bool, rip: bool, bgp: bool,
+                                             static: bool, connected: bool, bgp_as: int = None, ospf_proces: int = None,
+                                             subnets_on: bool = False) -> list[str] | None:
     list_of_commands: list[str] = []
     subnets: str = ''
     if subnets_on:
@@ -118,4 +126,3 @@ def get_conf_commands_as_list(redistribution: Redistribution, ospf: bool, rip: b
     if len(list_of_commands) > 0:
         return list_of_commands
     return None
-

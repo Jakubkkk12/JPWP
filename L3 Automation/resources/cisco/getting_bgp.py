@@ -13,6 +13,9 @@ from resources.cisco.getting_routing_protocol import (get_routing_protocol_defau
                                                       )
 from resources.constants import NETWORK_MASK_REVERSED, NETWORK_MASK
 
+########################################################################################################################
+# Parsing functions:
+
 
 def is_bgp_enabled(sh_run_sec_bgp_output: str) -> bool:
     pattern = r'(router bgp)'
@@ -66,9 +69,9 @@ def is_bgp_timers(sh_run_sec_bgp_output: str) -> bool:
     return False
 
 
-def get_bgp_timers(sh_run_sec_bgp_output: str) -> BGPTimers | None:
+def get_bgp_timers(sh_run_sec_bgp_output: str) -> BGPTimers:
     if not is_bgp_timers(sh_run_sec_bgp_output):
-        return None
+        return BGPTimers(keep_alive=60, hold_time=180)
 
     pattern = r'(timers bgp ).*'
     match = re.search(pattern, sh_run_sec_bgp_output)
@@ -132,11 +135,11 @@ def get_bgp_neighbor_shutdown(neighbor: str, sh_run_sec_bgp_output: str) -> bool
     return False
 
 
-def get_bgp_neighbor_timers(neighbor: str, sh_run_sec_bgp_output: str) -> BGPTimers | None:
+def get_bgp_neighbor_timers(neighbor: str, sh_run_sec_bgp_output: str) -> BGPTimers:
     pattern = f'(neighbor {neighbor} timers .*)'
     match = re.search(pattern, sh_run_sec_bgp_output)
     if not match:
-        return None
+        return BGPTimers(keep_alive=60, hold_time=180)
 
     timers: list[str] = match.group()[len(f'neighbor {neighbor} timers '):].split(' ')
     keep_alive: int = int(timers[0])
@@ -179,12 +182,7 @@ def get_bgp_neighbors(sh_run_sec_bgp_output: str, sh_bgp_summary_output: str) ->
     return neighbors
 
 
-def get_bgp_information(connection: netmiko.BaseConnection) -> BGPInformation | None:
-    connection.enable()
-    sh_run_sec_bgp_output: str = connection.send_command("show run | sec bgp")
-    sh_bgp_summary_output: str = connection.send_command("show bgp sum")
-    connection.exit_enable_mode()
-
+def get_bgp_information(sh_run_sec_bgp_output: str, sh_bgp_summary_output: str) -> BGPInformation | None:
     if not is_bgp_enabled(sh_run_sec_bgp_output):
         return None
 
@@ -207,6 +205,9 @@ def get_bgp_information(connection: netmiko.BaseConnection) -> BGPInformation | 
                                               timers=timers,
                                               neighbors=neighbors)
     return bgp_info
+
+########################################################################################################################
+# Configure functions:
 
 
 def get_bgp_conf_command_router_id(router_id: str) -> str:
@@ -251,7 +252,7 @@ def get_bgp_conf_networks_commands_as_list(network_and_mask: list[list[str, int]
     list_of_commands: list[str] = []
 
     for network, mask in network_and_mask:
-        net_mask = NETWORK_MASK[mask]
+        net_mask: str = NETWORK_MASK[mask]
         list_of_commands.append(f'network {network} mask {net_mask}')
 
     if len(list_of_commands) > 0:
@@ -263,7 +264,7 @@ def get_bgp_no_conf_networks_commands_as_list(network_and_mask: list[list[str, i
     list_of_commands: list[str] = []
 
     for network, mask in network_and_mask:
-        net_mask = NETWORK_MASK[mask]
+        net_mask: str = NETWORK_MASK[mask]
         list_of_commands.append(f'no network {network} mask {net_mask}')
 
     if len(list_of_commands) > 0:

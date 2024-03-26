@@ -17,8 +17,8 @@ class BGPInformation:
         default_information_originate (bool, optional): Indicates whether default route information is originated. Defaults to None.
         default_metric_of_redistributed_routes (int, optional): The default metric of redistributed routes. Defaults to None.
         redistribution (Redistribution, optional): Redistribution settings for BGP. Defaults to None.
-        networks (dict[str, Network], optional): A dictionary of networks advertised via BGP, where keys are network IDs and values are Network objects. Defaults to None.
         timers (BGPTimers, optional): Timer settings for BGP. Defaults to None.
+        networks (dict[str, Network], optional): A dictionary of networks advertised via BGP, where keys are network IDs and values are Network objects. Defaults to None.
         neighbors (dict[str, BGPNeighbor], optional): A dictionary of BGP neighbors, where keys are neighbor IP addresses and values are BGPNeighbor objects. Defaults to None.
     """
     autonomous_system: int
@@ -26,8 +26,8 @@ class BGPInformation:
     default_information_originate: bool = None
     default_metric_of_redistributed_routes: int = None
     redistribution: Redistribution = None
-    networks: dict[str, Network] = None
     timers: BGPTimers = None
+    networks: dict[str, Network] = None
     neighbors: dict[str, BGPNeighbor] = None
 
     def is_router_id_different(self, new_router_id_value: str) -> bool:

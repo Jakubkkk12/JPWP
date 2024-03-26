@@ -16,6 +16,10 @@ from resources.cisco.getting_routing_protocol import (get_routing_protocol_dista
                                                       get_conf_command_version)
 
 
+########################################################################################################################
+# Parsing functions:
+
+
 def is_rip_enabled(sh_run_sec_ospf_output: str) -> bool:
     pattern = r'(router rip)'
     if re.search(pattern, sh_run_sec_ospf_output):
@@ -72,6 +76,10 @@ def get_rip_information(connection: netmiko.BaseConnection) -> RIPInformation | 
     return rip_info
 
 
+########################################################################################################################
+# Configure functions:
+
+
 def get_rip_conf_command_auto_summary(auto_summary: bool) -> str:
     if auto_summary is True:
         return 'auto-summary'
@@ -79,10 +87,9 @@ def get_rip_conf_command_auto_summary(auto_summary: bool) -> str:
 
 
 def get_rip_conf_basic_commands_for_update_as_list(rip: RIPInformation, auto_summary: bool,
-                                               default_information_originate: bool,
-                                               default_metric_of_redistributed_routes: int, distance: int,
-                                               maximum_paths: int, version: int) -> list[str] | None:
-
+                                                   default_information_originate: bool,
+                                                   default_metric_of_redistributed_routes: int, distance: int,
+                                                   maximum_paths: int, version: int) -> list[str] | None:
     list_of_commands: list[str] = []
     if rip.is_auto_summary_different(new_auto_summary_value=auto_summary):
         list_of_commands.append(get_rip_conf_command_auto_summary(auto_summary))
