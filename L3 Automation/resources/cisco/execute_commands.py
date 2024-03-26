@@ -30,6 +30,7 @@ from resources.routing_protocols.bgp import BGPInformation
 ########################################################################################################################
 # Section: BGP
 
+
 def get_bgp(connection: BaseConnection | None, router: Router = None, user: User = None) -> BGPInformation:
     was_connection_given = False if connection is None else True
     if not was_connection_given:
@@ -110,6 +111,7 @@ def update_bgp_neighbor(router: Router, user: User, neighbor_id: str, remote_as:
 ########################################################################################################################
 # Section StaticRoutes
 
+
 def get_static_r(connection: BaseConnection | None, router: Router = None, user: User = None) -> list[StaticRoute]:
     was_connection_given = False if connection is None else True
     if not was_connection_given:
@@ -125,7 +127,7 @@ def get_static_r(connection: BaseConnection | None, router: Router = None, user:
 
 
 def add_static_route(router: Router, user: User, network: str, network_mask: int, route_distance: int = 1,
-                     next_hop: str = None, interface_name: str = None):
+                     next_hop: str = None, interface_name: str = None) -> tuple[bool, str | None]:
     command: str = get_static_route_conf_command(network, network_mask, route_distance, next_hop, interface_name)
     connection = create_connection_to_router(router, user)
     connection.enable()
@@ -134,7 +136,7 @@ def add_static_route(router: Router, user: User, network: str, network_mask: int
     return True, output
 
 
-def remove_static_route(router: Router, user: User, network: str, network_mask: int):
+def remove_static_route(router: Router, user: User, network: str, network_mask: int) -> tuple[bool, str | None]:
     command: str = get_static_route_no_conf_command(network, network_mask)
     connection = create_connection_to_router(router, user)
     connection.enable()
@@ -143,3 +145,65 @@ def remove_static_route(router: Router, user: User, network: str, network_mask: 
     return True, output
 
 ########################################################################################################################
+# Section RIP
+
+
+def get_rip(connection: BaseConnection | None, router: Router = None, user: User = None) -> RIPInformation:
+    was_connection_given = False if connection is None else True
+    if not was_connection_given:
+        connection = create_connection_to_router(router, user)
+        connection.enable()
+
+    sh_run_sec_rip_output: str = connection.send_command("show run | sec rip")
+
+    if not was_connection_given:
+        close_connection(connection)
+
+    return get_rip_information(sh_run_sec_rip_output)
+
+
+def update_rip(router: Router, user: User, auto_summary: bool, default_information_originate: bool,
+               default_metric_of_redistributed_routes: int, distance: int, maximum_paths: int, version: int) -> tuple[bool, str | None]:
+    commands = get_rip_conf_basic_commands_for_update_as_list(router.rip, auto_summary, default_information_originate,
+                                                              default_metric_of_redistributed_routes, distance,
+                                                              maximum_paths, version)
+    if commands is None:
+        return False, None
+
+    commands.insert(0, f'router rip')
+    connection = create_connection_to_router(router, user)
+    connection.enable()
+    output: str = connection.send_config_set(commands)
+    close_connection(connection)
+    return True, output
+
+
+def add_rip_networks(router: Router, user: User, networks: list[str]) -> tuple[bool, str | None]:
+    commands: list[str] = get_rip_conf_networks_commands_as_list(networks)
+
+    if commands is None:
+        return False, None
+
+    commands.insert(0, f'router rip')
+    connection = create_connection_to_router(router, user)
+    connection.enable()
+    output: str = connection.send_config_set(commands)
+    close_connection(connection)
+    return True, output
+
+
+def remove_rip_networks(router: Router, user: User, networks: list[str]) -> tuple[bool, str | None]:
+    commands: list[str] = get_rip_no_conf_networks_commands_as_list(networks)
+
+    if commands is None:
+        return False, None
+
+    commands.insert(0, f'router rip')
+    connection = create_connection_to_router(router, user)
+    connection.enable()
+    output: str = connection.send_config_set(commands)
+    close_connection(connection)
+    return True, output
+
+########################################################################################################################
+

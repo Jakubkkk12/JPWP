@@ -47,11 +47,7 @@ def get_rip_networks(sh_run_sec_ospf_output: str) -> dict[str, Network] | None:
     return networks
 
 
-def get_rip_information(connection: netmiko.BaseConnection) -> RIPInformation | None:
-    connection.enable()
-    sh_run_sec_rip_output: str = connection.send_command("show run | sec rip")
-    connection.exit_enable_mode()
-
+def get_rip_information(sh_run_sec_rip_output: str) -> RIPInformation | None:
     if not is_rip_enabled(sh_run_sec_rip_output):
         return None
 
