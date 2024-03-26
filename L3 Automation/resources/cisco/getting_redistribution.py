@@ -101,8 +101,8 @@ def get_conf_command_for_connected(connected: bool, subnets: str) -> str:
 
 
 def get_redistribution_conf_commands_as_list(redistribution: Redistribution, ospf: bool, rip: bool, bgp: bool,
-                                             static: bool, connected: bool, bgp_as: int = None, ospf_proces: int = None,
-                                             subnets_on: bool = False) -> list[str] | None:
+                                             static: bool, connected: bool, bgp_as: int | None,
+                                             ospf_proces: int | None, subnets_on: bool) -> list[str] | None:
     list_of_commands: list[str] = []
     subnets: str = ''
     if subnets_on:

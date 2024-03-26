@@ -26,6 +26,7 @@ from resources.routing_protocols.StaticRoute import StaticRoute
 from resources.routing_protocols.rip import RIPInformation
 from resources.routing_protocols.ospf import OSPFInformation, OSPFArea
 from resources.routing_protocols.bgp import BGPInformation
+from resources.routing_protocols import Redistribution
 
 ########################################################################################################################
 # Section: BGP
@@ -260,6 +261,7 @@ def update_ospf_area(router: Router, user: User, area: OSPFArea, authentication_
     close_connection(connection)
     return True, output
 
+
 def add_ospf_area_networks(router: Router, user: User, area: OSPFArea, network_and_wildcard: list[list[str]]) -> tuple[bool, str | None]:
     commands: list[str] = get_ospf_area_conf_networks_commands_as_list(area.id, network_and_wildcard)
 
@@ -287,3 +289,31 @@ def remove_ospf_area_networks(router: Router, user: User, area: OSPFArea, networ
     close_connection(connection)
     return True, output
 
+########################################################################################################################
+# Section Redistribution
+
+
+def update_redistribution(router: Router, user: User, routing_protocol: str, redistribution: Redistribution, ospf: bool,
+                          rip: bool, bgp: bool,  static: bool, connected: bool, subnets_on: bool) -> tuple[bool, str | None]:
+    bgp_as: int | None = router.bgp.autonomous_system if router.bgp is not None else None
+    ospf_proces: int | None = router.ospf.process_id if router.ospf is not None else None
+    commands: list[str] = get_redistribution_conf_commands_as_list(redistribution, ospf, rip, bgp, static, connected,
+                                                                   bgp_as=bgp_as, ospf_proces=ospf_proces,
+                                                                   subnets_on=subnets_on)
+    if commands is None:
+        return False, None
+
+    if routing_protocol == 'ospf':
+        commands.insert(0, f'router ospf {router.ospf.process_id}')
+    elif routing_protocol == 'rip':
+        commands.insert(0, 'router rip')
+    elif routing_protocol == 'bgp':
+        commands.insert(0, f'router bgp {router.bgp.autonomous_system}')
+    else:
+        raise ValueError(f'Cannot be {routing_protocol}')
+
+    connection = create_connection_to_router(router, user)
+    connection.enable()
+    output: str = connection.send_config_set(commands)
+    close_connection(connection)
+    return True, output
