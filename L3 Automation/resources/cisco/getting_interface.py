@@ -5,12 +5,14 @@ from resources.interfaces.InterfaceOSPFInformation import InterfaceOSPFInformati
 from resources.interfaces.RouterInterface import RouterInterface
 from resources.interfaces.InterfaceStatistics import InterfaceStatistics, InformationStatistics, ErrorsStatistics
 from resources.routing_protocols.ospf.OSPFTimers import OSPFTimers
+from resources.constants import NETWORK_MASK
 
 
-def get_interfaces_name(connection: netmiko.BaseConnection) -> list[str]:
-    connection.enable()
-    sh_ip_int_br_output: str = connection.send_command("show ip int br")
-    connection.exit_enable_mode()
+########################################################################################################################
+# Parsing Interface/RouterInterface functions:
+
+
+def get_interfaces_name(sh_ip_int_br_output: str) -> list[str]:
     interfaces_name: list[str] = [line.split()[0] for line in sh_ip_int_br_output.splitlines()]
     except_first: slice = slice(1, len(interfaces_name))
     interfaces_name = [int_name for int_name in interfaces_name[except_first] if not int_name.startswith('Vlan')]
@@ -295,11 +297,7 @@ def get_interface_statistics(sh_int_name_output: str) -> InterfaceStatistics:
     return int_stat
 
 
-def get_base_interface_information(connection: netmiko.BaseConnection, interface_name: str) -> RouterInterface:
-    connection.enable()
-    sh_int_name_output: str = connection.send_command(f"show int {interface_name}")
-    connection.exit_enable_mode()
-
+def get_base_interface_information(interface_name: str, sh_int_name_output: str) -> RouterInterface:
     interface_ip_address: dict[str, str | int | None] = get_interface_ip_address(sh_int_name_output)
     description: str | None = get_interface_description(sh_int_name_output)
     statistics: InterfaceStatistics = get_interface_statistics(sh_int_name_output)
@@ -310,6 +308,69 @@ def get_base_interface_information(connection: netmiko.BaseConnection, interface
                                                         subnet=interface_ip_address['subnet'],
                                                         statistics=statistics)
     return router_interface
+
+
+########################################################################################################################
+# Configure Interface/RouterInterface functions:
+
+
+def get_interface_conf_command_interface_description(description: str) -> str:
+    return f'description {description}'
+
+
+def get_interface_conf_command_interface_ip_address(interface_name: str, subnet: str) -> str:
+    return f'ip address {interface_name} {subnet}'
+
+
+def get_interface_conf_no_command_interface_ip_address() -> str:
+    return f'no ip address'
+
+
+def get_interface_conf_command_interface_duplex(duplex: str) -> str:
+    return f'duplex {duplex}'
+
+
+def get_interface_conf_command_interface_speed(speed: str) -> str:
+    if speed == '1000Mbps':
+        return f'speed 1000'
+    if speed == '100Mbps':
+        return f'speed 100'
+    if speed == '10Mbps':
+        return f'speed 10'
+    return f'speed auto'
+
+
+def get_interface_conf_command_interface_mtu(mtu: int) -> str:
+    return f'mtu {mtu}'
+
+
+def get_interface_base_conf_commands_for_update_as_list(router_interface: RouterInterface, description: str,
+                                                        ip_address: str, subnet: int, duplex: str, speed: str,
+                                                        mtu: int) -> list[str] | None:
+    list_of_commands: list[str] = []
+    if router_interface.is_description_different(new_description_value=description):
+        list_of_commands.append(get_interface_conf_command_interface_description(description))
+
+    if (router_interface.is_ip_address_different(new_ip_address_value=ip_address)
+            or router_interface.is_subnet_different(new_subnet_value=subnet)):
+        list_of_commands.append(get_interface_conf_command_interface_ip_address(ip_address, NETWORK_MASK[subnet]))
+
+    if router_interface.statistics.information.is_speed_different(new_speed_value=speed):
+        list_of_commands.append(get_interface_conf_command_interface_speed(speed))
+
+    if router_interface.statistics.information.is_duplex_different(new_duplex_value=duplex):
+        list_of_commands.append(get_interface_conf_command_interface_duplex(duplex))
+
+    if router_interface.statistics.information.is_mtu_different(new_mtu_value=mtu):
+        list_of_commands.append(get_interface_conf_command_interface_mtu(mtu))
+
+    if len(list_of_commands) > 0:
+        return list_of_commands
+    return None
+
+
+########################################################################################################################
+# Parsing InterfaceOSPFInformation functions:
 
 
 def is_ospf_enabled(sh_ip_ospf_int_name_output: str) -> bool:
@@ -412,11 +473,7 @@ def get_interface_ospf_timers(sh_ip_ospf_int_name_output: str) -> OSPFTimers | N
     return timers
 
 
-def get_interface_ospf_information(connection: netmiko.BaseConnection, interface_name: str) -> InterfaceOSPFInformation | None:
-    connection.enable()
-    sh_ip_ospf_int_name_output: str = connection.send_command(f'show ip ospf interface {interface_name}')
-    connection.exit_enable_mode()
-
+def get_interface_ospf_information(sh_ip_ospf_int_name_output: str) -> InterfaceOSPFInformation | None:
     if not is_ospf_enabled(sh_ip_ospf_int_name_output):
         return None
 
@@ -434,3 +491,71 @@ def get_interface_ospf_information(connection: netmiko.BaseConnection, interface
                                                                    priority=priority,
                                                                    timers=timers)
     return ospf_info
+
+
+########################################################################################################################
+# Configure InterfaceOSPF functions:
+
+
+def get_interface_ospf_conf_command_network_type(network_type: str) -> str:
+    return f'ip ospf network {network_type}'
+
+
+def get_interface_ospf_conf_command_cost(cost: int) -> str:
+    return f'ip ospf cost {cost}'
+
+
+def get_interface_ospf_conf_priority(priority: int) -> str:
+    return f'ip ospf priority {priority}'
+
+
+def get_interface_ospf_conf_authentication_message_digest(authentication_message_digest: bool,
+                                                          authentication_password: str) -> list[str]:
+    if authentication_message_digest is True:
+        return ['ip ospf authentication message-digest', f'ip ospf message-digest-key 1 md5 {authentication_password}']
+    return ['no ip ospf authentication', f'no ip ospf message-digest-key 1 md5']
+
+
+def get_interface_ospf_conf_hello_timer(hello_timer: int) -> str:
+    return f'ip ospf hello-interval {hello_timer}'
+
+
+def get_interface_ospf_conf_dead_timer(dead_timer: int) -> str:
+    return f'ip ospf dead-interval {dead_timer}'
+
+
+def get_interface_ospf_conf_retransmit_timer(retransmit_timer: int) -> str:
+    return f'ip ospf retransmit-interval {retransmit_timer}'
+
+
+def get_interface_ospf_conf_commands_for_update_as_list(ospf_info: InterfaceOSPFInformation, network_type: str,
+                                                        cost: int, priority: int, authentication_message_digest: bool,
+                                                        authentication_password: str, hello_timer: int, dead_timer: int,
+                                                        retransmit_timer: int) -> list[str] | None:
+    list_of_commands: list[str] = []
+    if ospf_info.is_network_type_different(new_network_type_value=network_type):
+        list_of_commands.append(get_interface_ospf_conf_command_network_type(network_type))
+
+    if ospf_info.is_cost_different(new_cost_value=cost):
+        list_of_commands.append(get_interface_ospf_conf_command_cost(cost))
+
+    if ospf_info.is_priority_different(new_priority_value=priority):
+        list_of_commands.append(get_interface_ospf_conf_priority(priority))
+
+    if ospf_info.is_authentication_message_digest_different(
+            new_authentication_message_digest_value=authentication_message_digest):
+        list_of_commands.extend(get_interface_ospf_conf_authentication_message_digest(authentication_message_digest,
+                                                                                      authentication_password))
+
+    if ospf_info.timers.is_hello_timer_different(new_hello_timer_value=hello_timer):
+        list_of_commands.append(get_interface_ospf_conf_hello_timer(hello_timer))
+
+    if ospf_info.timers.is_dead_timer_different(new_dead_timer_value=dead_timer):
+        list_of_commands.append(get_interface_ospf_conf_dead_timer(dead_timer))
+
+    if ospf_info.timers.is_retransmit_timer_different(new_retransmit_timer_value=retransmit_timer):
+        list_of_commands.append(get_interface_ospf_conf_retransmit_timer(retransmit_timer))
+
+    if len(list_of_commands) > 0:
+        return list_of_commands
+    return None

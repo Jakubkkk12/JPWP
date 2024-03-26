@@ -18,3 +18,13 @@ class RouterInterface(Interface):
     ip_address: str
     subnet: int = None
     ospf: InterfaceOSPFInformation = None
+
+    def is_ip_address_different(self, new_ip_address_value: str) -> bool:
+        if self.ip_address == new_ip_address_value:
+            return False
+        return True
+
+    def is_subnet_different(self, new_subnet_value: int) -> bool:
+        if self.subnet == new_subnet_value:
+            return False
+        return True

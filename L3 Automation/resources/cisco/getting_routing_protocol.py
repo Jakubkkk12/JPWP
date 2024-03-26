@@ -1,5 +1,8 @@
 import re
 
+########################################################################################################################
+# Parsing functions:
+
 
 def get_routing_protocol_default_information_originate(sh_run_sec_routing_protocol_output: str) -> bool:
     pattern = r'(default-information originate)'
@@ -58,3 +61,28 @@ def get_routing_protocol_version(routing_protocol: str, sh_run_sec_routing_proto
     if routing_protocol == 'ospf':
         return 2
     return None
+
+########################################################################################################################
+# Configure functions:
+
+
+def get_conf_command_default_information_originate(default_information_originate: bool) -> str:
+    if default_information_originate is True:
+        return 'default-information originate'
+    return 'no default-information originate'
+
+
+def get_conf_command_default_metric_of_redistributed_routes(default_metric_of_redistributed_routes: int) -> str:
+    return f'default-metric {default_metric_of_redistributed_routes}'
+
+
+def get_conf_command_distance(distance: int) -> str:
+    return f'distance {distance}'
+
+
+def get_conf_command_maximum_paths(maximum_paths: int) -> str:
+    return f'maximum-paths {maximum_paths}'
+
+
+def get_conf_command_version(version: int) -> str:
+    return f'version {version}'

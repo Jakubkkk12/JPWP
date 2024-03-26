@@ -27,11 +27,6 @@ class OSPFTimers:
             return False
         return True
 
-    def is_wait_timer_different(self, new_wait_timer_value: int) -> bool:
-        if self.wait_timer == new_wait_timer_value:
-            return False
-        return True
-
     def is_retransmit_timer_different(self, new_retransmit_timer_value: int) -> bool:
         if self.retransmit_timer == new_retransmit_timer_value:
             return False

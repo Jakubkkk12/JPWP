@@ -25,6 +25,11 @@ class BGPNeighbor:
     timers: BGPTimers = None
     update_source: str = None
 
+    def is_remote_as_different(self, new_remote_as_value: int) -> bool:
+        if self.remote_as == new_remote_as_value:
+            return False
+        return True
+
     def is_ebgp_multihop_different(self, new_ebgp_multihop_value: int) -> bool:
         if self.ebgp_multihop == new_ebgp_multihop_value:
             return False
