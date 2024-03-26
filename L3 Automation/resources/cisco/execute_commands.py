@@ -27,6 +27,8 @@ from resources.routing_protocols.rip import RIPInformation
 from resources.routing_protocols.ospf import OSPFInformation
 from resources.routing_protocols.bgp import BGPInformation
 
+########################################################################################################################
+# Section: BGP
 
 def get_bgp(connection: BaseConnection | None, router: Router = None, user: User = None) -> BGPInformation:
     was_connection_given = False if connection is None else True
@@ -104,3 +106,40 @@ def update_bgp_neighbor(router: Router, user: User, neighbor_id: str, remote_as:
     output: str = connection.send_config_set(commands)
     close_connection(connection)
     return True, output
+
+########################################################################################################################
+# Section StaticRoutes
+
+def get_static_r(connection: BaseConnection | None, router: Router = None, user: User = None) -> list[StaticRoute]:
+    was_connection_given = False if connection is None else True
+    if not was_connection_given:
+        connection = create_connection_to_router(router, user)
+        connection.enable()
+
+    sh_run_sec_ip_route_output: str = connection.send_command("show run | sec ip route")
+
+    if not was_connection_given:
+        close_connection(connection)
+
+    return get_static_routes(sh_run_sec_ip_route_output)
+
+
+def add_static_route(router: Router, user: User, network: str, network_mask: int, route_distance: int = 1,
+                     next_hop: str = None, interface_name: str = None):
+    command: str = get_static_route_conf_command(network, network_mask, route_distance, next_hop, interface_name)
+    connection = create_connection_to_router(router, user)
+    connection.enable()
+    output: str = connection.send_config_set(command)
+    close_connection(connection)
+    return True, output
+
+
+def remove_static_route(router: Router, user: User, network: str, network_mask: int):
+    command: str = get_static_route_no_conf_command(network, network_mask)
+    connection = create_connection_to_router(router, user)
+    connection.enable()
+    output: str = connection.send_config_set(command)
+    close_connection(connection)
+    return True, output
+
+########################################################################################################################

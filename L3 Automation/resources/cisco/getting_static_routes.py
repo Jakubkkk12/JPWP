@@ -44,11 +44,7 @@ def get_static_route(static_route_info: list[str]) -> StaticRoute:
     return static_route
 
 
-def get_static_routes(connection: netmiko.BaseConnection) -> list[StaticRoute] | None:
-    connection.enable()
-    sh_run_sec_ip_route_output: str = connection.send_command("show run | sec ip route")
-    connection.exit_enable_mode()
-
+def get_static_routes(sh_run_sec_ip_route_output: str) -> list[StaticRoute] | None:
     all_static_route_info: list[str] | None = get_all_static_route_info(sh_run_sec_ip_route_output)
     if all_static_route_info is None:
         return None
