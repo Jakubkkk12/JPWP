@@ -30,7 +30,7 @@ class BGPInformation:
     timers: BGPTimers = None
     neighbors: dict[str, BGPNeighbor] = None
 
-    def is_router_id_different(self, new_router_id_value: bool) -> bool:
+    def is_router_id_different(self, new_router_id_value: str) -> bool:
         if self.router_id == new_router_id_value:
             return False
         return True

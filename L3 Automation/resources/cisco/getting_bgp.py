@@ -6,10 +6,12 @@ from resources.routing_protocols.bgp.BGPInformation import BGPInformation
 from resources.routing_protocols.Redistribution import Redistribution
 from resources.routing_protocols.Network import Network
 from resources.cisco.getting_redistribution import get_routing_protocol_redistribution
-from resources.cisco.getting_routing_protocol import (get_routing_protocol_distance,
-                                                      get_routing_protocol_default_information_originate,
-                                                      get_routing_protocol_default_metric_of_redistributed_routes)
-from resources.constants import NETWORK_MASK_REVERSED
+from resources.cisco.getting_routing_protocol import (get_routing_protocol_default_information_originate,
+                                                      get_routing_protocol_default_metric_of_redistributed_routes,
+                                                      get_conf_command_default_metric_of_redistributed_routes,
+                                                      get_conf_command_default_information_originate,
+                                                      )
+from resources.constants import NETWORK_MASK_REVERSED, NETWORK_MASK
 
 
 def is_bgp_enabled(sh_run_sec_bgp_output: str) -> bool:
@@ -205,3 +207,127 @@ def get_bgp_information(connection: netmiko.BaseConnection) -> BGPInformation | 
                                               timers=timers,
                                               neighbors=neighbors)
     return bgp_info
+
+
+def get_bgp_conf_command_router_id(router_id: str) -> str:
+    return f'bgp router-id {router_id}'
+
+
+def get_bgp_conf_command_timers(timers: BGPTimers, keep_alive: int, hold_on: int) -> str | None:
+    if (timers.is_keep_alive_different(new_keep_alive_value=keep_alive)
+            or timers.is_hold_time_different(new_hold_time_value=hold_on)):
+        return f'timers bgp {keep_alive} {hold_on}'
+    return None
+
+
+def get_bgp_base_conf_commands_for_update_as_list(bgp: BGPInformation, router_id: str,
+                                                  default_information_originate: bool,
+                                                  default_metric_of_redistributed_routes: int, keep_alive: int,
+                                                  hold_on: int) -> list[str] | None:
+    list_of_commands: list[str] = []
+    if bgp.is_router_id_different(new_router_id_value=router_id):
+        list_of_commands.append(get_bgp_conf_command_router_id(router_id))
+
+    if bgp.is_default_information_originate_different(
+            new_default_information_originate_value=default_information_originate):
+        list_of_commands.append(get_conf_command_default_information_originate(default_information_originate))
+
+    if bgp.is_default_metric_of_redistributed_routes_different(
+            new_default_metric_of_redistributed_routes=default_metric_of_redistributed_routes):
+        list_of_commands.append(get_conf_command_default_metric_of_redistributed_routes(
+            default_metric_of_redistributed_routes
+        ))
+
+    bgp_conf_command_timers: str | None = get_bgp_conf_command_timers(bgp.timers, keep_alive, hold_on)
+    if bgp_conf_command_timers is not None:
+        list_of_commands.append(bgp_conf_command_timers)
+
+    if len(list_of_commands) > 0:
+        return list_of_commands
+    return None
+
+
+def get_bgp_conf_networks_commands_as_list(network_and_mask: list[list[str, int]]) -> list[str] | None:
+    list_of_commands: list[str] = []
+
+    for network, mask in network_and_mask:
+        net_mask = NETWORK_MASK[mask]
+        list_of_commands.append(f'network {network} mask {net_mask}')
+
+    if len(list_of_commands) > 0:
+        return list_of_commands
+    return None
+
+
+def get_bgp_no_conf_networks_commands_as_list(network_and_mask: list[list[str, int]]) -> list[str] | None:
+    list_of_commands: list[str] = []
+
+    for network, mask in network_and_mask:
+        net_mask = NETWORK_MASK[mask]
+        list_of_commands.append(f'no network {network} mask {net_mask}')
+
+    if len(list_of_commands) > 0:
+        return list_of_commands
+    return None
+
+
+def get_bgp_neighbor_conf_command_remote_as(neighbor_id: str, remote_as: int) -> str:
+    return f'neighbor {neighbor_id} remote-as {remote_as}'
+
+
+def get_bgp_neighbor_conf_command_ebgp_multihop(neighbor_id: str, ebgp_multihop: int) -> str:
+    return f'neighbor {neighbor_id} ebgp-multihop {ebgp_multihop}'
+
+
+def get_bgp_neighbor_conf_command_next_hop_self(neighbor_id: str, next_hop_self: bool) -> str:
+    if next_hop_self is True:
+        return f'neighbor {neighbor_id} next-hop-self'
+    return f'no neighbor {neighbor_id} next-hop-self'
+
+
+def get_bgp_neighbor_conf_command_shutdown(neighbor_id: str, shutdown: bool) -> str:
+    if shutdown is True:
+        return f'neighbor {neighbor_id} shutdown'
+    return f'no neighbor {neighbor_id} shutdown'
+
+
+def get_bgp_neighbor_conf_command_update_source(neighbor_id: str, update_source: str) -> str:
+    return f'neighbor {neighbor_id} update-source {update_source}'
+
+
+def get_bgp_neighbor_conf_command_timers(neighbor_id: str, timers: BGPTimers, keep_alive: int, hold_on: int) -> str | None:
+    if (timers.is_keep_alive_different(new_keep_alive_value=keep_alive)
+            or timers.is_hold_time_different(new_hold_time_value=hold_on)):
+        return f'neighbor {neighbor_id} timers {keep_alive} {hold_on}'
+    return None
+
+
+def get_bgp_conf_neighbor_commands_for_update_as_list(neighbors: dict[str, BGPNeighbor], neighbor_id: str,
+                                                      remote_as: int, ebgp_multihop: int, next_hop_self: bool,
+                                                      shutdown: bool, update_source: str, keep_alive: int,
+                                                      hold_on: int) -> list[str] | None:
+    list_of_commands: list[str] = []
+    if neighbors[neighbor_id].is_remote_as_different(new_remote_as_value=remote_as):
+        list_of_commands.append(get_bgp_neighbor_conf_command_remote_as(neighbor_id, remote_as))
+
+    if neighbors[neighbor_id].is_ebgp_multihop_different(new_ebgp_multihop_value=ebgp_multihop):
+        list_of_commands.append(get_bgp_neighbor_conf_command_ebgp_multihop(neighbor_id, ebgp_multihop))
+
+    if neighbors[neighbor_id].is_next_hop_self_different(new_next_hop_self_value=next_hop_self):
+        list_of_commands.append(get_bgp_neighbor_conf_command_next_hop_self(neighbor_id, next_hop_self))
+
+    if neighbors[neighbor_id].is_shutdown_different(new_shutdown_value=shutdown):
+        list_of_commands.append(get_bgp_neighbor_conf_command_shutdown(neighbor_id, shutdown))
+
+    if neighbors[neighbor_id].is_update_source_different(new_update_source_value=update_source):
+        list_of_commands.append(get_bgp_neighbor_conf_command_update_source(neighbor_id, update_source))
+
+    bgp_neighbor_conf_command_timers: str | None = get_bgp_neighbor_conf_command_timers(neighbor_id,
+                                                                                        neighbors[neighbor_id].timers,
+                                                                                        keep_alive, hold_on)
+    if bgp_neighbor_conf_command_timers is not None:
+        list_of_commands.append(bgp_neighbor_conf_command_timers)
+
+    if len(list_of_commands) > 0:
+        return list_of_commands
+    return None
