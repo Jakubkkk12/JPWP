@@ -12,10 +12,7 @@ from resources.constants import NETWORK_MASK
 # Parsing Interface/RouterInterface functions:
 
 
-def get_interfaces_name(connection: netmiko.BaseConnection) -> list[str]:
-    connection.enable()
-    sh_ip_int_br_output: str = connection.send_command("show ip int br")
-    connection.exit_enable_mode()
+def get_interfaces_name(sh_ip_int_br_output: str) -> list[str]:
     interfaces_name: list[str] = [line.split()[0] for line in sh_ip_int_br_output.splitlines()]
     except_first: slice = slice(1, len(interfaces_name))
     interfaces_name = [int_name for int_name in interfaces_name[except_first] if not int_name.startswith('Vlan')]
@@ -300,11 +297,7 @@ def get_interface_statistics(sh_int_name_output: str) -> InterfaceStatistics:
     return int_stat
 
 
-def get_base_interface_information(connection: netmiko.BaseConnection, interface_name: str) -> RouterInterface:
-    connection.enable()
-    sh_int_name_output: str = connection.send_command(f"show int {interface_name}")
-    connection.exit_enable_mode()
-
+def get_base_interface_information(interface_name: str, sh_int_name_output: str) -> RouterInterface:
     interface_ip_address: dict[str, str | int | None] = get_interface_ip_address(sh_int_name_output)
     description: str | None = get_interface_description(sh_int_name_output)
     statistics: InterfaceStatistics = get_interface_statistics(sh_int_name_output)
@@ -352,8 +345,8 @@ def get_interface_conf_command_interface_mtu(mtu: int) -> str:
 
 
 def get_interface_base_conf_commands_for_update_as_list(router_interface: RouterInterface, description: str,
-                                                        ip_address: str,
-                                                        subnet: int, duplex: str, speed: str, mtu: int) -> list[str] | None:
+                                                        ip_address: str, subnet: int, duplex: str, speed: str,
+                                                        mtu: int) -> list[str] | None:
     list_of_commands: list[str] = []
     if router_interface.is_description_different(new_description_value=description):
         list_of_commands.append(get_interface_conf_command_interface_description(description))
@@ -480,12 +473,7 @@ def get_interface_ospf_timers(sh_ip_ospf_int_name_output: str) -> OSPFTimers | N
     return timers
 
 
-def get_interface_ospf_information(connection: netmiko.BaseConnection,
-                                   interface_name: str) -> InterfaceOSPFInformation | None:
-    connection.enable()
-    sh_ip_ospf_int_name_output: str = connection.send_command(f'show ip ospf interface {interface_name}')
-    connection.exit_enable_mode()
-
+def get_interface_ospf_information(sh_ip_ospf_int_name_output: str) -> InterfaceOSPFInformation | None:
     if not is_ospf_enabled(sh_ip_ospf_int_name_output):
         return None
 

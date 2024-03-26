@@ -4,7 +4,7 @@ from resources.cisco.getting_bgp import (get_bgp_information, get_bgp_base_conf_
                                          get_bgp_conf_neighbor_commands_for_update_as_list,
                                          get_bgp_conf_networks_commands_as_list,
                                          get_bgp_no_conf_networks_commands_as_list)
-from resources.cisco.getting_interface import (get_base_interface_information,
+from resources.cisco.getting_interface import (get_interfaces_name, get_base_interface_information,
                                                get_interface_base_conf_commands_for_update_as_list,
                                                get_interface_ospf_information,
                                                get_interface_ospf_conf_commands_for_update_as_list)
@@ -27,6 +27,7 @@ from resources.routing_protocols.rip import RIPInformation
 from resources.routing_protocols.ospf import OSPFInformation, OSPFArea
 from resources.routing_protocols.bgp import BGPInformation
 from resources.routing_protocols import Redistribution
+from resources.interfaces import RouterInterface
 
 ########################################################################################################################
 # Section: BGP
@@ -312,6 +313,64 @@ def update_redistribution(router: Router, user: User, routing_protocol: str, red
     else:
         raise ValueError(f'Cannot be {routing_protocol}')
 
+    connection = create_connection_to_router(router, user)
+    connection.enable()
+    output: str = connection.send_config_set(commands)
+    close_connection(connection)
+    return True, output
+
+########################################################################################################################
+# Section RouterInterface
+
+
+def get_all_interfaces(connection: BaseConnection | None, router: Router = None, user: User = None) -> dict[str, RouterInterface]:
+    was_connection_given = False if connection is None else True
+    if not was_connection_given:
+        connection = create_connection_to_router(router, user)
+        connection.enable()
+
+    sh_ip_int_br_output: str = connection.send_command("show ip int br")
+    interfaces_name: list[str] = get_interfaces_name(sh_ip_int_br_output)
+
+    interfaces: dict[str, RouterInterface] = {}
+    for interface_name in interfaces_name:
+        sh_int_name_output: str = connection.send_command(f"show int {interface_name}")
+        sh_ip_ospf_int_name_output: str = connection.send_command(f'show ip ospf interface {interface_name}')
+        interfaces[interface_name] = get_base_interface_information(interface_name, sh_int_name_output)
+        interfaces[interface_name].ospf = get_interface_ospf_information(sh_ip_ospf_int_name_output)
+
+    if not was_connection_given:
+        close_connection(connection)
+
+    return interfaces
+
+
+def update_interface_basic(router: Router, user: User, router_interface: RouterInterface, description: str,
+                           ip_address: str, subnet: int, duplex: str, speed: str, mtu: int) -> tuple[bool, str | None]:
+    commands: list[str] = get_interface_base_conf_commands_for_update_as_list(router_interface, description, ip_address,
+                                                                              subnet, duplex, speed, mtu)
+    if commands is None:
+        return False, None
+
+    commands.insert(0, f'interface {router_interface.name}')
+    connection = create_connection_to_router(router, user)
+    connection.enable()
+    output: str = connection.send_config_set(commands)
+    close_connection(connection)
+    return True, output
+
+
+def update_interface_ospf(router: Router, user: User, router_interface: RouterInterface, network_type: str, cost: int,
+                          priority: int, authentication_message_digest: bool, authentication_password: str,
+                          hello_timer: int, dead_timer: int, retransmit_timer: int) -> tuple[bool, str | None]:
+    commands: list[str] = get_interface_ospf_conf_commands_for_update_as_list(router_interface.ospf, network_type, cost,
+                                                                              priority, authentication_message_digest,
+                                                                              authentication_password, hello_timer,
+                                                                              dead_timer, retransmit_timer)
+    if commands is None:
+        return False, None
+
+    commands.insert(0, f'interface {router_interface.name}')
     connection = create_connection_to_router(router, user)
     connection.enable()
     output: str = connection.send_config_set(commands)
