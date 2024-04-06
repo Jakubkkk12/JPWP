@@ -10,6 +10,7 @@ from python_guis.ospf_area_configuration_gui import OSPFAreaConfigurationGUI
 from python_guis.ospf_interface_details_gui import OSPFInterfaceDetailsGUI
 from python_guis.rip_network_add_gui import RIPNetworkAddGUI
 from python_guis.rip_networks_gui import RIPNetworksGUI
+from python_guis.rip_redistribution_gui import RIPRedistributionGUI
 from python_guis.static_routes_gui import StaticRoutesGUI
 
 from resources.devices.Router import Router
@@ -485,13 +486,13 @@ class MainGUI:
                     selected_router = self.devices.get(hostname)
                     menu.post(event.x_root, event.y_root)
                     menu.entryconfigure('Networks', command=lambda: RIPNetworksGUI(selected_router))
-                    # menu.entryconfigure('Redistribution', command=lambda: )
+                    menu.entryconfigure('Redistribution', command=lambda: RIPRedistributionGUI(selected_router))
                 except IndexError:
                     pass
 
         menu = tk.Menu(self.root, tearoff=False)
         menu.add_command(label='Networks', command=RIPNetworkAddGUI)
-        # menu.add_command(label='Redistribution', command=OSPFAreaConfigurationGUI)
+        menu.add_command(label='Redistribution', command=RIPRedistributionGUI)
         self.tree.bind('<Button-3>', show_menu_rip)
 
         return None
