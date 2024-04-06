@@ -63,40 +63,12 @@ class OSPFNetworkAddGUI:
         lblMask.pack()
         entryMask.pack()
 
-        # wildcardFrame = tk.Frame(root)
-        # lblWildcard = tk.Label(wildcardFrame, text='Wildcard:')
-        # lblWildcard.pack()
-        #
-        # entryIPWildcardFirst = tk.Entry(wildcardFrame, width=10)
-        # entryIPWildcardFirst.pack(side='left')
-        # labelDot1 = tk.Label(wildcardFrame, text='.')
-        # labelDot1.pack(side='left')
-        #
-        # entryIPWildcardSecond = tk.Entry(wildcardFrame, width=10)
-        # entryIPWildcardSecond.pack(side='left')
-        # labelDot2 = tk.Label(wildcardFrame, text='.')
-        # labelDot2.pack(side='left')
-        #
-        # entryIPWildcardThird = tk.Entry(wildcardFrame, width=10)
-        # entryIPWildcardThird.pack(side='left')
-        # labelDot3 = tk.Label(wildcardFrame, text='.')
-        # labelDot3.pack(side='left')
-        #
-        # entryIPWildcardFourth = tk.Entry(wildcardFrame, width=10)
-        # entryIPWildcardFourth.pack(side='left')
-        #
-        # wildcardFrame.pack()
-
         def get_network() -> str:
             return (entryIPNetworkFirst.get() + '.' + entryIPNetworkSecond.get() + '.' +
                     entryIPNetworkThird.get() + '.' + entryIPNetworkFourth.get())
 
         def get_mask() -> int:
             return int(entryMask.get())
-
-        # def get_wildcard() -> str:
-        #     return (entryIPWildcardFirst.get() + '.' + entryIPWildcardSecond.get() + '.' +
-        #             entryIPWildcardThird.get() + '.' + entryIPWildcardFourth.get())
 
         def clean_entries() -> None:
             ip_entries = [entryIPNetworkFirst, entryIPNetworkSecond, entryIPNetworkThird,
@@ -124,7 +96,8 @@ class OSPFNetworkAddGUI:
             if validate_network():
                 network = get_network()
                 mask = get_mask()
-                wildcard = '0.0.0.255' #todo
+                from resources import constants
+                wildcard = constants.NETWORK_MASK.get(mask)
                 messagebox.showinfo('Route Added', 'Route Added', parent=root)
 
                 network = Network(network=network,
