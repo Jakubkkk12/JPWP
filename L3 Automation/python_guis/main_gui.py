@@ -6,6 +6,7 @@ import ssh_password_gui
 from gui_resources import config
 from login_gui import LoginGUI
 from python_guis.interfaces_details_gui import InterfacesDetails
+from python_guis.ospf_area_configuration_gui import OSPFAreaConfigurationGUI
 from python_guis.ospf_interface_details_gui import OSPFInterfaceDetailsGUI
 from python_guis.static_routes_gui import StaticRoutesGUI
 
@@ -455,7 +456,7 @@ class MainGUI:
 
             if len(router_areas) > 1:
                 for area in router_areas[1:]:
-                        values = ('', '', '', router.ospf.areas[area].id, list(router.ospf.areas[area].networks.keys()), '')
+                        values = ('', router.name, '', router.ospf.areas[area].id, list(router.ospf.areas[area].networks.keys()), '')
                         self.tree.insert(iid, tk.END, values=values)
 
         self.tree.heading(treeColumns[0], text='No', anchor='w')
@@ -484,9 +485,14 @@ class MainGUI:
                 try:
                     hostname = self.tree.item(item)['values'][1]
                     selected_router = self.devices.get(hostname)
+                    area = self.tree.item(item)['values'][3]
+                    selected_area = selected_router.ospf.areas.get(str(area))
+
                     menu.post(event.x_root, event.y_root)
                     menu.entryconfigure('Interfaces', command=lambda: show_interfaces_details(selected_router))
-                except IndexError():
+                    menu.entryconfigure('Area', command=lambda: run_ospf_area_configuration_gui(selected_router,
+                                                                                                selected_area))
+                except IndexError:
                     pass
 
         def show_interfaces_details(selected_router: Router) -> None:
@@ -494,8 +500,14 @@ class MainGUI:
                 OSPFInterfaceDetailsGUI(selected_router)
             return None
 
+        def run_ospf_area_configuration_gui(selected_router:Router, selected_area: OSPFArea) -> None:
+            if selected_area:
+                OSPFAreaConfigurationGUI(selected_router, selected_area, self)
+            return None
+
         menu = tk.Menu(self.root, tearoff=False)
         menu.add_command(label='Interfaces', command=OSPFInterfaceDetailsGUI)
+        menu.add_command(label='Area', command=OSPFAreaConfigurationGUI)
         self.tree.bind('<Button-3>', show_menu_ospf)
 
         self.console_command('test')
@@ -526,6 +538,10 @@ class MainGUI:
     def console_command(self, text: str) -> None:
         self.consoleBox.insert(tk.END, text)
         return None
+
+    def update_ospf_networks(self, area: OSPFArea.id, network: Network):
+        # todo
+        pass
 
 
 if __name__ == "__main__":
