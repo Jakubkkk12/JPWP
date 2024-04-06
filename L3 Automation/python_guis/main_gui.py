@@ -16,9 +16,13 @@ from resources.interfaces.RouterInterface import RouterInterface
 from resources.routing_protocols.Network import Network
 from resources.routing_protocols.Redistribution import Redistribution
 from resources.routing_protocols.StaticRoute import StaticRoute
+from resources.routing_protocols.bgp.BGPInformation import BGPInformation
+from resources.routing_protocols.bgp.BGPNeighbor import BGPNeighbor
+from resources.routing_protocols.bgp.BGPTimers import BGPTimers
 from resources.routing_protocols.ospf.OSPFArea import OSPFArea
 from resources.routing_protocols.ospf.OSPFInformation import OSPFInformation
 from resources.routing_protocols.ospf.OSPFTimers import OSPFTimers
+from resources.routing_protocols.rip.RIPInformation import RIPInformation
 from resources.ssh.SSHInformation import SSHInformation
 
 
@@ -59,14 +63,13 @@ class MainGUI:
         self.root.rowconfigure(5, weight=4)
 
         # Sample data:
-        self.devices = {
+        self.devices = devices = {
             'R1': Router(name='R1',
                          ssh_information=SSHInformation(ip_addresses={'0': '10.250.250.1',
-                                                                      '1': '10.250.250.2'}),
+                                                                      '1': '13.13.13.13'}),
                          type='cisco',
                          enable_password='ZSEDCxzaqwe',
                          interfaces={'f0/0': RouterInterface(name='f0/0',
-                                                             description='test1',
                                                              statistics=InterfaceStatistics(
                                                                  information=InformationStatistics(
                                                                      collision=1,
@@ -114,7 +117,6 @@ class MainGUI:
                                                                     mask=24,
                                                                     wildcard='0.0.0.255'
                                                                     ),
-                                                    distance=1,
                                                     next_hop='12.345.32.1',
                                                     interface='f0/0')
                                         ],
@@ -136,26 +138,9 @@ class MainGUI:
                                                                    networks={'10.0.0.0/16': Network(network='10.0.0.0',
                                                                                                     mask=16,
                                                                                                     wildcard='0.0.255.255'
-                                                                                                    ),
-                                                                             '20.0.0.0/16': Network(network='20.0.0.0',
-                                                                                                    mask=16,
-                                                                                                    wildcard='0.0.255.255'
                                                                                                     )
                                                                              }
-                                                                   ),
-                                                     '1': OSPFArea(id='1',
-                                                                   is_authentication_message_digest=False,
-                                                                   type='NSSA',
-                                                                   networks={'10.0.0.0/16': Network(network='10.0.0.0',
-                                                                                                    mask=16,
-                                                                                                    wildcard='0.0.255.255'
-                                                                                                    ),
-                                                                             '30.0.0.0/16': Network(network='30.0.0.0',
-                                                                                                    mask=16,
-                                                                                                    wildcard='0.0.255.255'
-                                                                                                    )
-                                                                             }
-                                                                   ),
+                                                                   )
                                                      }
                                               ),
                          ),
@@ -164,7 +149,6 @@ class MainGUI:
                          type='cisco',
                          enable_password='ZSEDCxzaqwe',
                          interfaces={'f0/0': RouterInterface(name='f0/0',
-                                                             description='test',
                                                              statistics=InterfaceStatistics(
                                                                  information=InformationStatistics(
                                                                      collision=1,
@@ -209,11 +193,11 @@ class MainGUI:
                                                              )
                                      },
                          static_routes=[StaticRoute(network=Network(network='192.168.1.0',
-                                                                                      mask=24,
-                                                                                      wildcard='0.0.0.255'
-                                                                                      ),
-                                                                      next_hop='12.345.32.1',
-                                                                      interface='f0/0')
+                                                                    mask=24,
+                                                                    wildcard='0.0.0.255'
+                                                                    ),
+                                                    next_hop='12.345.32.1',
+                                                    interface='f0/0')
                                         ],
                          ospf=OSPFInformation(router_id='1.1.1.1',
                                               auto_cost_reference_bandwidth=1000,
@@ -230,14 +214,62 @@ class MainGUI:
                                               areas={'0': OSPFArea(id='0',
                                                                    is_authentication_message_digest=False,
                                                                    type='NSSA',
-                                                                   networks={'10.0.0.0/16': Network(network='10.0.0.0',
-                                                                                                    mask=16,
-                                                                                                    wildcard='0.0.255.255'
-                                                                                                    )
-                                                                             }
-                                                                   )
+                                                                   networks={
+                                                                       '10.0.0.0/16': Network(
+                                                                           network='10.0.0.0',
+                                                                           mask=None,
+                                                                           wildcard='0.0.255.255'
+                                                                           )
+                                                                   }
+                                                                   ),
+                                                     '10': OSPFArea(id='10',
+                                                                    is_authentication_message_digest=True,
+                                                                    type='NSSA',
+                                                                    networks={
+                                                                        '25.0.0.0/16': Network(
+                                                                            network='25.0.0.0',
+                                                                            mask=None,
+                                                                            wildcard='0.0.255.255'
+                                                                        )
+                                                                    }
+                                                                    )
                                                      }
                                               ),
+                         rip=RIPInformation(auto_summary=True,
+                                            default_information_originate=False,
+                                            default_metric_of_redistributed_routes=14,
+                                            distance=115,
+                                            maximum_paths=2,
+                                            version=2,
+                                            redistribution=Redistribution(is_redistribute_static=True,
+                                                                          is_redistribute_bgp=False,
+                                                                          is_redistribute_ospf=False,
+                                                                          is_redistribute_connected=True,
+                                                                          ),
+                                            networks={'10.1.0.0': Network(network='10.1.0.0', mask=None),
+                                                      '192.168.3.0': Network(network='192.168.3.0', mask=None)}
+                                            ),
+                         bgp=BGPInformation(autonomous_system=666,
+                                            router_id='1.1.1.1',
+                                            default_information_originate=False,
+                                            default_metric_of_redistributed_routes=5,
+                                            timers=BGPTimers(keep_alive=20,
+                                                             hold_time=60
+                                                             ),
+                                            networks={'10.1.0.0 255.255.255.0': Network(network='10.1.0.0', mask=24)},
+                                            redistribution=Redistribution(is_redistribute_ospf=False,
+                                                                          is_redistribute_connected=True,
+                                                                          is_redistribute_static=False,
+                                                                          is_redistribute_rip=True),
+                                            neighbors={'10.22.33.2': BGPNeighbor(ip_address='10.22.33.2',
+                                                                                 remote_as=456,
+                                                                                 state='COS',
+                                                                                 ebgp_multihop=3,
+                                                                                 next_hop_self=False,
+                                                                                 shutdown=False,
+                                                                                 timers=BGPTimers(keep_alive=30,
+                                                                                                  hold_time=90))}
+                                            )
                          )
         }
 
@@ -412,17 +444,18 @@ class MainGUI:
 
         # Data insert
         for iid, (router_name, router) in enumerate(self.devices.items(), start=1):
-            ospf_area = router.ospf.areas['0'].id
+            router_areas = list(router.ospf.areas.keys())
+            ospf_area = router_areas[0]
+
             ospf_networks = list(router.ospf.areas[ospf_area].networks.keys())
             ospf_redistributions = self.get_ospf_redistribution(router)
 
             values = (iid, router.name, router.ospf.router_id, ospf_area, ospf_networks, ospf_redistributions)
             self.tree.insert('', tk.END, values=values, iid=iid)
 
-            if len(router.ospf.areas) > 1:
-                for j, area in router.ospf.areas.items():
-                    if j != '0':
-                        values = ('', '', '', area.id, list(router.ospf.areas[area.id].networks.keys()), '')
+            if len(router_areas) > 1:
+                for area in router_areas[1:]:
+                        values = ('', '', '', router.ospf.areas[area].id, list(router.ospf.areas[area].networks.keys()), '')
                         self.tree.insert(iid, tk.END, values=values)
 
         self.tree.heading(treeColumns[0], text='No', anchor='w')
