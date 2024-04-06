@@ -110,14 +110,14 @@ class MainGUI:
                                                              )
                                                              )
                                      },
-                         static_routes={'192.168.1.0/24': StaticRoute(network=Network(network='192.168.1.0',
-                                                                                      mask=24,
-                                                                                      wildcard='0.0.0.255'
-                                                                                      ),
-                                                                      distance=1,
-                                                                      next_hop='12.345.32.1',
-                                                                      interface='f0/0')
-                                        },
+                         static_routes=[StaticRoute(network=Network(network='192.168.1.0',
+                                                                    mask=24,
+                                                                    wildcard='0.0.0.255'
+                                                                    ),
+                                                    distance=1,
+                                                    next_hop='12.345.32.1',
+                                                    interface='f0/0')
+                                        ],
                          ospf=OSPFInformation(router_id='1.1.1.1',
                                               auto_cost_reference_bandwidth=1000,
                                               default_information_originate=False,
@@ -208,13 +208,13 @@ class MainGUI:
                                                              )
                                                              )
                                      },
-                         static_routes={'192.168.1.0/24': StaticRoute(network=Network(network='192.168.1.0',
+                         static_routes=[StaticRoute(network=Network(network='192.168.1.0',
                                                                                       mask=24,
                                                                                       wildcard='0.0.0.255'
                                                                                       ),
                                                                       next_hop='12.345.32.1',
                                                                       interface='f0/0')
-                                        },
+                                        ],
                          ospf=OSPFInformation(router_id='1.1.1.1',
                                               auto_cost_reference_bandwidth=1000,
                                               default_information_originate=False,
@@ -341,16 +341,12 @@ class MainGUI:
 
         iid = 0
         for i, (router_name, router) in enumerate(self.devices.items(), start=1):
-            ssh_ip = router.ssh_information.ip_addresses['0']
-            values = (i, router.name, router.type, ssh_ip)
+            ssh_ips = list(router.ssh_information.ip_addresses.values())
+            string_ips = ', '.join(ssh_ips)
+
+            values = (i, router.name, router.type, string_ips)
             self.tree.insert('', tk.END, values=values, iid=iid)
 
-            # inserting as sub values additional ssh ips
-            if len(router.ssh_information.ip_addresses) > 1:
-                for j, ip in router.ssh_information.ip_addresses.items():
-                    if j != '0':
-                        ssh_ips = ('', '', '', ip)
-                        self.tree.insert(iid, tk.END, values=ssh_ips)  # this need to be fixed so it skips first item
             iid += 1
 
         self.tree.configure(columns=treeColumns)
