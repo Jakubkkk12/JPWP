@@ -8,6 +8,8 @@ from login_gui import LoginGUI
 from python_guis.interfaces_details_gui import InterfacesDetails
 from python_guis.ospf_area_configuration_gui import OSPFAreaConfigurationGUI
 from python_guis.ospf_interface_details_gui import OSPFInterfaceDetailsGUI
+from python_guis.rip_network_add_gui import RIPNetworkAddGUI
+from python_guis.rip_networks_gui import RIPNetworksGUI
 from python_guis.static_routes_gui import StaticRoutesGUI
 
 from resources.devices.Router import Router
@@ -430,10 +432,119 @@ class MainGUI:
 
     def show_view_rip(self) -> None:
         self.clear_tree()
+
+        treeColumns = ('No', 'Hostname', 'Auto-summary', 'Default information originate', 'Default metric',
+                       'Distance', 'Maximum paths', 'Version')
+        self.tree.configure(columns=treeColumns)
+
+        self.tree.heading(treeColumns[0], text='No', anchor='w')
+        self.tree.column(treeColumns[0], minwidth=30, width=30, stretch=False)
+
+        self.tree.heading(treeColumns[1], text='Hostname', anchor='w')
+        self.tree.column(treeColumns[1], minwidth=70, width=70, stretch=False)
+
+        self.tree.heading(treeColumns[2], text='Auto-summary', anchor='w')
+        self.tree.column(treeColumns[2], minwidth=50, width=100, stretch=False)
+
+        self.tree.heading(treeColumns[3], text='Default information originate', anchor='w')
+        self.tree.column(treeColumns[3], minwidth=100, width=150, stretch=False)
+
+        self.tree.heading(treeColumns[4], text='Default metric', anchor='w')
+        self.tree.column(treeColumns[4], minwidth=70, width=100, stretch=False)
+
+        self.tree.heading(treeColumns[5], text='Distance', anchor='w')
+        self.tree.column(treeColumns[5], minwidth=50, width=70, stretch=False)
+
+        self.tree.heading(treeColumns[6], text='Maximum paths', anchor='w')
+        self.tree.column(treeColumns[6], minwidth=50, width=120, stretch=False)
+
+        self.tree.heading(treeColumns[7], text='Version', anchor='w')
+        self.tree.column(treeColumns[7], minwidth=50, width=70, stretch=False)
+
+        # Data insert
+        iid = 0
+        for i, (router_name, router) in enumerate(self.devices.items(), start=1):
+            if router.rip is None:
+                values = (iid+1, router.name, 'RIP DISABLED')
+                self.tree.insert('', tk.END, iid=iid, values=values)
+                iid += 1
+            if router.rip is not None:
+                values = (iid+1, router.name, router.rip.auto_summary, router.rip.default_information_originate,
+                          router.rip.default_metric_of_redistributed_routes, router.rip.distance,
+                          router.rip.maximum_paths, router.rip.version)
+                self.tree.insert('', tk.END, iid=iid, values=values)
+                iid += 1
+
+        # This function shows menu when <MB-3> is clicked with treeview item selected
+        def show_menu_rip(event):
+            item = self.tree.identify_row(event.y)
+            self.tree.selection_set(item)
+            if item:
+                try:
+                    hostname = self.tree.item(item)['values'][1]
+                    selected_router = self.devices.get(hostname)
+                    menu.post(event.x_root, event.y_root)
+                    menu.entryconfigure('Networks', command=lambda: RIPNetworksGUI(selected_router))
+                    # menu.entryconfigure('Redistribution', command=lambda: )
+                except IndexError:
+                    pass
+
+        menu = tk.Menu(self.root, tearoff=False)
+        menu.add_command(label='Networks', command=RIPNetworkAddGUI)
+        # menu.add_command(label='Redistribution', command=OSPFAreaConfigurationGUI)
+        self.tree.bind('<Button-3>', show_menu_rip)
+
         return None
+
+    def insert_rip_network(self, router: Router, network: Network):
+        print('tutaj')
+        # self.tree.item
 
     def show_view_bgp(self) -> None:
         self.clear_tree()
+
+        treeColumns = ('No', 'Hostname', 'AS', 'Router ID', 'Default information originate',
+                       'Default metric of redistributed routers', 'Keep alive timer', 'Hold time timer')
+        self.tree.configure(columns=treeColumns)
+
+        self.tree.heading(treeColumns[0], text='No', anchor='w')
+        self.tree.column(treeColumns[0], minwidth=30, width=30, stretch=False)
+
+        self.tree.heading(treeColumns[1], text='Hostname', anchor='w')
+        self.tree.column(treeColumns[1], minwidth=70, width=70, stretch=False)
+
+        self.tree.heading(treeColumns[2], text='AS', anchor='w')
+        self.tree.column(treeColumns[2], minwidth=50, width=100, stretch=False)
+
+        self.tree.heading(treeColumns[3], text='Router ID', anchor='w')
+        self.tree.column(treeColumns[3], minwidth=80, width=80, stretch=False)
+
+        self.tree.heading(treeColumns[4], text='Default information originate', anchor='w')
+        self.tree.column(treeColumns[4], minwidth=70, width=120, stretch=False)
+
+        self.tree.heading(treeColumns[5], text='Default metric of redistributed routers', anchor='w')
+        self.tree.column(treeColumns[5], minwidth=50, width=120, stretch=False)
+
+        self.tree.heading(treeColumns[6], text='Keep alive timer', anchor='w')
+        self.tree.column(treeColumns[6], minwidth=50, width=120, stretch=False)
+
+        self.tree.heading(treeColumns[7], text='Hold time timer', anchor='w')
+        self.tree.column(treeColumns[7], minwidth=50, width=120, stretch=False)
+
+        # Data insert
+        iid = 0
+        for i, (router_name, router) in enumerate(self.devices.items(), start=1):
+            if router.bgp is None:
+                values = (iid + 1, router.name, 'BGP DISABLED')
+                self.tree.insert('', tk.END, iid=iid, values=values)
+                iid += 1
+            if router.bgp is not None:
+                values = (iid + 1, router.name, router.bgp.autonomous_system, router.bgp.router_id,
+                          router.bgp.default_information_originate, router.bgp.default_metric_of_redistributed_routes,
+                          router.bgp.timers.keep_alive, router.bgp.timers.hold_time)
+                self.tree.insert('', tk.END, iid=iid, values=values)
+                iid += 1
+
         return None
 
     # This function inserts data into treeview widget and binds <MB-3> according to 'ospf' view
