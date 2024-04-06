@@ -8,7 +8,7 @@ from gui_resources import config
 class EditInterfaceOSPFGUI:
     def __init__(self, router: Router, int_name: str, iid: int, ospf_interfaces_details_gui):
         root = tk.Toplevel()
-        self.ospf_interfaces_details_gui = ospf_interfaces_details_gui
+        ospf_interfaces_details_gui = ospf_interfaces_details_gui
 
         # title
         root.title(config.APPNAME + ' ' + config.VERSION + ' ' + router.name + ' ' + ' Edit Interface ' + int_name)
@@ -47,14 +47,14 @@ class EditInterfaceOSPFGUI:
 
         lblPassiveInterface = tk.Label(root, text='Passive interface:')
         lblPassiveInterface.grid(column=0, row=2)
-        chckbtnVar = tk.BooleanVar(root)
-        chckbtnPassiveInterface = tk.Checkbutton(root, variable=chckbtnVar)
+        varPassiveInt = tk.BooleanVar(root)
+        chckbtnPassiveInterface = tk.Checkbutton(root, variable=varPassiveInt)
         if router.interfaces[int_name].ospf.passive_interface is True:
             chckbtnPassiveInterface.select()
-            chckbtnVar = True
+            varPassiveInt = True
         else:
             chckbtnPassiveInterface.deselect()
-            chckbtnVar = False
+            varPassiveInt = False
         chckbtnPassiveInterface.grid(column=1, row=2)
 
         lblPriority = tk.Label(root, text='Priority:')
@@ -91,7 +91,7 @@ class EditInterfaceOSPFGUI:
                 pass
 
         def get_passive_interface() -> bool:
-            return chckbtnVar
+            return varPassiveInt
 
         def get_priority() -> int:
             try:
@@ -151,8 +151,8 @@ class EditInterfaceOSPFGUI:
                 router.interfaces[int_name].ospf.timers.dead_timer = get_dead_timer()
                 router.interfaces[int_name].ospf.timers.retransmit_timer = get_retransmit_timer()
 
-            self.ospf_interfaces_details_gui.update_interface_details(iid, int_name, router.interfaces[int_name].ospf)
-            root.destroy()
+                ospf_interfaces_details_gui.update_interface_details(iid, int_name, router.interfaces[int_name].ospf)
+                root.destroy()
 
         btnFrame = tk.Frame(root, pady=10)
         btnApply = tk.Button(btnFrame, text='Apply', command=apply_changes, width=30)
