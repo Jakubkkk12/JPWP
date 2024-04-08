@@ -5,6 +5,8 @@ from PIL import Image, ImageTk
 import ssh_password_gui
 from gui_resources import config
 from login_gui import LoginGUI
+from python_guis.bgp_neighbors_gui import BGPNeighborsGUI
+from python_guis.bgp_redistribution_gui import BGPRedistributionGUI
 from python_guis.interfaces_details_gui import InterfacesDetails
 from python_guis.ospf_area_configuration_gui import OSPFAreaConfigurationGUI
 from python_guis.ospf_interface_details_gui import OSPFInterfaceDetailsGUI
@@ -484,9 +486,10 @@ class MainGUI:
                 try:
                     hostname = self.tree.item(item)['values'][1]
                     selected_router = self.devices.get(hostname)
-                    menu.post(event.x_root, event.y_root)
-                    menu.entryconfigure('Networks', command=lambda: RIPNetworksGUI(selected_router))
-                    menu.entryconfigure('Redistribution', command=lambda: RIPRedistributionGUI(selected_router))
+                    if selected_router.rip is not None:
+                        menu.post(event.x_root, event.y_root)
+                        menu.entryconfigure('Networks', command=lambda: RIPNetworksGUI(selected_router))
+                        menu.entryconfigure('Redistribution', command=lambda: RIPRedistributionGUI(selected_router))
                 except IndexError:
                     pass
 
@@ -497,9 +500,10 @@ class MainGUI:
 
         return None
 
-    def insert_rip_network(self, router: Router, network: Network):
-        print('tutaj')
-        # self.tree.item
+    # def insert_rip_network(self, router: Router, network: Network):
+    #     print('tutaj')
+    #     # self.tree.item
+    #     #
 
     def show_view_bgp(self) -> None:
         self.clear_tree()
@@ -546,9 +550,29 @@ class MainGUI:
                 self.tree.insert('', tk.END, iid=iid, values=values)
                 iid += 1
 
+        def show_menu_bgp(event):
+            item = self.tree.identify_row(event.y)
+            self.tree.selection_set(item)
+            if item:
+                try:
+                    hostname = self.tree.item(item)['values'][1]
+                    selected_router = self.devices.get(hostname)
+                    if selected_router.bgp is not None:
+                        menu.post(event.x_root, event.y_root)
+                        menu.entryconfigure('Neighbors', command=lambda: BGPNeighborsGUI(selected_router))
+                        menu.entryconfigure('Redistribution', command=lambda: BGPRedistributionGUI(selected_router))
+
+                except IndexError:
+                    pass
+
+        menu = tk.Menu(self.root, tearoff=False)
+        menu.add_command(label='Neighbors', command=BGPNeighborsGUI)
+        menu.add_command(label='Redistribution', command=BGPRedistributionGUI)
+        self.tree.bind('<Button-3>', show_menu_bgp)
+
         return None
 
-    # This function inserts data into treeview widget and binds <MB-3> according to 'ospf' view
+    # This function inserts ospf data into treeview widget and binds <MB-3> according to 'ospf' view
     def show_view_ospf(self) -> None:
         self.clear_tree()
 
@@ -568,7 +592,8 @@ class MainGUI:
 
             if len(router_areas) > 1:
                 for area in router_areas[1:]:
-                        values = ('', router.name, '', router.ospf.areas[area].id, list(router.ospf.areas[area].networks.keys()), '')
+                        values = ('', router.name, '', router.ospf.areas[area].id,
+                                  list(router.ospf.areas[area].networks.keys()), '')
                         self.tree.insert(iid, tk.END, values=values)
 
         self.tree.heading(treeColumns[0], text='No', anchor='w')
@@ -621,8 +646,6 @@ class MainGUI:
         menu.add_command(label='Interfaces', command=OSPFInterfaceDetailsGUI)
         menu.add_command(label='Area', command=OSPFAreaConfigurationGUI)
         self.tree.bind('<Button-3>', show_menu_ospf)
-
-        self.console_command('test')
 
         return None
 
