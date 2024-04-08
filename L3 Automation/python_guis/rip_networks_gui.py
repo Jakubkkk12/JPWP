@@ -1,10 +1,8 @@
 import tkinter as tk
 import tkinter.ttk
 from gui_resources import config
-from python_guis.ospf_network_add_gui import OSPFNetworkAddGUI
 from python_guis.rip_network_add_gui import RIPNetworkAddGUI
 from resources.devices.Router import Router
-from resources.routing_protocols.ospf.OSPFArea import OSPFArea
 from resources.routing_protocols.Network import Network
 
 
