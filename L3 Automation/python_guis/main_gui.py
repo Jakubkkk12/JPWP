@@ -581,20 +581,24 @@ class MainGUI:
 
         # Data insert
         for iid, (router_name, router) in enumerate(self.devices.items(), start=1):
-            router_areas = list(router.ospf.areas.keys())
-            ospf_area = router_areas[0]
+            if router.ospf is None:
+                values = (iid, router.name, 'OSPF DISABLED')
+                self.tree.insert('', tk.END, values=values, iid=iid)
+            if router.ospf is not None:
+                router_areas = list(router.ospf.areas.keys())
+                ospf_area = router_areas[0]
 
-            ospf_networks = list(router.ospf.areas[ospf_area].networks.keys())
-            ospf_redistributions = self.get_ospf_redistribution(router)
+                ospf_networks = list(router.ospf.areas[ospf_area].networks.keys())
+                ospf_redistributions = self.get_ospf_redistribution(router)
 
-            values = (iid, router.name, router.ospf.router_id, ospf_area, ospf_networks, ospf_redistributions)
-            self.tree.insert('', tk.END, values=values, iid=iid)
+                values = (iid, router.name, router.ospf.router_id, ospf_area, ospf_networks, ospf_redistributions)
+                self.tree.insert('', tk.END, values=values, iid=iid)
 
-            if len(router_areas) > 1:
-                for area in router_areas[1:]:
-                        values = ('', router.name, '', router.ospf.areas[area].id,
-                                  list(router.ospf.areas[area].networks.keys()), '')
-                        self.tree.insert(iid, tk.END, values=values)
+                if len(router_areas) > 1:
+                    for area in router_areas[1:]:
+                            values = ('', router.name, '', router.ospf.areas[area].id,
+                                      list(router.ospf.areas[area].networks.keys()), '')
+                            self.tree.insert(iid, tk.END, values=values)
 
         self.tree.heading(treeColumns[0], text='No', anchor='w')
         self.tree.column(treeColumns[0], minwidth=30, width=30, stretch=False)
@@ -622,13 +626,14 @@ class MainGUI:
                 try:
                     hostname = self.tree.item(item)['values'][1]
                     selected_router = self.devices.get(hostname)
-                    area = self.tree.item(item)['values'][3]
-                    selected_area = selected_router.ospf.areas.get(str(area))
+                    if selected_router.ospf is not None:
+                        area = self.tree.item(item)['values'][3]
+                        selected_area = selected_router.ospf.areas.get(str(area))
 
-                    menu.post(event.x_root, event.y_root)
-                    menu.entryconfigure('Interfaces', command=lambda: show_interfaces_details(selected_router))
-                    menu.entryconfigure('Area', command=lambda: run_ospf_area_configuration_gui(selected_router,
-                                                                                                selected_area))
+                        menu.post(event.x_root, event.y_root)
+                        menu.entryconfigure('Interfaces', command=lambda: show_interfaces_details(selected_router))
+                        menu.entryconfigure('Area', command=lambda: run_ospf_area_configuration_gui(selected_router,
+                                                                                                    selected_area))
                 except IndexError:
                     pass
 
