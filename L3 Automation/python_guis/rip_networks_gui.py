@@ -51,11 +51,13 @@ class RIPNetworksGUI:
         self.tree.column(treeColumns[2], width=30)
 
         i = 1
-        for k, network in router.rip.networks.items():
-            values = (i, network.network, network.mask)
-            self.tree.insert('', tk.END, iid=i-1, values=values)
-            i += 1
-
+        try:
+            for k, network in router.rip.networks.items():
+                values = (i, network.network, network.mask)
+                self.tree.insert('', tk.END, iid=i-1, values=values)
+                i += 1
+        except AttributeError:
+            pass
         treeFrame.grid(column=0, row=3, columnspan=2, sticky='NEWS')
 
         def add_network(router, self):
@@ -63,7 +65,11 @@ class RIPNetworksGUI:
 
         def remove_network() -> None:
             item = self.tree.selection()
+            ip = self.tree.item(item)['values'][1]
+
+            del router.rip.networks[ip]
             self.tree.delete(item)
+
             # Update No
             children = self.tree.get_children()
             for i, child in enumerate(children, start=1):

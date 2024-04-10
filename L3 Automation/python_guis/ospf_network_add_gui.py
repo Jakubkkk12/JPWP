@@ -7,6 +7,7 @@ from resources.routing_protocols.Network import Network
 from resources.routing_protocols.ospf.OSPFArea import OSPFArea
 import ipaddress
 
+
 class OSPFNetworkAddGUI:
     def __init__(self, router: Router, ospf_area: OSPFArea, ospf_config_gui):
         self.hostname = router.name
@@ -16,7 +17,8 @@ class OSPFNetworkAddGUI:
         root = tk.Toplevel()
         # ######## WINDOW PARAMETERS ######## #
         # title
-        root.title(config.APPNAME + ' ' + config.VERSION + ' ' + self.hostname + ' Area ' + ospf_area + ' Add Network')
+        root.title(config.APPNAME + ' ' + config.VERSION + ' ' + self.hostname + ' Area ' + ospf_area.id +
+                   ' Add Network')
 
         # window icon, using conversion to iso, cause tkinter doesn't accept jpg
         icon = tk.PhotoImage(file=config.WINDOW_ICON_PATH)
@@ -109,6 +111,7 @@ class OSPFNetworkAddGUI:
                 network = Network(network=network,
                                   mask=mask,
                                   wildcard=wildcard)
+                router.ospf.areas[self.area.id].networks[network.network] = network
 
                 self.ospf_config_gui.insert_network(network)
                 clean_entries()

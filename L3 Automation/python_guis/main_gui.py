@@ -267,8 +267,8 @@ class MainGUI:
                                                                           is_redistribute_ospf=False,
                                                                           is_redistribute_connected=True,
                                                                           ),
-                                            networks={'10.1.0.0': Network(network='10.1.0.0', mask=None),
-                                                      '192.168.3.0': Network(network='192.168.3.0', mask=None)}
+                                            networks={'10.1.0.0': Network(network='10.1.0.0', mask=24),
+                                                      '192.168.3.0': Network(network='192.168.3.0', mask=24)}
                                             ),
                          bgp=BGPInformation(autonomous_system=666,
                                             router_id='1.1.1.1',
@@ -532,11 +532,6 @@ class MainGUI:
 
         return None
 
-    # def insert_rip_network(self, router: Router, network: Network):
-    #     print('tutaj')
-    #     # self.tree.item
-    #     #
-
     def show_view_bgp(self) -> None:
         self.clear_tree()
 
@@ -652,7 +647,6 @@ class MainGUI:
                         menu.entryconfigure('Interfaces', command=lambda: show_interfaces_details(selected_router))
                         menu.entryconfigure('Area', command=lambda: run_ospf_area_configuration_gui(selected_router,
                                                                                                     selected_area))
-                        menu.entryconfigure('Networks', command=lambda: show_networks(selected_router, area))
                         menu.entryconfigure('Redistribution', command=lambda: show_redistribution(selected_router))
                 except IndexError:
                     pass
@@ -680,7 +674,6 @@ class MainGUI:
         menu = tk.Menu(self.root, tearoff=False)
         menu.add_command(label='Interfaces', command=OSPFInterfaceDetailsGUI)
         menu.add_command(label='Area', command=OSPFAreaConfigurationGUI)
-        menu.add_command(label='Networks', command=OSPFNetworksGUI)
         menu.add_command(label='Redistribution', command=OSPFRedistributionGUI)
         self.tree.bind('<Button-3>', show_menu_ospf)
 

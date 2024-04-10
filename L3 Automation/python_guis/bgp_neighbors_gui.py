@@ -87,11 +87,14 @@ class BGPNeighborsGUI:
 
         def add_neighbor(router, self):
             BGPNeighborAddGUI(router, self)
-            pass
 
         def remove_neighbor() -> None:
             item = self.tree.selection()
+            ip = self.tree.item(item)['values'][1]
+
+            del router.bgp.neighbors[ip]
             self.tree.delete(item)
+
             # Update No
             children = self.tree.get_children()
             for i, child in enumerate(children, start=1):

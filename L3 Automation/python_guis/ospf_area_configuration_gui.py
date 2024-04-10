@@ -97,7 +97,13 @@ class OSPFAreaConfigurationGUI:
 
         def remove_network() -> None:
             item = self.tree.selection()
+            ip = self.tree.item(item)['values'][1]
+            mask = str(self.tree.item(item)['values'][2])
+            network = ip + '/' + mask
+
+            del router.ospf.areas[area.id].networks[network]
             self.tree.delete(item)
+
             # Update No
             children = self.tree.get_children()
             for i, child in enumerate(children, start=1):
@@ -121,5 +127,3 @@ class OSPFAreaConfigurationGUI:
         values = (no, network.network, network.mask, network.wildcard)
         # Update tree
         self.tree.insert('', tk.END, values=values)
-        # Update main_gui
-        self.main_gui.update_ospf_networks(self.area, network)
