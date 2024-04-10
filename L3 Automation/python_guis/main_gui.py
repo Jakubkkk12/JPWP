@@ -12,6 +12,7 @@ from python_guis.ospf_area_configuration_gui import OSPFAreaConfigurationGUI
 from python_guis.ospf_interface_details_gui import OSPFInterfaceDetailsGUI
 from python_guis.ospf_networks_gui import OSPFNetworksGUI
 from python_guis.ospf_redistribution_gui import OSPFRedistributionGUI
+from python_guis.rip_edit_gui import RIPEditGUI
 from python_guis.rip_network_add_gui import RIPNetworkAddGUI
 from python_guis.rip_networks_gui import RIPNetworksGUI
 from python_guis.rip_redistribution_gui import RIPRedistributionGUI
@@ -516,12 +517,14 @@ class MainGUI:
                     selected_router = self.devices.get(hostname)
                     if selected_router.rip is not None:
                         menu.post(event.x_root, event.y_root)
+                        menu.entryconfigure('Edit', command=lambda: RIPEditGUI(selected_router, self))
                         menu.entryconfigure('Networks', command=lambda: RIPNetworksGUI(selected_router))
                         menu.entryconfigure('Redistribution', command=lambda: RIPRedistributionGUI(selected_router))
                 except IndexError:
                     pass
 
         menu = tk.Menu(self.root, tearoff=False)
+        menu.add_command(label='Edit', command=RIPEditGUI)
         menu.add_command(label='Networks', command=RIPNetworkAddGUI)
         menu.add_command(label='Redistribution', command=RIPRedistributionGUI)
         self.tree.bind('<Button-3>', show_menu_rip)
@@ -691,6 +694,14 @@ class MainGUI:
     def console_command(self, text: str) -> None:
         self.consoleBox.insert(tk.END, text)
         return None
+
+    def update_rip_tree(self, rip: RIPInformation):
+        item = self.tree.selection()
+        self.tree.item(item, values=(self.tree.item(item)['values'][0], self.tree.item(item)['values'][1],
+                                     rip.auto_summary, rip.default_information_originate,
+                                     rip.default_metric_of_redistributed_routes, rip.distance,
+                                     rip.maximum_paths, rip.version))
+        pass
 
 
 if __name__ == "__main__":
