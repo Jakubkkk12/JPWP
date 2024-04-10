@@ -1,18 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 
-from gui_resources import config
+from python_guis.gui_resources import config
 from resources.devices.Router import Router
-from resources.interfaces.InterfaceOSPFInformation import InterfaceOSPFInformation
-from resources.interfaces.InterfaceStatistics import InterfaceStatistics, ErrorsStatistics, InformationStatistics
-from resources.interfaces.RouterInterface import RouterInterface
-from resources.routing_protocols.Network import Network
-from resources.routing_protocols.Redistribution import Redistribution
-from resources.routing_protocols.StaticRoute import StaticRoute
-from resources.routing_protocols.ospf.OSPFArea import OSPFArea
-from resources.routing_protocols.ospf.OSPFInformation import OSPFInformation
-from resources.routing_protocols.ospf.OSPFTimers import OSPFTimers
-from resources.ssh.SSHInformation import SSHInformation
 
 
 class InterfaceStatisticsGUI:

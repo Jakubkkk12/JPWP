@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
-from gui_resources import config
+from python_guis.gui_resources import config
 from resources.devices.Router import Router
 
 

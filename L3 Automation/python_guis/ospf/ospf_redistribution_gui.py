@@ -2,11 +2,11 @@ import tkinter as tk
 from tkinter import messagebox
 
 from resources.devices.Router import Router
-from gui_resources import config
+from python_guis.gui_resources import config
 from resources.routing_protocols.Redistribution import Redistribution
 
 
-class RIPRedistributionGUI:
+class OSPFRedistributionGUI:
     def __init__(self, router: Router):
         self.selected_router = router
         self.hostname = router.name
@@ -14,7 +14,7 @@ class RIPRedistributionGUI:
         root = tk.Toplevel()
         # ######## WINDOW PARAMETERS ######## #
         # title
-        root.title(config.APPNAME + ' ' + config.VERSION + ' ' + self.hostname + ' Redistribution RIP')
+        root.title(config.APPNAME + ' ' + config.VERSION + ' ' + self.hostname + ' Redistribution OSPF')
 
         # window icon, using conversion to iso, cause tkinter doesn't accept jpg
         icon = tk.PhotoImage(file=config.WINDOW_ICON_PATH)
@@ -44,10 +44,10 @@ class RIPRedistributionGUI:
         chckbtnConnected = tk.Checkbutton(root, variable=varConnected)
         chckbtnConnected.grid(column=1, row=1)
 
-        lblOSPF = tk.Label(root, text='OSPF')
-        lblOSPF.grid(column=0, row=2)
-        varOSPF = tk.BooleanVar(root)
-        chckbtnOSPF = tk.Checkbutton(root, variable=varOSPF)
+        lblRIP = tk.Label(root, text='RIP')
+        lblRIP.grid(column=0, row=2)
+        varRIP = tk.BooleanVar(root)
+        chckbtnOSPF = tk.Checkbutton(root, variable=varRIP)
         chckbtnOSPF.grid(column=1, row=2)
 
         lblBGP = tk.Label(root, text='BGP')
@@ -56,16 +56,16 @@ class RIPRedistributionGUI:
         chckbtnBGP = tk.Checkbutton(root, variable=varBGP)
         chckbtnBGP.grid(column=1, row=3)
 
-        if router.rip.redistribution.is_redistribute_static:
+        if router.ospf.redistribution.is_redistribute_static:
             chckbtnStatic.select()
             varStatic.set(True)
-        if router.rip.redistribution.is_redistribute_connected:
+        if router.ospf.redistribution.is_redistribute_connected:
             chckbtnConnected.select()
             varConnected.set(True)
-        if router.rip.redistribution.is_redistribute_ospf:
+        if router.ospf.redistribution.is_redistribute_ospf:
             chckbtnOSPF.select()
-            varOSPF.set(True)
-        if router.rip.redistribution.is_redistribute_bgp:
+            varRIP.set(True)
+        if router.ospf.redistribution.is_redistribute_bgp:
             chckbtnBGP.select()
             varBGP.set(True)
 
@@ -73,13 +73,13 @@ class RIPRedistributionGUI:
 
             static = varStatic.get()
             connected = varConnected.get()
-            ospf = varOSPF.get()
+            rip = varRIP.get()
             bgp = varBGP.get()
             redistribution = Redistribution(is_redistribute_static=static,
                                             is_redistribute_connected=connected,
-                                            is_redistribute_ospf=ospf,
+                                            is_redistribute_rip=rip,
                                             is_redistribute_bgp=bgp)
-            router.rip.redistribution = redistribution
+            router.ospf.redistribution = redistribution
             messagebox.showinfo('Success', 'Changes Applied', parent=root)
 
             root.destroy()

@@ -1,10 +1,10 @@
 import tkinter as tk
 import tkinter.ttk
 from tkinter import ttk
-from gui_resources import config
-from python_guis.edit_interface_all_gui import EditInterfaceGUI
-from python_guis.interface_errors_gui import InterfaceErrorsGUI
-from python_guis.interface_statistics_gui import InterfaceStatisticsGUI
+from python_guis.gui_resources import config
+from python_guis.interface.interface_edit_all_gui import EditInterfaceGUI
+from python_guis.interface.interface_errors_gui import InterfaceErrorsGUI
+from python_guis.interface.interface_statistics_gui import InterfaceStatisticsGUI
 from resources.devices.Router import Router
 
 

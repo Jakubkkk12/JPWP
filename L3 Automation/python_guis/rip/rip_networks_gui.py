@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.ttk
-from gui_resources import config
-from python_guis.rip_network_add_gui import RIPNetworkAddGUI
+from python_guis.gui_resources import config
+from python_guis.rip.rip_network_add_gui import RIPNetworkAddGUI
 from resources.devices.Router import Router
 from resources.routing_protocols.Network import Network
 

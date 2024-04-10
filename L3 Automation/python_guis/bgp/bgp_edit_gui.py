@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import messagebox
 
 from resources.devices.Router import Router
-from gui_resources import config
+from python_guis.gui_resources import config
 from resources.routing_protocols.bgp.BGPInformation import BGPInformation
 from resources.routing_protocols.bgp.BGPTimers import BGPTimers
 from resources.routing_protocols.rip.RIPInformation import RIPInformation

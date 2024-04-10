@@ -1,8 +1,8 @@
 
 import tkinter as tk
 import tkinter.ttk
-from gui_resources import config
-from python_guis.bgp_neighbor_add_gui import BGPNeighborAddGUI
+from python_guis.gui_resources import config
+from python_guis.bgp.bgp_neighbor_add_gui import BGPNeighborAddGUI
 from resources.routing_protocols.bgp.BGPNeighbor import BGPNeighbor
 from resources.devices.Router import Router
 

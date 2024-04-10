@@ -5,19 +5,19 @@ from PIL import Image, ImageTk
 import ssh_password_gui
 from gui_resources import config
 from login_gui import LoginGUI
-from python_guis.bgp_edit_gui import BGPEditGUI
-from python_guis.bgp_neighbors_gui import BGPNeighborsGUI
-from python_guis.bgp_redistribution_gui import BGPRedistributionGUI
-from python_guis.interfaces_details_gui import InterfacesDetails
-from python_guis.ospf_area_configuration_gui import OSPFAreaConfigurationGUI
-from python_guis.ospf_interface_details_gui import OSPFInterfaceDetailsGUI
-from python_guis.ospf_networks_gui import OSPFNetworksGUI
-from python_guis.ospf_redistribution_gui import OSPFRedistributionGUI
-from python_guis.rip_edit_gui import RIPEditGUI
-from python_guis.rip_network_add_gui import RIPNetworkAddGUI
-from python_guis.rip_networks_gui import RIPNetworksGUI
-from python_guis.rip_redistribution_gui import RIPRedistributionGUI
-from python_guis.static_routes_gui import StaticRoutesGUI
+from python_guis.bgp.bgp_edit_gui import BGPEditGUI
+from python_guis.bgp.bgp_neighbors_gui import BGPNeighborsGUI
+from python_guis.bgp.bgp_redistribution_gui import BGPRedistributionGUI
+from python_guis.interface.interfaces_details_gui import InterfacesDetails
+from python_guis.ospf.ospf_area_configuration_gui import OSPFAreaConfigurationGUI
+from python_guis.ospf.ospf_interface_details_gui import OSPFInterfaceDetailsGUI
+from python_guis.ospf.ospf_networks_gui import OSPFNetworksGUI
+from python_guis.ospf.ospf_redistribution_gui import OSPFRedistributionGUI
+from python_guis.rip.rip_edit_gui import RIPEditGUI
+from python_guis.rip.rip_network_add_gui import RIPNetworkAddGUI
+from python_guis.rip.rip_networks_gui import RIPNetworksGUI
+from python_guis.rip.rip_redistribution_gui import RIPRedistributionGUI
+from python_guis.static.static_routes_gui import StaticRoutesGUI
 
 from resources.devices.Router import Router
 from resources.interfaces.InterfaceOSPFInformation import InterfaceOSPFInformation

@@ -1,8 +1,8 @@
 import tkinter as tk
 import tkinter.ttk
 from tkinter import ttk
-from gui_resources import config
-from python_guis.edit_interface_ospf_gui import EditInterfaceOSPFGUI
+from python_guis.gui_resources import config
+from python_guis.interface.interface_edit_ospf_gui import EditInterfaceOSPFGUI
 from resources.devices.Router import Router
 
 

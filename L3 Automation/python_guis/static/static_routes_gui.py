@@ -1,7 +1,7 @@
 import tkinter as tk
 import tkinter.ttk
 from gui_resources import config
-from python_guis.static_route_add_gui import StaticRouteAddGUI
+from python_guis.static.static_route_add_gui import StaticRouteAddGUI
 from resources.devices.Router import Router
 
 

@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import messagebox
 
 from resources.devices.Router import Router
-from gui_resources import config
+from python_guis.gui_resources import config
 from resources.routing_protocols.Redistribution import Redistribution
 
 
