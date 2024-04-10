@@ -5,6 +5,7 @@ from PIL import Image, ImageTk
 import ssh_password_gui
 from gui_resources import config
 from login_gui import LoginGUI
+from python_guis.bgp_edit_gui import BGPEditGUI
 from python_guis.bgp_neighbors_gui import BGPNeighborsGUI
 from python_guis.bgp_redistribution_gui import BGPRedistributionGUI
 from python_guis.interfaces_details_gui import InterfacesDetails
@@ -586,6 +587,7 @@ class MainGUI:
                     selected_router = self.devices.get(hostname)
                     if selected_router.bgp is not None:
                         menu.post(event.x_root, event.y_root)
+                        menu.entryconfigure('Edit', command=lambda: BGPEditGUI(selected_router, self))
                         menu.entryconfigure('Neighbors', command=lambda: BGPNeighborsGUI(selected_router))
                         menu.entryconfigure('Redistribution', command=lambda: BGPRedistributionGUI(selected_router))
 
@@ -593,6 +595,7 @@ class MainGUI:
                     pass
 
         menu = tk.Menu(self.root, tearoff=False)
+        menu.add_command(label='Edit', command=BGPEditGUI)
         menu.add_command(label='Neighbors', command=BGPNeighborsGUI)
         menu.add_command(label='Redistribution', command=BGPRedistributionGUI)
         self.tree.bind('<Button-3>', show_menu_bgp)
@@ -695,13 +698,20 @@ class MainGUI:
         self.consoleBox.insert(tk.END, text)
         return None
 
-    def update_rip_tree(self, rip: RIPInformation):
+    def update_rip_tree(self, rip: RIPInformation) -> None:
         item = self.tree.selection()
         self.tree.item(item, values=(self.tree.item(item)['values'][0], self.tree.item(item)['values'][1],
                                      rip.auto_summary, rip.default_information_originate,
                                      rip.default_metric_of_redistributed_routes, rip.distance,
                                      rip.maximum_paths, rip.version))
-        pass
+        return None
+
+    def update_bgp_tree(self, bgp: BGPInformation) -> None:
+        item = self.tree.selection()
+        self.tree.item(item, values=(self.tree.item(item)['values'][0], self.tree.item(item)['values'][1],
+                                     bgp.autonomous_system, bgp.router_id, bgp.default_information_originate,
+                                     bgp.default_metric_of_redistributed_routes, bgp.timers.keep_alive,
+                                     bgp.timers.hold_time))
 
 
 if __name__ == "__main__":
