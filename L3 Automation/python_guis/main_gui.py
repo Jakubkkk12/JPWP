@@ -10,6 +10,8 @@ from python_guis.bgp_redistribution_gui import BGPRedistributionGUI
 from python_guis.interfaces_details_gui import InterfacesDetails
 from python_guis.ospf_area_configuration_gui import OSPFAreaConfigurationGUI
 from python_guis.ospf_interface_details_gui import OSPFInterfaceDetailsGUI
+from python_guis.ospf_networks_gui import OSPFNetworksGUI
+from python_guis.ospf_redistribution_gui import OSPFRedistributionGUI
 from python_guis.rip_network_add_gui import RIPNetworkAddGUI
 from python_guis.rip_networks_gui import RIPNetworksGUI
 from python_guis.rip_redistribution_gui import RIPRedistributionGUI
@@ -225,10 +227,21 @@ class MainGUI:
                                                                            network='10.0.0.0',
                                                                            mask=None,
                                                                            wildcard='0.0.255.255'
-                                                                           )
+                                                                       )
                                                                    }
                                                                    ),
                                                      '10': OSPFArea(id='10',
+                                                                    is_authentication_message_digest=True,
+                                                                    type='NSSA',
+                                                                    networks={
+                                                                        '25.0.0.0/16': Network(
+                                                                            network='25.0.0.0',
+                                                                            mask=None,
+                                                                            wildcard='0.0.255.255'
+                                                                        )
+                                                                    }
+                                                                    ),
+                                                     '20': OSPFArea(id='20',
                                                                     is_authentication_message_digest=True,
                                                                     type='NSSA',
                                                                     networks={
@@ -374,7 +387,7 @@ class MainGUI:
     def show_view_all(self) -> None:
         self.clear_tree()
 
-        treeColumns = ('No', 'Hostname', 'Type', 'SSH Address')
+        treeColumns = ('No', 'Hostname', 'Type', 'SSH Address', 'RIP', 'OSPF', 'BGP')
         self.tree.configure(columns=treeColumns)
 
         iid = 0
@@ -382,7 +395,17 @@ class MainGUI:
             ssh_ips = list(router.ssh_information.ip_addresses.values())
             string_ips = ', '.join(ssh_ips)
 
-            values = (i, router.name, router.type, string_ips)
+            rip = ''
+            if router.rip is not None:
+                rip = 'Enabled'
+            ospf = ''
+            if router.ospf is not None:
+                ospf = 'Enabled'
+            bgp = ''
+            if router.bgp is not None:
+                bgp = 'Enabled'
+
+            values = (i, router.name, router.type, string_ips, rip, ospf, bgp)
             self.tree.insert('', tk.END, values=values, iid=iid)
 
             iid += 1
@@ -400,6 +423,15 @@ class MainGUI:
 
         self.tree.heading(treeColumns[3], text='SSH Addresses', anchor='w')
         self.tree.column(treeColumns[3], minwidth=90, stretch=True)
+
+        self.tree.heading(treeColumns[4], text='RIP', anchor='w')
+        self.tree.column(treeColumns[4], minwidth=50, width=50, stretch=True)
+
+        self.tree.heading(treeColumns[5], text='OSPF', anchor='w')
+        self.tree.column(treeColumns[5], minwidth=50, width=50, stretch=True)
+
+        self.tree.heading(treeColumns[6], text='BGP', anchor='w')
+        self.tree.column(treeColumns[6], minwidth=50, width=50, stretch=True)
 
         # This function defines pop-up menu for 'all' view
         def show_menu_all(event):
@@ -467,12 +499,8 @@ class MainGUI:
         # Data insert
         iid = 0
         for i, (router_name, router) in enumerate(self.devices.items(), start=1):
-            if router.rip is None:
-                values = (iid+1, router.name, 'RIP DISABLED')
-                self.tree.insert('', tk.END, iid=iid, values=values)
-                iid += 1
             if router.rip is not None:
-                values = (iid+1, router.name, router.rip.auto_summary, router.rip.default_information_originate,
+                values = (iid + 1, router.name, router.rip.auto_summary, router.rip.default_information_originate,
                           router.rip.default_metric_of_redistributed_routes, router.rip.distance,
                           router.rip.maximum_paths, router.rip.version)
                 self.tree.insert('', tk.END, iid=iid, values=values)
@@ -539,10 +567,6 @@ class MainGUI:
         # Data insert
         iid = 0
         for i, (router_name, router) in enumerate(self.devices.items(), start=1):
-            if router.bgp is None:
-                values = (iid + 1, router.name, 'BGP DISABLED')
-                self.tree.insert('', tk.END, iid=iid, values=values)
-                iid += 1
             if router.bgp is not None:
                 values = (iid + 1, router.name, router.bgp.autonomous_system, router.bgp.router_id,
                           router.bgp.default_information_originate, router.bgp.default_metric_of_redistributed_routes,
@@ -576,29 +600,23 @@ class MainGUI:
     def show_view_ospf(self) -> None:
         self.clear_tree()
 
-        treeColumns = ('No', 'Hostname', 'Router ID', 'Areas', 'Networks', 'Redistribution')
+        treeColumns = ('No', 'Hostname', 'Router ID', 'Areas')
         self.tree.configure(columns=treeColumns)
 
         # Data insert
         for iid, (router_name, router) in enumerate(self.devices.items(), start=1):
-            if router.ospf is None:
-                values = (iid, router.name, 'OSPF DISABLED')
-                self.tree.insert('', tk.END, values=values, iid=iid)
             if router.ospf is not None:
                 router_areas = list(router.ospf.areas.keys())
                 ospf_area = router_areas[0]
 
-                ospf_networks = list(router.ospf.areas[ospf_area].networks.keys())
-                ospf_redistributions = self.get_ospf_redistribution(router)
-
-                values = (iid, router.name, router.ospf.router_id, ospf_area, ospf_networks, ospf_redistributions)
+                values = (iid, router.name, router.ospf.router_id, ospf_area)
                 self.tree.insert('', tk.END, values=values, iid=iid)
 
                 if len(router_areas) > 1:
                     for area in router_areas[1:]:
-                            values = ('', router.name, '', router.ospf.areas[area].id,
-                                      list(router.ospf.areas[area].networks.keys()), '')
-                            self.tree.insert(iid, tk.END, values=values)
+                        values = ('', router.name, '', router.ospf.areas[area].id,
+                                  list(router.ospf.areas[area].networks.keys()), '')
+                        self.tree.insert(iid, tk.END, values=values)
 
         self.tree.heading(treeColumns[0], text='No', anchor='w')
         self.tree.column(treeColumns[0], minwidth=30, width=30, stretch=False)
@@ -611,12 +629,6 @@ class MainGUI:
 
         self.tree.heading(treeColumns[3], text='Areas', anchor='w')
         self.tree.column(treeColumns[3], minwidth=50, width=50, stretch=False)
-
-        self.tree.heading(treeColumns[4], text='Networks', anchor='w')
-        self.tree.column(treeColumns[4], minwidth=50, stretch=False)
-
-        self.tree.heading(treeColumns[5], text='Redistribution', anchor='w')
-        self.tree.column(treeColumns[5], minwidth=70, stretch=False)
 
         # This function shows menu when <MB-3> is clicked with treeview item selected
         def show_menu_ospf(event):
@@ -634,6 +646,8 @@ class MainGUI:
                         menu.entryconfigure('Interfaces', command=lambda: show_interfaces_details(selected_router))
                         menu.entryconfigure('Area', command=lambda: run_ospf_area_configuration_gui(selected_router,
                                                                                                     selected_area))
+                        menu.entryconfigure('Networks', command=lambda: show_networks(selected_router, area))
+                        menu.entryconfigure('Redistribution', command=lambda: show_redistribution(selected_router))
                 except IndexError:
                     pass
 
@@ -642,30 +656,29 @@ class MainGUI:
                 OSPFInterfaceDetailsGUI(selected_router)
             return None
 
-        def run_ospf_area_configuration_gui(selected_router:Router, selected_area: OSPFArea) -> None:
+        def run_ospf_area_configuration_gui(selected_router: Router, selected_area: OSPFArea) -> None:
             if selected_area:
                 OSPFAreaConfigurationGUI(selected_router, selected_area, self)
+            return None
+
+        def show_networks(selected_router: Router, area: OSPFArea) -> None:
+            if selected_router:
+                OSPFNetworksGUI(selected_router, area)
+            return None
+
+        def show_redistribution(selected_router: Router) -> None:
+            if selected_router:
+                OSPFRedistributionGUI(selected_router)
             return None
 
         menu = tk.Menu(self.root, tearoff=False)
         menu.add_command(label='Interfaces', command=OSPFInterfaceDetailsGUI)
         menu.add_command(label='Area', command=OSPFAreaConfigurationGUI)
+        menu.add_command(label='Networks', command=OSPFNetworksGUI)
+        menu.add_command(label='Redistribution', command=OSPFRedistributionGUI)
         self.tree.bind('<Button-3>', show_menu_ospf)
 
         return None
-
-    def get_ospf_redistribution(self, router) -> str:
-        ospf_redistribution = ''
-        if router.ospf.redistribution.is_redistribute_static is True:
-            ospf_redistribution += 'Static, '
-        if router.ospf.redistribution.is_redistribute_connected is True:
-            ospf_redistribution += 'Connected, '
-        if router.ospf.redistribution.is_redistribute_rip is True:
-            ospf_redistribution += 'RIP, '
-        if router.ospf.redistribution.is_redistribute_bgp is True:
-            ospf_redistribution += 'BGP, '
-        ospf_redistribution = ospf_redistribution.rstrip(', ')
-        return ospf_redistribution
 
     # This function clears contents of treeview
     def clear_tree(self) -> None:
@@ -678,10 +691,6 @@ class MainGUI:
     def console_command(self, text: str) -> None:
         self.consoleBox.insert(tk.END, text)
         return None
-
-    def update_ospf_networks(self, area: OSPFArea.id, network: Network):
-        # todo
-        pass
 
 
 if __name__ == "__main__":
