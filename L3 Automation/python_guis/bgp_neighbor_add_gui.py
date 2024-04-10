@@ -1,9 +1,9 @@
+import ipaddress
 import tkinter as tk
 from tkinter import messagebox
 
 from resources.devices.Router import Router
 from gui_resources import config
-from resources.routing_protocols.Network import Network
 from resources.routing_protocols.bgp.BGPNeighbor import BGPNeighbor
 from resources.routing_protocols.bgp.BGPTimers import BGPTimers
 
@@ -108,13 +108,19 @@ class BGPNeighborAddGUI:
 
         def validate_neighbor() -> bool:
             ip_entries = [entryIPNetworkFirst, entryIPNetworkSecond, entryIPNetworkThird, entryIPNetworkFourth]
+            neighbor_id = ''
             for entry in ip_entries:
                 value = entry.get()
-                if not value.isdigit() or not (0 <= int(value) <= 255):
-                    messagebox.showerror('Error', 'Incorrect IP Format', parent=root)
-                    for entry in ip_entries:
-                        entry.delete(0, 'end')
-                    return False
+                neighbor_id += value + '.'
+            neighbor_id = neighbor_id.rstrip('.')
+            try:
+                ipaddress.ip_address(neighbor_id)
+            except ValueError:
+                messagebox.showerror('Error', 'Incorrect IP Format', parent=root)
+                for entry in ip_entries:
+                    entry.delete(0, 'end')
+                return False
+
             value = entryRemoteAS.get()
             if not value.isdigit() or not (0 <= int(value) <= 4294967295):
                 messagebox.showerror('Error', 'Incorrect remote AS value.', parent=root)
@@ -122,17 +128,20 @@ class BGPNeighborAddGUI:
                 return False
             value = entryEBGPMultihop.get()
             if not value.isdigit() or not (0 <= int(value) <= 255):
-                messagebox.showerror('Error', 'Incorrect EBGP Multihop value.', parent=root)
+                messagebox.showerror('Error', 'Incorrect EBGP Multihop value.'
+                                              'It must be between 0 and 255.', parent=root)
                 entryEBGPMultihop.delete(0, 'end')
                 return False
             value = entryKeepAliveTimer.get()
             if not value.isdigit() or not (0 <= int(value) <= 65535):
-                messagebox.showerror('Error', 'Incorrect Keep Alive Timer.')
+                messagebox.showerror('Error', 'Incorrect Keep Alive Timer.'
+                                              ' It must be between 0 and 65535 seconds.', parent=root)
                 entryKeepAliveTimer.delete(0, 'end')
                 return False
             value = entryHoldTimeTimer.get()
             if not value.isdigit() or not (3 <= int(value) <= 65535):
-                messagebox.showerror('Error', 'Incorrect Hold Time Timer.')
+                messagebox.showerror('Error', 'Incorrect Hold Time Timer.'
+                                              ' It must be between 3 and 65535 seconds.', parent=root)
                 entryHoldTimeTimer.delete(0, 'end')
                 return False
             return True

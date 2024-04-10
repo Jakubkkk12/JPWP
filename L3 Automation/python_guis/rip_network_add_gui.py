@@ -1,3 +1,4 @@
+import ipaddress
 import tkinter as tk
 from tkinter import messagebox
 
@@ -76,18 +77,19 @@ class RIPNetworkAddGUI:
 
         def validate_network() -> bool:
             ip_entries = [entryIPNetworkFirst, entryIPNetworkSecond, entryIPNetworkThird, entryIPNetworkFourth]
+            network = ''
             for entry in ip_entries:
                 value = entry.get()
-                if not value.isdigit() or not (0 <= int(value) <= 255):
-                    messagebox.showerror('Error', 'Incorrect IP Format', parent=root)
-                    clean_entries()
-                    return False
-            value = entryMask.get()
-            if not value.isdigit() or not (0 <= int(value) <= 32):
-                messagebox.showerror('Error', 'Incorrect mask value', parent=root)
-                entryMask.delete(0, 'end')
+                network += value + '.'
+            network = network.rstrip('.')
+            mask = entryMask.get()
+            try:
+                ipaddress.ip_network(network + '/' + mask)
+                return True
+            except ValueError:
+                messagebox.showerror('Error', 'Incorrect Network', parent=root)
+                clean_entries()
                 return False
-            return True
 
         def apply_network():
             if validate_network():

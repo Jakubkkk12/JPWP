@@ -1,3 +1,4 @@
+import ipaddress
 import tkinter as tk
 from tkinter import messagebox
 
@@ -124,43 +125,53 @@ class StaticRouteAddGUI:
         def validate_route() -> bool:
             if interfaceVariable.get() == '-':
                 ip_entries = [entryIPDestinationFirst, entryIPDestinationSecond, entryIPDestinationThird,
-                              entryIPDestinationFourth,
-                              entryIPNextHopFirst, entryIPNextHopSecond, entryIPNextHopThird, entryIPNextHopFourth]
+                              entryIPDestinationFourth]
+                network = ''
                 for entry in ip_entries:
                     value = entry.get()
-                    if not value.isdigit() or not (0 <= int(value) <= 255):
-                        messagebox.showerror('Error', 'Incorrect IP Format', parent=root)
-                        for entry in ip_entries:
-                            entry.delete(0, 'end')
-                        return False
+                    network += value + '.'
+                network = network.rstrip('.')
+                mask = entryMask.get()
                 try:
-                    if int(entryIPDestinationFirst.get()) == 0 or int(entryIPNextHopFirst.get()) == 0:
-                        messagebox.showerror('Error', 'Incorrect IP Format', parent=root)
-                        for entry in ip_entries:
-                            entry.delete(0, 'end')
-                        return False
+                    ipaddress.ip_network(network + '/' + mask)
                 except ValueError:
-                    return False
-
-                mask_value = entryMask.get()
-                if not mask_value.isdigit() or not (0 <= int(mask_value) <= 32):
-                    messagebox.showerror('Error', 'Incorrect Mask Value', parent=root)
+                    messagebox.showerror('Error', 'Incorrect IP Format', parent=root)
+                    for entry in ip_entries:
+                        entry.delete(0, 'end')
                     entryMask.delete(0, 'end')
                     return False
-                if not entryDistance.get().isdigit() or not (1 <= int(entryDistance.get()) <= 255):
-                    messagebox.showerror('Error', 'Incorrect distance value', parent=root)
-                    entryDistance.delete(0, 'end')
+
+                ip_entries = [entryIPNextHopFirst, entryIPNextHopSecond, entryIPNextHopThird, entryIPNextHopFourth]
+                next_hop = ''
+                for entry in ip_entries:
+                    value = entry.get()
+                    next_hop += value + '.'
+                next_hop = next_hop.rstrip('.')
+                try:
+                    ipaddress.ip_address(next_hop)
+                except ValueError:
+                    messagebox.showerror('Error', 'Incorrect IP Format', parent=root)
+                    for entry in ip_entries:
+                        entry.delete(0, 'end')
+                    return False
                 return True
             else:
                 ip_entries = [entryIPDestinationFirst, entryIPDestinationSecond, entryIPDestinationThird,
                               entryIPDestinationFourth]
+                destination = ''
                 for entry in ip_entries:
                     value = entry.get()
-                    if not value.isdigit() or not (0 <= int(value) <= 255):
-                        messagebox.showerror('Error', 'Incorrect IP Format', parent=root)
-                        for entry in ip_entries:
-                            entry.delete(0, 'end')
-                        return False
+                    destination += value + '.'
+                destination = destination.rstrip('.')
+                mask = entryMask.get()
+                try:
+                    ipaddress.ip_network(destination + '/' + mask)
+                except ValueError:
+                    messagebox.showerror('Error', 'Incorrect IP Format', parent=root)
+                    for entry in ip_entries:
+                        entry.delete(0, 'end')
+                    entryMask.delete(0, 'end')
+                    return False
                 return True
 
         def clean_entries() -> None:

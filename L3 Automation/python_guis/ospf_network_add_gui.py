@@ -5,7 +5,7 @@ from resources.devices.Router import Router
 from gui_resources import config
 from resources.routing_protocols.Network import Network
 from resources.routing_protocols.ospf.OSPFArea import OSPFArea
-
+import ipaddress
 
 class OSPFNetworkAddGUI:
     def __init__(self, router: Router, ospf_area: OSPFArea, ospf_config_gui):
@@ -16,8 +16,7 @@ class OSPFNetworkAddGUI:
         root = tk.Toplevel()
         # ######## WINDOW PARAMETERS ######## #
         # title
-        root.title(config.APPNAME + ' ' + config.VERSION + ' ' + self.hostname + ' Area ' + ospf_area.id +
-                   ' Add Network')
+        root.title(config.APPNAME + ' ' + config.VERSION + ' ' + self.hostname + ' Area ' + ospf_area + ' Add Network')
 
         # window icon, using conversion to iso, cause tkinter doesn't accept jpg
         icon = tk.PhotoImage(file=config.WINDOW_ICON_PATH)
@@ -64,8 +63,14 @@ class OSPFNetworkAddGUI:
         entryMask.pack()
 
         def get_network() -> str:
-            return (entryIPNetworkFirst.get() + '.' + entryIPNetworkSecond.get() + '.' +
-                    entryIPNetworkThird.get() + '.' + entryIPNetworkFourth.get())
+            ip = (entryIPNetworkFirst.get() + '.' + entryIPNetworkSecond.get() + '.' + entryIPNetworkThird.get() + '.' +
+                  entryIPNetworkFourth.get())
+            try:
+                ipaddress.ip_address(ip)
+                return ip
+            except ValueError:
+                messagebox.showerror('Error', 'Incorrect IP Format', parent=root)
+                clean_entries()
 
         def get_mask() -> int:
             return int(entryMask.get())
@@ -79,18 +84,19 @@ class OSPFNetworkAddGUI:
 
         def validate_network() -> bool:
             ip_entries = [entryIPNetworkFirst, entryIPNetworkSecond, entryIPNetworkThird, entryIPNetworkFourth]
+            network = ''
             for entry in ip_entries:
                 value = entry.get()
-                if not value.isdigit() or not (0 <= int(value) <= 255):
-                    messagebox.showerror('Error', 'Incorrect IP Format', parent=root)
-                    clean_entries()
-                    return False
-            value = entryMask.get()
-            if not value.isdigit() or not (0 <= int(value) <= 32):
-                messagebox.showerror('Error', 'Incorrect mask value', parent=root)
-                entryMask.delete(0, 'end')
+                network += value + '.'
+            network = network.rstrip('.')
+            mask = entryMask.get()
+            try:
+                ipaddress.ip_network(network + '/' + mask)
+                return True
+            except ValueError:
+                messagebox.showerror('Error', 'Incorrect Network', parent=root)
+                clean_entries()
                 return False
-            return True
 
         def apply_network():
             if validate_network():
@@ -98,7 +104,7 @@ class OSPFNetworkAddGUI:
                 mask = get_mask()
                 from resources import constants
                 wildcard = constants.NETWORK_MASK.get(mask)
-                messagebox.showinfo('Route Added', 'Route Added', parent=root)
+                messagebox.showinfo('Network added', 'Network added', parent=root)
 
                 network = Network(network=network,
                                   mask=mask,
