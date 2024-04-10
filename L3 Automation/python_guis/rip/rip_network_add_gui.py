@@ -93,12 +93,13 @@ class RIPNetworkAddGUI:
 
         def apply_network():
             if validate_network():
-                messagebox.showinfo('Network added', 'Network added', parent=root)
-
                 network = get_network()
                 mask = get_mask()
                 network = Network(network=network, mask=mask)
+
+                router.rip.networks[network.network] = network
                 self.rip_networks_gui.insert_network(network)
+                messagebox.showinfo('Network added', 'Network added', parent=root)
                 clean_entries()
 
         btnApply = tk.Button(root, text='Apply', command=apply_network)

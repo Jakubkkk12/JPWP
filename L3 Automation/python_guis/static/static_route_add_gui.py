@@ -3,7 +3,7 @@ import tkinter as tk
 from tkinter import messagebox
 
 from resources.devices.Router import Router
-from gui_resources import config
+from python_guis.gui_resources import config
 from resources.routing_protocols.Network import Network
 from resources.routing_protocols.StaticRoute import StaticRoute
 
@@ -86,7 +86,6 @@ class StaticRouteAddGUI:
         entryMask.pack()
         lblNextHop.pack()
         nexthopFrame.pack()
-
 
         interfaceSelectFrame = tk.Frame(root)
         lblInterface = tk.Label(interfaceSelectFrame, text='Interface (optional):')
@@ -197,16 +196,18 @@ class StaticRouteAddGUI:
                                               interface='',
                                               distance=distance)
                     clean_entries()
-                    messagebox.showinfo('Route Added', 'Route Added', parent=root)
                     self.static_routes_gui.insert_route(staticroute)
+                    router.static_routes.append(staticroute)
+                    messagebox.showinfo('Route Added', 'Route Added', parent=root)
                 else:
                     staticroute = StaticRoute(network=Network(network=destination, mask=mask),
                                               next_hop='',
                                               interface=int_name,
                                               distance=distance)
                     clean_entries()
-                    messagebox.showinfo('Route Added', 'Route Added', parent=root)
                     self.static_routes_gui.insert_route(staticroute)
+                    router.static_routes.append(staticroute)
+                    messagebox.showinfo('Route Added', 'Route Added', parent=root)
 
         btnApply = tk.Button(root, text='Apply', command=apply_route)
         btnApply.pack(pady=5)

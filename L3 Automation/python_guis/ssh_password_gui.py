@@ -59,7 +59,3 @@ class SSHPasswordGUI:
             # router.sshpass = ssh_pass
             self.root.destroy()
             return None
-
-
-# if __name__ == '__main__':
-#     SSHPasswordGUI()

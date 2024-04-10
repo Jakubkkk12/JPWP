@@ -11,12 +11,12 @@ from python_guis.bgp.bgp_redistribution_gui import BGPRedistributionGUI
 from python_guis.interface.interfaces_details_gui import InterfacesDetails
 from python_guis.ospf.ospf_area_configuration_gui import OSPFAreaConfigurationGUI
 from python_guis.ospf.ospf_interface_details_gui import OSPFInterfaceDetailsGUI
-from python_guis.ospf.ospf_networks_gui import OSPFNetworksGUI
 from python_guis.ospf.ospf_redistribution_gui import OSPFRedistributionGUI
 from python_guis.rip.rip_edit_gui import RIPEditGUI
 from python_guis.rip.rip_network_add_gui import RIPNetworkAddGUI
 from python_guis.rip.rip_networks_gui import RIPNetworksGUI
 from python_guis.rip.rip_redistribution_gui import RIPRedistributionGUI
+from python_guis.ssh_connections_gui import SSHConnectionsGUI
 from python_guis.static.static_routes_gui import StaticRoutesGUI
 
 from resources.devices.Router import Router
@@ -76,7 +76,7 @@ class MainGUI:
         self.devices = devices = {
             'R1': Router(name='R1',
                          ssh_information=SSHInformation(ip_addresses={'0': '10.250.250.1',
-                                                                      '1': '13.13.13.13'}),
+                                                                      '1': '13.13.13.13'},),
                          type='cisco',
                          enable_password='ZSEDCxzaqwe',
                          interfaces={'f0/0': RouterInterface(name='f0/0',
@@ -444,6 +444,7 @@ class MainGUI:
                     hostname = self.tree.item(item)['values'][1]
                     selected_router = self.devices.get(hostname)
                     menu.post(event.x_root, event.y_root)
+                    menu.entryconfigure('Edit', command=lambda: SSHConnectionsGUI(selected_router, self))
                     menu.entryconfigure('Interfaces', command=lambda: show_interfaces_details(selected_router))
                     menu.entryconfigure('Static routes', command=lambda: show_static_routes(selected_router))
                 except IndexError():
@@ -460,7 +461,13 @@ class MainGUI:
                 StaticRoutesGUI(selected_router)
             return None
 
+        def show_ssh_adresses(selected_router: Router) -> None:
+            if selected_router:
+                SSHConnectionsGUI(selected_router)
+            return None
+
         menu = tk.Menu(self.root, tearoff=False)
+        menu.add_command(label='Edit', command= show_ssh_adresses)
         menu.add_command(label='Interfaces', command=show_interfaces_details)
         menu.add_command(label='Static routes', command=show_static_routes)
         self.tree.bind('<Button-3>', show_menu_all)
@@ -661,11 +668,6 @@ class MainGUI:
                 OSPFAreaConfigurationGUI(selected_router, selected_area, self)
             return None
 
-        def show_networks(selected_router: Router, area: OSPFArea) -> None:
-            if selected_router:
-                OSPFNetworksGUI(selected_router, area)
-            return None
-
         def show_redistribution(selected_router: Router) -> None:
             if selected_router:
                 OSPFRedistributionGUI(selected_router)
@@ -705,6 +707,13 @@ class MainGUI:
                                      bgp.autonomous_system, bgp.router_id, bgp.default_information_originate,
                                      bgp.default_metric_of_redistributed_routes, bgp.timers.keep_alive,
                                      bgp.timers.hold_time))
+
+    def update_all_tree(self, ssh: SSHInformation):
+        item = self.tree.selection()
+        ssh_addresses = self.tree.item(item)['values'][3]
+        ssh_addresses = ssh_addresses + ', ' + ssh.ip_addresses
+        self.tree.item(item, values=(self.tree.item(item)['values'][0], self.tree.item(item)['values'][1],
+                                     ssh_addresses))
 
 
 if __name__ == "__main__":
