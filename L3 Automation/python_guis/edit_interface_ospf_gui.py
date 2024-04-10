@@ -3,6 +3,9 @@ from tkinter import messagebox
 
 from resources.devices.Router import Router
 from gui_resources import config
+from resources.interfaces.InterfaceOSPFInformation import InterfaceOSPFInformation
+from resources.routing_protocols.ospf.OSPFInformation import OSPFInformation
+from resources.routing_protocols.ospf.OSPFTimers import OSPFTimers
 
 
 class EditInterfaceOSPFGUI:
@@ -119,23 +122,29 @@ class EditInterfaceOSPFGUI:
 
         def validate_changes() -> bool:
             if not entryCost.get().isdigit() or not (0 < int(entryCost.get()) <= 65535):
-                messagebox.showerror('Error', 'Incorrect cost size', parent=root)
+                messagebox.showerror('Error', 'Incorrect cost size. It should be an integer between 1 and 65535.',
+                                     parent=root)
                 entryCost.delete(0, 'end')
                 return False
             if not entryPriority.get().isdigit() or not (0 <= int(entryPriority.get()) <= 255):
-                messagebox.showerror('Error', 'Incorrect priority size', parent=root)
+                messagebox.showerror('Error', 'Incorrect priority size. It should be an integer between 0 and 255.',
+                                     parent=root)
                 entryPriority.delete(0, 'end')
                 return False
             if not entryHelloTimer.get().isdigit() or not (0 < int(entryHelloTimer.get()) <= 65535):
-                messagebox.showerror('Error', 'Incorrect hello timer', parent=root)
+                messagebox.showerror('Error', 'Incorrect hello timer. It should be an integer between 1 and 65535.',
+                                     parent=root)
                 entryHelloTimer.delete(0, 'end')
                 return False
             if not entryDeadTimer.get().isdigit() or not (0 < int(entryDeadTimer.get()) <= 65535):
-                messagebox.showerror('Error', 'Incorrect dead timer', parent=root)
+                messagebox.showerror('Error', 'Incorrect dead timer. It should be an integer between 1 and 65535.',
+                                     parent=root)
                 entryDeadTimer.delete(0, 'end')
                 return False
             if not entryRetransmitTimer.get().isdigit() or not (0 < int(entryRetransmitTimer.get()) <= 65535):
-                messagebox.showerror('Error', 'Incorrect retransmit timer', parent=root)
+                messagebox.showerror('Error',
+                                     'Incorrect retransmit timer. It should be an integer between 1 and 65535.',
+                                     parent=root)
                 entryRetransmitTimer.delete(0, 'end')
                 return False
             return True
@@ -143,13 +152,17 @@ class EditInterfaceOSPFGUI:
         def apply_changes() -> None:
             if validate_changes():
 
-                router.interfaces[int_name].ospf.network_type = get_network_type()
-                router.interfaces[int_name].ospf.cost = get_cost()
-                router.interfaces[int_name].ospf.passive_interface = get_passive_interface()
-                router.interfaces[int_name].ospf.priority = get_priority()
-                router.interfaces[int_name].ospf.timers.hello_timer = get_hello_timer()
-                router.interfaces[int_name].ospf.timers.dead_timer = get_dead_timer()
-                router.interfaces[int_name].ospf.timers.retransmit_timer = get_retransmit_timer()
+                network_type = get_network_type()
+                cost = get_cost()
+                passive_interface = get_passive_interface()
+                priority = get_priority()
+                hello_timer = get_hello_timer()
+                dead_timer = get_dead_timer()
+                retransmit_timer = get_retransmit_timer()
+                timers = OSPFTimers(hello_timer=hello_timer, dead_timer=dead_timer, retransmit_timer=retransmit_timer)
+                ospf = InterfaceOSPFInformation(network_type=network_type, cost=cost,
+                                                passive_interface=passive_interface, priority=priority, timers=timers)
+                router.interfaces[int_name].ospf = ospf
 
                 ospf_interfaces_details_gui.update_interface_details(iid, int_name, router.interfaces[int_name].ospf)
                 root.destroy()
