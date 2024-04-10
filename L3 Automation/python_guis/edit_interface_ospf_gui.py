@@ -4,7 +4,6 @@ from tkinter import messagebox
 from resources.devices.Router import Router
 from gui_resources import config
 from resources.interfaces.InterfaceOSPFInformation import InterfaceOSPFInformation
-from resources.routing_protocols.ospf.OSPFInformation import OSPFInformation
 from resources.routing_protocols.ospf.OSPFTimers import OSPFTimers
 
 
@@ -159,12 +158,14 @@ class EditInterfaceOSPFGUI:
                 hello_timer = get_hello_timer()
                 dead_timer = get_dead_timer()
                 retransmit_timer = get_retransmit_timer()
+
                 timers = OSPFTimers(hello_timer=hello_timer, dead_timer=dead_timer, retransmit_timer=retransmit_timer)
                 ospf = InterfaceOSPFInformation(network_type=network_type, cost=cost,
                                                 passive_interface=passive_interface, priority=priority, timers=timers)
                 router.interfaces[int_name].ospf = ospf
 
                 ospf_interfaces_details_gui.update_interface_details(iid, int_name, router.interfaces[int_name].ospf)
+
                 root.destroy()
 
         btnFrame = tk.Frame(root, pady=10)
