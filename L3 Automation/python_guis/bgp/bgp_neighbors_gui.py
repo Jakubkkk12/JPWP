@@ -77,11 +77,15 @@ class BGPNeighborsGUI:
         self.tree.column(treeColumns[8], width=100)
 
         i = 1
-        for k, neighbor in router.bgp.neighbors.items():
-            values = (i, neighbor.ip_address, neighbor.remote_as, neighbor.state, neighbor.ebgp_multihop,
-                      neighbor.next_hop_self, neighbor.shutdown, neighbor.timers.keep_alive, neighbor.timers.hold_time)
-            self.tree.insert('', tk.END, iid=i-1, values=values)
-            i += 1
+        try:
+            for k, neighbor in router.bgp.neighbors.items():
+                values = (i, neighbor.ip_address, neighbor.remote_as, neighbor.state, neighbor.ebgp_multihop,
+                          neighbor.next_hop_self, neighbor.shutdown, neighbor.timers.keep_alive,
+                          neighbor.timers.hold_time)
+                self.tree.insert('', tk.END, iid=i-1, values=values)
+                i += 1
+        except AttributeError:
+            pass
 
         treeFrame.grid(column=0, row=3, columnspan=2, sticky='NEWS')
 
