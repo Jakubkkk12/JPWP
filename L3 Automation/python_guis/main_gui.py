@@ -3,6 +3,7 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 
 from python_guis.add_router_gui import AddRouterGUI
+from python_guis.bgp.bgp_add_router_gui import BGPAddRouterGUI
 from python_guis.ospf.ospf_add_router_gui import OSPFAddRouterGUI
 from python_guis.rip.rip_add_router_gui import RIPAddRouterGUI
 from python_guis.ssh import ssh_password_gui
@@ -606,6 +607,8 @@ class MainGUI:
         menu.add_command(label='Redistribution', command=BGPRedistributionGUI)
         self.tree.bind('<Button-3>', show_menu_bgp)
 
+        self.btnAddRouter.config(command=lambda: BGPAddRouterGUI(self))
+
         return None
 
     # This function inserts ospf data into treeview widget and binds <MB-3> according to 'ospf' view
@@ -743,12 +746,23 @@ class MainGUI:
 
     def add_router_ospf(self, router: Router) -> None:
         self.devices[router.name] = router
-        print(self.devices)
         last_item = self.tree.get_children()[-1]
         last_index = self.tree.index(last_item)
         no = last_index + 2
 
         values = (no, router.name, router.ospf.router_id, list(router.ospf.areas.keys())[0])
+        self.tree.insert('', tk.END, values=values)
+        return None
+
+    def add_router_bgp(self, router: Router) -> None:
+        self.devices[router.name] = router
+        last_item = self.tree.get_children()[-1]
+        last_index = self.tree.index(last_item)
+        no = last_index + 2
+
+        values = (no, router.name, router.bgp.autonomous_system, router.bgp.router_id,
+                  router.bgp.default_information_originate, router.bgp.default_metric_of_redistributed_routes,
+                  router.bgp.timers.keep_alive, router.bgp.timers.hold_time)
         self.tree.insert('', tk.END, values=values)
         return None
 
