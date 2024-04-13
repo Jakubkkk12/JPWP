@@ -720,7 +720,6 @@ class MainGUI:
 
     def add_router_all(self, router: Router) -> None:
         self.devices[router.name] = router
-        print(self.devices)
         last_item = self.tree.get_children()[-1]
         last_index = self.tree.index(last_item)
         no = last_index + 2
@@ -741,6 +740,9 @@ class MainGUI:
 
     def get_router(self, hostname: str) -> Router:
         return self.devices.get(hostname)
+
+    def get_devices(self) -> dict:
+        return self.devices
 
 
 if __name__ == "__main__":

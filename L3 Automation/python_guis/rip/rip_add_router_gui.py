@@ -33,10 +33,21 @@ class RIPAddRouterGUI:
         root.columnconfigure(1, weight=1)
 
         # Components
+        devices = main_gui.get_devices()
+        ripOptions = []
+        for k, router in devices.items():
+            if router.rip is None:
+                ripOptions.append(router.name)
+        if len(ripOptions) == 0:
+            messagebox.showerror('Error', 'All routers have RIP configured', parent=root)
+            root.destroy()
+            return
         lblHostname = tk.Label(root, text='Hostname:')
         lblHostname.grid(row=0, column=0)
-        entryHostname = tk.Entry(root)
-        entryHostname.grid(row=0, column=1)
+
+        varHostname = tk.StringVar(root)
+        optionMenuHostname = tk.OptionMenu(root, varHostname, *ripOptions)
+        optionMenuHostname.grid(row=0, column=1)
 
         lblAutoSummary = tk.Label(root, text='Auto Summary')
         lblAutoSummary.grid(column=0, row=1)
@@ -73,17 +84,6 @@ class RIPAddRouterGUI:
         optionMenuVersion.grid(column=1, row=6)
 
         def validate_router() -> bool:
-            try:
-                router = main_gui.get_router(entryHostname.get())
-                if router.rip is not None:
-                    messagebox.showerror('Error', 'Router already has RIP configuration', parent=root)
-                    return False
-            except AttributeError:
-                messagebox.showerror('Error', 'Router does not exist', parent=root)
-                return False
-            if not main_gui.router_exists(entryHostname.get()):
-                messagebox.showerror('Error', 'Router does not exist', parent=root)
-                return False
             if not entryDefaultMetric.get().isdigit() or not (0 <= int(entryDefaultMetric.get()) <= 15):
                 messagebox.showerror('Error', 'Default metric must be a an integer between 0 and 15', parent=root)
                 entryDefaultMetric.delete(0, tk.END)
@@ -103,7 +103,7 @@ class RIPAddRouterGUI:
 
         def add_router():
             if validate_router():
-                router = main_gui.get_router(entryHostname.get())
+                router = main_gui.get_router(varHostname.get())
                 rip = RIPInformation(auto_summary=varAutoSummary.get(),
                                      default_information_originate=varDefaultInformationOriginate.get(),
                                      default_metric_of_redistributed_routes=int(entryDefaultMetric.get()),
