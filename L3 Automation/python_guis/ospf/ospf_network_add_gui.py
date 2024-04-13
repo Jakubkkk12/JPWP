@@ -105,7 +105,7 @@ class OSPFNetworkAddGUI:
                 network = get_network()
                 mask = get_mask()
                 from resources import constants
-                wildcard = constants.NETWORK_MASK.get(mask)
+                wildcard = constants.WILDCARD_MASK[str(mask)]
                 messagebox.showinfo('Network added', 'Network added', parent=root)
 
                 network = Network(network=network,
