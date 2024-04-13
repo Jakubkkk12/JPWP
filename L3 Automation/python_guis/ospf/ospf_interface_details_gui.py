@@ -58,9 +58,6 @@ class OSPFInterfaceDetailsGUI:
         btnQuit = tk.Button(root, text='Quit', command=root.destroy)
         btnQuit.pack(side='bottom')
 
-        # todo: redistribution after router id
-        # remove non-broadcast
-
         # Data insert
         interfaces = router.interfaces
         i = 1
