@@ -77,6 +77,7 @@ class OSPFAddRouterGUI:
         lblAutoCostReferenceBandwidth.grid(row=2, column=0)
         entryAutoCostReferenceBandwidth = tk.Entry(root)
         entryAutoCostReferenceBandwidth.grid(row=2, column=1)
+        entryAutoCostReferenceBandwidth.insert(0, '10000')
 
         lblDefaultInformationOriginate = tk.Label(root, text='Default information originate:')
         lblDefaultInformationOriginate.grid(row=3, column=0)
@@ -89,16 +90,19 @@ class OSPFAddRouterGUI:
         lblDefaultMetricOfRedistributedRoutes.grid(row=4, column=0)
         entryDefaultMetricOfRedistributedRoutes = tk.Entry(root)
         entryDefaultMetricOfRedistributedRoutes.grid(row=4, column=1)
+        entryDefaultMetricOfRedistributedRoutes.insert(0, '1')
 
         lblDistance = tk.Label(root, text='Distance:')
         lblDistance.grid(row=5, column=0)
         entryDistance = tk.Entry(root)
         entryDistance.grid(row=5, column=1)
+        entryDistance.insert(0, '1')
 
         lblMaximumPaths = tk.Label(root, text='Maximum paths:')
         lblMaximumPaths.grid(row=6, column=0)
         entryMaximumPaths = tk.Entry(root)
         entryMaximumPaths.grid(row=6, column=1)
+        entryMaximumPaths.insert(0, '1')
 
         lblPassiveInterface = tk.Label(root, text='Passive interface:')
         lblPassiveInterface.grid(row=7, column=0)
@@ -147,6 +151,7 @@ class OSPFAddRouterGUI:
         lblType.grid(row=12, column=0)
         varType = tk.StringVar()
         typeOptions = ['backbone area', 'standard area', 'stub area', 'totally stub area', 'NSSA']
+        varType.set(typeOptions[1])
         optionMenuType = tk.OptionMenu(root, varType, *typeOptions)
         optionMenuType.grid(row=12, column=1)
 
@@ -204,6 +209,9 @@ class OSPFAddRouterGUI:
                 messagebox.showerror('Error', 'Area ID must be a an integer between 0 and 4294967295.',
                                      parent=root)
                 entryAreaId.delete(0, tk.END)
+                return False
+            if varType == '':
+                messagebox.showerror('Error', 'Type is required.', parent=root)
                 return False
             return True
 
