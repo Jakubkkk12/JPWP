@@ -3,6 +3,7 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 
 from python_guis.add_router_gui import AddRouterGUI
+from python_guis.rip.rip_add_router_gui import RIPAddRouterGUI
 from python_guis.ssh import ssh_password_gui
 from gui_resources import config
 from login_gui import LoginGUI
@@ -536,8 +537,7 @@ class MainGUI:
         self.tree.bind('<Button-3>', show_menu_rip)
 
         def add_router_rip():
-            # RIPAddRouterGUI(self)
-            pass
+            RIPAddRouterGUI(self)
         self.btnAddRouter.config(command=add_router_rip)
 
         return None
@@ -727,6 +727,20 @@ class MainGUI:
         values = (no, router.name, router.type, '', '', '')
         self.tree.insert('', tk.END, values=values)
         return None
+
+    def add_router_rip(self, router: Router) -> None:
+        self.devices[router.name] = router
+        last_item = self.tree.get_children()[-1]
+        last_index = self.tree.index(last_item)
+        no = last_index + 2
+        values = (no, router.name, router.rip.auto_summary, router.rip.default_information_originate,
+                  router.rip.default_metric_of_redistributed_routes, router.rip.distance,
+                  router.rip.maximum_paths, router.rip.version)
+        self.tree.insert('', tk.END, values=values)
+        return None
+
+    def get_router(self, hostname: str) -> Router:
+        return self.devices.get(hostname)
 
 
 if __name__ == "__main__":
