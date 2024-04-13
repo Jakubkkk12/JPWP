@@ -1,9 +1,8 @@
 import tkinter as tk
 import tkinter.ttk
-from gui_resources import config
-from python_guis.ssh_address_add_gui import SSHAddressAddGUI
+from python_guis.gui_resources import config
+from python_guis.ssh.ssh_address_add_gui import SSHAddressAddGUI
 from resources.devices.Router import Router
-from resources.ssh.SSHInformation import SSHInformation
 
 
 class SSHConnectionsGUI:

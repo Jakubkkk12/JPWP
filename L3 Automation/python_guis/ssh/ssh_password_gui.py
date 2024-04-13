@@ -1,8 +1,8 @@
 import tkinter as tk
 import tkinter.messagebox
-from gui_resources import config
+from python_guis.gui_resources import config
 
-WINDOW_ICON_PATH = 'gui_resources/APP_ICON_512.png'
+WINDOW_ICON_PATH = config.WINDOW_ICON_PATH
 BG_COLOR = config.BG_COLOR
 
 
