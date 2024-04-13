@@ -389,13 +389,11 @@ class MainGUI:
     def show_view_all(self) -> None:
         self.clear_tree()
 
-        treeColumns = ('No', 'Hostname', 'Type', 'SSH Address', 'RIP', 'OSPF', 'BGP')
+        treeColumns = ('No', 'Hostname', 'Type', 'RIP', 'OSPF', 'BGP')
         self.tree.configure(columns=treeColumns)
 
         iid = 0
         for i, (router_name, router) in enumerate(self.devices.items(), start=1):
-            ssh_ips = list(router.ssh_information.ip_addresses.values())
-            string_ips = ', '.join(ssh_ips)
 
             rip = ''
             if router.rip is not None:
@@ -407,7 +405,7 @@ class MainGUI:
             if router.bgp is not None:
                 bgp = 'Enabled'
 
-            values = (i, router.name, router.type, string_ips, rip, ospf, bgp)
+            values = (i, router.name, router.type, rip, ospf, bgp)
             self.tree.insert('', tk.END, values=values, iid=iid)
 
             iid += 1
@@ -423,17 +421,14 @@ class MainGUI:
         self.tree.heading(treeColumns[2], text='Type', anchor='w')
         self.tree.column(treeColumns[2], minwidth=50, width=50, stretch=True)
 
-        self.tree.heading(treeColumns[3], text='SSH Addresses', anchor='w')
-        self.tree.column(treeColumns[3], minwidth=90, stretch=True)
+        self.tree.heading(treeColumns[3], text='RIP', anchor='w')
+        self.tree.column(treeColumns[3], minwidth=50, width=50, stretch=True)
 
-        self.tree.heading(treeColumns[4], text='RIP', anchor='w')
+        self.tree.heading(treeColumns[4], text='OSPF', anchor='w')
         self.tree.column(treeColumns[4], minwidth=50, width=50, stretch=True)
 
-        self.tree.heading(treeColumns[5], text='OSPF', anchor='w')
+        self.tree.heading(treeColumns[5], text='BGP', anchor='w')
         self.tree.column(treeColumns[5], minwidth=50, width=50, stretch=True)
-
-        self.tree.heading(treeColumns[6], text='BGP', anchor='w')
-        self.tree.column(treeColumns[6], minwidth=50, width=50, stretch=True)
 
         # This function defines pop-up menu for 'all' view
         def show_menu_all(event):
@@ -444,7 +439,7 @@ class MainGUI:
                     hostname = self.tree.item(item)['values'][1]
                     selected_router = self.devices.get(hostname)
                     menu.post(event.x_root, event.y_root)
-                    menu.entryconfigure('Edit', command=lambda: SSHConnectionsGUI(selected_router, self))
+                    menu.entryconfigure('SSH Addresses', command=lambda: SSHConnectionsGUI(selected_router))
                     menu.entryconfigure('Interfaces', command=lambda: show_interfaces_details(selected_router))
                     menu.entryconfigure('Static routes', command=lambda: show_static_routes(selected_router))
                 except IndexError():
@@ -461,13 +456,13 @@ class MainGUI:
                 StaticRoutesGUI(selected_router)
             return None
 
-        def show_ssh_adresses(selected_router: Router) -> None:
+        def show_ssh_addresses(selected_router: Router) -> None:
             if selected_router:
                 SSHConnectionsGUI(selected_router)
             return None
 
         menu = tk.Menu(self.root, tearoff=False)
-        menu.add_command(label='Edit', command= show_ssh_adresses)
+        menu.add_command(label='SSH Addresses', command= show_ssh_addresses)
         menu.add_command(label='Interfaces', command=show_interfaces_details)
         menu.add_command(label='Static routes', command=show_static_routes)
         self.tree.bind('<Button-3>', show_menu_all)
@@ -707,13 +702,14 @@ class MainGUI:
                                      bgp.autonomous_system, bgp.router_id, bgp.default_information_originate,
                                      bgp.default_metric_of_redistributed_routes, bgp.timers.keep_alive,
                                      bgp.timers.hold_time))
+        return None
 
-    def update_all_tree(self, ssh: SSHInformation):
-        item = self.tree.selection()
-        ssh_addresses = self.tree.item(item)['values'][3]
-        ssh_addresses = ssh_addresses + ', ' + ssh.ip_addresses
-        self.tree.item(item, values=(self.tree.item(item)['values'][0], self.tree.item(item)['values'][1],
-                                     ssh_addresses))
+    # def update_all_tree(self, ssh_ip):
+    #     item = self.tree.selection()
+    #     ssh_addresses = self.tree.item(item)['values'][3]
+    #     ssh_addresses = ssh_addresses + ', ' + ssh_ip
+    #     self.tree.item(item, values=(self.tree.item(item)['values'][0], self.tree.item(item)['values'][1],
+    #                                  ssh_addresses))
 
 
 if __name__ == "__main__":
