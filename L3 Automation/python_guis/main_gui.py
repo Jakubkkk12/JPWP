@@ -2,7 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
 
-import ssh_password_gui
+from python_guis.add_router_gui import AddRouterGUI
+from python_guis.ssh import ssh_password_gui
 from gui_resources import config
 from login_gui import LoginGUI
 from python_guis.bgp.bgp_edit_gui import BGPEditGUI
@@ -16,7 +17,7 @@ from python_guis.rip.rip_edit_gui import RIPEditGUI
 from python_guis.rip.rip_network_add_gui import RIPNetworkAddGUI
 from python_guis.rip.rip_networks_gui import RIPNetworksGUI
 from python_guis.rip.rip_redistribution_gui import RIPRedistributionGUI
-from python_guis.ssh_connections_gui import SSHConnectionsGUI
+from python_guis.ssh.ssh_connections_gui import SSHConnectionsGUI
 from python_guis.static.static_routes_gui import StaticRoutesGUI
 
 from resources.devices.Router import Router
@@ -337,8 +338,8 @@ class MainGUI:
         btnFrameAddSSH = tk.Frame(self.root)
         btnFrameAddSSH.grid(column=5, row=0, padx=10)
 
-        btnAddRouter = tk.Button(btnFrameAddSSH, text='Add Router', command=self.btnAddRouter_command)
-        btnAddRouter.grid(column=0, row=0, sticky='EW')
+        self.btnAddRouter = tk.Button(btnFrameAddSSH, text='Add Router')
+        self.btnAddRouter.grid(column=0, row=0, sticky='EW')
 
         btnSSHPassword = tk.Button(btnFrameAddSSH, text='SSH Password', padx=2, pady=2,
                                    command=ssh_password_gui.SSHPasswordGUI)
@@ -380,9 +381,6 @@ class MainGUI:
     def log_out(self) -> None:
         self.root.destroy()
         LoginGUI()
-        return None
-
-    def btnAddRouter_command(self):
         return None
 
     # This function inserts data into treeview widget and binds <MB-3> according to 'all' view
@@ -467,6 +465,11 @@ class MainGUI:
         menu.add_command(label='Static routes', command=show_static_routes)
         self.tree.bind('<Button-3>', show_menu_all)
 
+        def add_router_all():
+            AddRouterGUI(self)
+
+        self.btnAddRouter.config(command=add_router_all)
+
         return None
 
     def show_view_rip(self) -> None:
@@ -531,6 +534,11 @@ class MainGUI:
         menu.add_command(label='Networks', command=RIPNetworkAddGUI)
         menu.add_command(label='Redistribution', command=RIPRedistributionGUI)
         self.tree.bind('<Button-3>', show_menu_rip)
+
+        def add_router_rip():
+            # RIPAddRouterGUI(self)
+            pass
+        self.btnAddRouter.config(command=add_router_rip)
 
         return None
 
@@ -704,12 +712,21 @@ class MainGUI:
                                      bgp.timers.hold_time))
         return None
 
-    # def update_all_tree(self, ssh_ip):
-    #     item = self.tree.selection()
-    #     ssh_addresses = self.tree.item(item)['values'][3]
-    #     ssh_addresses = ssh_addresses + ', ' + ssh_ip
-    #     self.tree.item(item, values=(self.tree.item(item)['values'][0], self.tree.item(item)['values'][1],
-    #                                  ssh_addresses))
+    def router_exists(self, hostname: str) -> bool:
+        for k, router in enumerate(self.devices.values(), start=1):
+            if router.name == hostname:
+                return True
+        return False
+
+    def add_router_all(self, router: Router) -> None:
+        self.devices[router.name] = router
+        print(self.devices)
+        last_item = self.tree.get_children()[-1]
+        last_index = self.tree.index(last_item)
+        no = last_index + 2
+        values = (no, router.name, router.type, '', '', '')
+        self.tree.insert('', tk.END, values=values)
+        return None
 
 
 if __name__ == "__main__":
