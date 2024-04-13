@@ -69,11 +69,16 @@ class StaticRoutesGUI:
         self.tree.heading(treeColumns[5], text='Distance', anchor='w')
         self.tree.column(treeColumns[5], width=50)
 
-        i = 1
-        for route in router.static_routes:
-            values = (i, route.network.network, route.network.mask, route.next_hop, route.interface, route.distance)
-            self.tree.insert('', tk.END, iid=i-1, values=values)
-            i += 1
+        try:
+            i = 1
+            for route in router.static_routes:
+                values = (i, route.network.network, route.network.mask, route.next_hop, route.interface, route.distance)
+                self.tree.insert('', tk.END, iid=i-1, values=values)
+                i += 1
+        except AttributeError:
+            pass
+        except TypeError:
+            pass
 
         def add_route(router):
             StaticRouteAddGUI(router, self)
