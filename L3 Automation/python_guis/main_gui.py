@@ -3,6 +3,7 @@ from tkinter import ttk
 from PIL import Image, ImageTk
 
 from python_guis.add_router_gui import AddRouterGUI
+from python_guis.ospf.ospf_add_router_gui import OSPFAddRouterGUI
 from python_guis.rip.rip_add_router_gui import RIPAddRouterGUI
 from python_guis.ssh import ssh_password_gui
 from gui_resources import config
@@ -461,7 +462,7 @@ class MainGUI:
             return None
 
         menu = tk.Menu(self.root, tearoff=False)
-        menu.add_command(label='SSH Addresses', command= show_ssh_addresses)
+        menu.add_command(label='SSH Addresses', command=show_ssh_addresses)
         menu.add_command(label='Interfaces', command=show_interfaces_details)
         menu.add_command(label='Static routes', command=show_static_routes)
         self.tree.bind('<Button-3>', show_menu_all)
@@ -647,8 +648,8 @@ class MainGUI:
             self.tree.selection_set(item)
             if item:
                 try:
-                    hostname = self.tree.item(item)['values'][1]
-                    selected_router = self.devices.get(hostname)
+                    hostname = str(self.tree.item(item)['values'][1])
+                    selected_router = self.get_router(hostname)
                     if selected_router.ospf is not None:
                         area = self.tree.item(item)['values'][3]
                         selected_area = selected_router.ospf.areas.get(str(area))
@@ -681,6 +682,8 @@ class MainGUI:
         menu.add_command(label='Area', command=OSPFAreaConfigurationGUI)
         menu.add_command(label='Redistribution', command=OSPFRedistributionGUI)
         self.tree.bind('<Button-3>', show_menu_ospf)
+
+        self.btnAddRouter.config(command=lambda: OSPFAddRouterGUI(self))
 
         return None
 
@@ -735,6 +738,17 @@ class MainGUI:
         values = (no, router.name, router.rip.auto_summary, router.rip.default_information_originate,
                   router.rip.default_metric_of_redistributed_routes, router.rip.distance,
                   router.rip.maximum_paths, router.rip.version)
+        self.tree.insert('', tk.END, values=values)
+        return None
+
+    def add_router_ospf(self, router: Router) -> None:
+        self.devices[router.name] = router
+        print(self.devices)
+        last_item = self.tree.get_children()[-1]
+        last_index = self.tree.index(last_item)
+        no = last_index + 2
+
+        values = (no, router.name, router.ospf.router_id, list(router.ospf.areas.keys())[0])
         self.tree.insert('', tk.END, values=values)
         return None
 
