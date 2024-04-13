@@ -55,19 +55,21 @@ class RIPRedistributionGUI:
         varBGP = tk.BooleanVar(root)
         chckbtnBGP = tk.Checkbutton(root, variable=varBGP)
         chckbtnBGP.grid(column=1, row=3)
-
-        if router.rip.redistribution.is_redistribute_static:
-            chckbtnStatic.select()
-            varStatic.set(True)
-        if router.rip.redistribution.is_redistribute_connected:
-            chckbtnConnected.select()
-            varConnected.set(True)
-        if router.rip.redistribution.is_redistribute_ospf:
-            chckbtnOSPF.select()
-            varOSPF.set(True)
-        if router.rip.redistribution.is_redistribute_bgp:
-            chckbtnBGP.select()
-            varBGP.set(True)
+        try:
+            if router.rip.redistribution.is_redistribute_static:
+                chckbtnStatic.select()
+                varStatic.set(True)
+            if router.rip.redistribution.is_redistribute_connected:
+                chckbtnConnected.select()
+                varConnected.set(True)
+            if router.rip.redistribution.is_redistribute_ospf:
+                chckbtnOSPF.select()
+                varOSPF.set(True)
+            if router.rip.redistribution.is_redistribute_bgp:
+                chckbtnBGP.select()
+                varBGP.set(True)
+        except AttributeError:
+            pass
 
         def apply_changes():
 
