@@ -76,6 +76,6 @@ class InterfaceErrorsGUI:
 
         for heading in treeColumns:
             tree.heading(heading, text=heading, anchor='w')
-            tree.column(heading, width=100)
+            tree.column(heading, width=100, stretch=False)
 
         root.mainloop()

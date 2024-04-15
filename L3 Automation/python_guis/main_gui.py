@@ -510,7 +510,7 @@ class MainGUI:
         self.tree.column(treeColumns[2], minwidth=50, width=100, stretch=False)
 
         self.tree.heading(treeColumns[3], text='Default information originate', anchor='w')
-        self.tree.column(treeColumns[3], minwidth=100, width=150, stretch=False)
+        self.tree.column(treeColumns[3], minwidth=100, width=200, stretch=False)
 
         self.tree.heading(treeColumns[4], text='Default metric', anchor='w')
         self.tree.column(treeColumns[4], minwidth=70, width=100, stretch=False)
@@ -582,10 +582,10 @@ class MainGUI:
         self.tree.column(treeColumns[3], minwidth=80, width=80, stretch=False)
 
         self.tree.heading(treeColumns[4], text='Default information originate', anchor='w')
-        self.tree.column(treeColumns[4], minwidth=70, width=120, stretch=False)
+        self.tree.column(treeColumns[4], minwidth=70, width=200, stretch=False)
 
-        self.tree.heading(treeColumns[5], text='Default metric of redistributed routers', anchor='w')
-        self.tree.column(treeColumns[5], minwidth=50, width=120, stretch=False)
+        self.tree.heading(treeColumns[5], text='Default metric of redistributed routes', anchor='w')
+        self.tree.column(treeColumns[5], minwidth=50, width=230, stretch=False)
 
         self.tree.heading(treeColumns[6], text='Keep alive timer', anchor='w')
         self.tree.column(treeColumns[6], minwidth=50, width=120, stretch=False)
@@ -633,7 +633,8 @@ class MainGUI:
     def show_view_ospf(self) -> None:
         self.clear_tree()
 
-        treeColumns = ('No', 'Hostname', 'Router ID', 'Areas')
+        treeColumns = ('No', 'Hostname', 'Router ID', 'Areas', 'Auto cost bandwidth', 'Default information originate',
+                       'Default metric of redistributed routes', 'Distance', 'Maximum paths')
         self.tree.configure(columns=treeColumns)
 
         # Data insert
@@ -642,13 +643,14 @@ class MainGUI:
                 router_areas = list(router.ospf.areas.keys())
                 ospf_area = router_areas[0]
 
-                values = (iid, router.name, router.ospf.router_id, ospf_area)
+                values = (iid, router.name, router.ospf.router_id, ospf_area, router.ospf.auto_cost_reference_bandwidth,
+                          router.ospf.default_information_originate, router.ospf.default_metric_of_redistributed_routes,
+                          router.ospf.distance, router.ospf.maximum_paths)
                 self.tree.insert('', tk.END, values=values, iid=iid)
 
                 if len(router_areas) > 1:
                     for area in router_areas[1:]:
-                        values = ('', router.name, '', router.ospf.areas[area].id,
-                                  list(router.ospf.areas[area].networks.keys()), '')
+                        values = ('', router.name, '', router.ospf.areas[area].id)
                         self.tree.insert(iid, tk.END, values=values)
 
         self.tree.heading(treeColumns[0], text='No', anchor='w')
@@ -662,6 +664,21 @@ class MainGUI:
 
         self.tree.heading(treeColumns[3], text='Areas', anchor='w')
         self.tree.column(treeColumns[3], minwidth=50, width=50, stretch=False)
+
+        self.tree.heading(treeColumns[4], text='Auto cost reference bandwidth', anchor='w')
+        self.tree.column(treeColumns[4], minwidth=50, width=200, stretch=False)
+
+        self.tree.heading(treeColumns[5], text='Default information originate', anchor='w')
+        self.tree.column(treeColumns[5], minwidth=50, width=200, stretch=False)
+
+        self.tree.heading(treeColumns[6], text='Default metric of redistributed routes', anchor='w')
+        self.tree.column(treeColumns[6], minwidth=50, width=230, stretch=False)
+
+        self.tree.heading(treeColumns[7], text='Distance', anchor='w')
+        self.tree.column(treeColumns[7], minwidth=50, width=70, stretch=False)
+
+        self.tree.heading(treeColumns[8], text='Maximum paths', anchor='w')
+        self.tree.column(treeColumns[8], minwidth=50, width=100, stretch=False)
 
         # This function shows menu when <MB-3> is clicked with treeview item selected
         def show_menu_ospf(event):

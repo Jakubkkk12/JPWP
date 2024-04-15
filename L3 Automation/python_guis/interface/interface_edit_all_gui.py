@@ -124,7 +124,8 @@ class EditInterfaceGUI:
         lblDescription = tk.Label(root, text='Description:')
         lblDescription.grid(column=0, row=5)
         entryDescription = tk.Entry(root)
-        entryDescription.insert(0, router.interfaces[int_name].description)
+        if router.interfaces[int_name].description is not None:
+            entryDescription.insert(0, router.interfaces[int_name].description)
         entryDescription.grid(column=1, row=5)
 
         def validate_changes() -> bool:

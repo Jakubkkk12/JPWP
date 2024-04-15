@@ -50,13 +50,13 @@ class BGPNeighborsGUI:
         horizontalscrollbar.config(command=self.tree.xview)
 
         self.tree.heading(treeColumns[0], text='No', anchor='w')
-        self.tree.column(treeColumns[0], width=15)
+        self.tree.column(treeColumns[0], width=30)
 
         self.tree.heading(treeColumns[1], text='ID', anchor='w')
-        self.tree.column(treeColumns[1], width=30)
+        self.tree.column(treeColumns[1], width=100)
 
         self.tree.heading(treeColumns[2], text='Remote AS', anchor='w')
-        self.tree.column(treeColumns[2], width=50)
+        self.tree.column(treeColumns[2], width=100)
 
         self.tree.heading(treeColumns[3], text='State', anchor='w')
         self.tree.column(treeColumns[3], width=50)
@@ -68,13 +68,13 @@ class BGPNeighborsGUI:
         self.tree.column(treeColumns[5], width=100)
 
         self.tree.heading(treeColumns[6], text='Shutdown', anchor='w')
-        self.tree.column(treeColumns[6], width=50)
+        self.tree.column(treeColumns[6], width=80)
 
         self.tree.heading(treeColumns[7], text='Keep alive timer', anchor='w')
-        self.tree.column(treeColumns[7], width=100)
+        self.tree.column(treeColumns[7], width=120)
 
         self.tree.heading(treeColumns[8], text='Hold time timer', anchor='w')
-        self.tree.column(treeColumns[8], width=100)
+        self.tree.column(treeColumns[8], width=120)
 
         i = 1
         try:
