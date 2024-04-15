@@ -1,5 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter.filedialog import asksaveasfile, askopenfilename
+
 from PIL import Image, ImageTk
 
 from python_guis.add_router_gui import AddRouterGUI
@@ -334,6 +336,22 @@ class MainGUI:
         viewmenu.add_command(label='OSPF', command=self.show_view_ospf)
         viewmenu.add_command(label='BGP', command=self.show_view_bgp)
         menubar.add_cascade(label='View', menu=viewmenu)
+
+        filemenu = tk.Menu(menubar, tearoff=False)
+
+        def save_project():
+            files = [('All Files', '*.*'),
+                     ('L3 Project Files', '*.jkal')]
+            file = asksaveasfile(filetypes=files)
+        filemenu.add_command(label='Save project...', command=save_project)
+
+        def open_project():
+            files = [('All Files', '*.*'),
+                     ('L3 Project Files', '*.jkal')]
+            file = askopenfilename(filetypes=files)
+        filemenu.add_command(label='Open project...', command=open_project)
+
+        menubar.add_cascade(label='File', menu=filemenu)
 
         self.root.config(menu=menubar)
 
