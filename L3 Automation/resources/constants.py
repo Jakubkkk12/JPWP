@@ -69,3 +69,5 @@ NETWORK_MASK_REVERSED = {
     '255.255.255.254': 31,
     '255.255.255.255': 32
 }
+
+WILDCARD_MASK = {k: '.'.join(map(str, (255 - int(i) for i in v.split('.')))) for k, v in NETWORK_MASK.items()}

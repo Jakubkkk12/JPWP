@@ -1,151 +1,812 @@
 import tkinter as tk
-import ssh_password_gui
-from resources import config
+from tkinter import ttk
+from tkinter.filedialog import asksaveasfile, askopenfilename
 
-APPNAME = 'appname'
-VERSION = '0.0.1'
-WINDOW_ICON_PATH = 'resources/APP_ICON_512.png'
-COLOR = config.COLOR
+from PIL import Image, ImageTk
+
+from python_guis.add_router_gui import AddRouterGUI
+from python_guis.bgp.bgp_add_router_gui import BGPAddRouterGUI
+from python_guis.ospf.ospf_add_router_gui import OSPFAddRouterGUI
+from python_guis.rip.rip_add_router_gui import RIPAddRouterGUI
+from python_guis.ssh import ssh_password_gui
+from gui_resources import config
+from login_gui import LoginGUI
+from python_guis.bgp.bgp_edit_gui import BGPEditGUI
+from python_guis.bgp.bgp_neighbors_gui import BGPNeighborsGUI
+from python_guis.bgp.bgp_redistribution_gui import BGPRedistributionGUI
+from python_guis.interface.interfaces_details_gui import InterfacesDetails
+from python_guis.ospf.ospf_area_configuration_gui import OSPFAreaConfigurationGUI
+from python_guis.ospf.ospf_interface_details_gui import OSPFInterfaceDetailsGUI
+from python_guis.ospf.ospf_redistribution_gui import OSPFRedistributionGUI
+from python_guis.rip.rip_edit_gui import RIPEditGUI
+from python_guis.rip.rip_network_add_gui import RIPNetworkAddGUI
+from python_guis.rip.rip_networks_gui import RIPNetworksGUI
+from python_guis.rip.rip_redistribution_gui import RIPRedistributionGUI
+from python_guis.ssh.ssh_connections_gui import SSHConnectionsGUI
+from python_guis.static.static_routes_gui import StaticRoutesGUI
+
+from resources.devices.Router import Router
+from resources.interfaces.InterfaceOSPFInformation import InterfaceOSPFInformation
+from resources.interfaces.InterfaceStatistics import InterfaceStatistics, InformationStatistics, ErrorsStatistics
+from resources.interfaces.RouterInterface import RouterInterface
+from resources.routing_protocols.Network import Network
+from resources.routing_protocols.Redistribution import Redistribution
+from resources.routing_protocols.StaticRoute import StaticRoute
+from resources.routing_protocols.bgp.BGPInformation import BGPInformation
+from resources.routing_protocols.bgp.BGPNeighbor import BGPNeighbor
+from resources.routing_protocols.bgp.BGPTimers import BGPTimers
+from resources.routing_protocols.ospf.OSPFArea import OSPFArea
+from resources.routing_protocols.ospf.OSPFInformation import OSPFInformation
+from resources.routing_protocols.ospf.OSPFTimers import OSPFTimers
+from resources.routing_protocols.rip.RIPInformation import RIPInformation
+from resources.ssh.SSHInformation import SSHInformation
+
 
 class MainGUI:
     def __init__(self):
-        root = tk.Tk()
+        self.root = tk.Tk()
+
         # title
-        root.title(APPNAME + ' ' + VERSION)
+        self.root.title(config.APPNAME + ' ' + config.VERSION)
 
         # window icon, using conversion to iso, cause tkinter doesn't accept jpg
-        icon = tk.PhotoImage(file=WINDOW_ICON_PATH)
-        root.wm_iconphoto(False, icon)
+        icon = tk.PhotoImage(file=config.WINDOW_ICON_PATH)
+        self.root.wm_iconphoto(False, icon)
 
-        #setting window size
-        width=800
-        height=800
-        screenwidth = root.winfo_screenwidth()
-        screenheight = root.winfo_screenheight()
+        # Window properties
+        width = config.WIDTH
+        height = config.HEIGHT
+        screenwidth = self.root.winfo_screenwidth()
+        screenheight = self.root.winfo_screenheight()
         alignstr = '%dx%d+%d+%d' % (width, height, (screenwidth - width) / 2, (screenheight - height) / 2)
-        root.geometry(alignstr)
-        root.resizable(width=False, height=False)
+        self.root.geometry(alignstr)
+        self.root.resizable(width=True, height=True)
 
-        root.configure(bg='grey')
+        self.root.configure(bg=config.BG_COLOR)
 
-        lblHostnameHeader = tk.Label(root, text='Hostname')
-        lblHostnameHeader.place(x=5, y=70, width=60, height=30) # min=60
-        lblHostnameHeader.configure(bg='grey', bd=2, relief='solid')
+        self.root.minsize(300, 200)
 
-        lblStateHeader = tk.Label(root, text='State')
-        lblStateHeader.place(x=65, y=70, width=50, height=30)
-        lblStateHeader.configure(bg='grey', bd=2, relief='solid')
+        self.root.columnconfigure(0, weight=4)
+        self.root.columnconfigure(1, weight=4)
+        self.root.columnconfigure(2, weight=4)
+        self.root.columnconfigure(3, weight=4)
+        self.root.columnconfigure(4, weight=1)
 
-        lblRIPHeader = tk.Label(root, text='RIP')
-        lblRIPHeader.place(x=115, y=70, width=50, height=30)
-        lblRIPHeader.configure(bg='grey', bd=2, relief='solid')
-
-        lblOSPFHeader = tk.Label(root, text='OSPF')
-        lblOSPFHeader.place(x=165, y=70, width=50, height=30)
-        lblOSPFHeader.configure(bg='grey', bd=2, relief='solid')
-
-        self.lstbxRouters = tk.Listbox(root)
-        self.lstbxRouters["borderwidth"] = "1px"
-        self.lstbxRouters["fg"] = "#333333"
-        self.lstbxRouters["justify"] = "center"
-        self.lstbxRouters.place(x=5,y=100,width=680,height=650)
-        self.lstbxRouters.configure(bg='grey')
+        self.root.rowconfigure(0, weight=1)
+        self.root.rowconfigure(1, weight=1)
+        self.root.rowconfigure(2, weight=4)
+        self.root.rowconfigure(3, weight=4)
+        self.root.rowconfigure(5, weight=4)
 
         # Sample data:
-        routers = {
-            "R1": "123",
-            "R2": "123131313"
+        self.devices = devices = {
+            'R1': Router(name='R1',
+                         ssh_information=SSHInformation(ip_addresses={'0': '10.250.250.1',
+                                                                      '1': '13.13.13.13'},),
+                         type='cisco',
+                         enable_password='ZSEDCxzaqwe',
+                         interfaces={'f0/0': RouterInterface(name='f0/0',
+                                                             statistics=InterfaceStatistics(
+                                                                 information=InformationStatistics(
+                                                                     collision=1,
+                                                                     late_collision=12,
+                                                                     broadcast=234,
+                                                                     packets_input=45,
+                                                                     packets_output=76,
+                                                                     duplex='full',
+                                                                     speed='100 Mb/s',
+                                                                     layer1_status='up',
+                                                                     layer2_status='up',
+                                                                     mtu=1500,
+                                                                     encapsulation='XD'
+                                                                 ),
+                                                                 errors=ErrorsStatistics(
+                                                                     input_errors=123,
+                                                                     output_errors=45,
+                                                                     output_buffer_failures=34,
+                                                                     runts=9,
+                                                                     giants=0,
+                                                                     crc=56,
+                                                                     frame=4,
+                                                                     throttles=9,
+                                                                     overrun=0,
+                                                                     ignored=0
+                                                                 )
+                                                             ),
+                                                             ip_address='23.45.67.43',
+                                                             subnet=24,
+                                                             ospf=InterfaceOSPFInformation(
+                                                                 network_type='broadcast',
+                                                                 cost=10,
+                                                                 state='DR',
+                                                                 passive_interface=False,
+                                                                 priority=10,
+                                                                 timers=OSPFTimers(hello_timer=5,
+                                                                                   dead_timer=20,
+                                                                                   wait_timer=20,
+                                                                                   retransmit_timer=30
+                                                                                   )
+                                                             )
+                                                             )
+                                     },
+                         static_routes=[StaticRoute(network=Network(network='192.168.1.0',
+                                                                    mask=24,
+                                                                    wildcard='0.0.0.255'
+                                                                    ),
+                                                    next_hop='12.345.32.1',
+                                                    interface='f0/0')
+                                        ],
+                         ospf=OSPFInformation(router_id='1.1.1.1',
+                                              auto_cost_reference_bandwidth=1000,
+                                              default_information_originate=False,
+                                              default_metric_of_redistributed_routes=10,
+                                              distance=110,
+                                              maximum_paths=2,
+                                              passive_interface_default=False,
+                                              redistribution=Redistribution(is_redistribute_static=True,
+                                                                            is_redistribute_bgp=False,
+                                                                            is_redistribute_rip=False,
+                                                                            is_redistribute_connected=True
+                                                                            ),
+                                              areas={'0': OSPFArea(id='0',
+                                                                   is_authentication_message_digest=False,
+                                                                   type='NSSA',
+                                                                   networks={'10.0.0.0/16': Network(network='10.0.0.0',
+                                                                                                    mask=16,
+                                                                                                    wildcard='0.0.255.255'
+                                                                                                    )
+                                                                             }
+                                                                   )
+                                                     }
+                                              ),
+                         ),
+            'R2': Router(name='R2',
+                         ssh_information=SSHInformation(ip_addresses={'0': '10.250.250.1'}),
+                         type='cisco',
+                         enable_password='ZSEDCxzaqwe',
+                         interfaces={'f0/0': RouterInterface(name='f0/0',
+                                                             statistics=InterfaceStatistics(
+                                                                 information=InformationStatistics(
+                                                                     collision=1,
+                                                                     late_collision=12,
+                                                                     broadcast=234,
+                                                                     packets_input=45,
+                                                                     packets_output=76,
+                                                                     duplex='full',
+                                                                     speed='100 Mb/s',
+                                                                     layer1_status='up',
+                                                                     layer2_status='up',
+                                                                     mtu=1500,
+                                                                     encapsulation='XD'
+                                                                 ),
+                                                                 errors=ErrorsStatistics(
+                                                                     input_errors=123,
+                                                                     output_errors=45,
+                                                                     output_buffer_failures=34,
+                                                                     runts=9,
+                                                                     giants=0,
+                                                                     crc=56,
+                                                                     frame=4,
+                                                                     throttles=9,
+                                                                     overrun=0,
+                                                                     ignored=0
+                                                                 )
+                                                             ),
+                                                             ip_address='23.45.67.43',
+                                                             subnet=24,
+                                                             ospf=InterfaceOSPFInformation(
+                                                                 network_type='broadcast',
+                                                                 cost=10,
+                                                                 state='DR',
+                                                                 passive_interface=False,
+                                                                 priority=10,
+                                                                 timers=OSPFTimers(hello_timer=5,
+                                                                                   dead_timer=20,
+                                                                                   wait_timer=20,
+                                                                                   retransmit_timer=30
+                                                                                   )
+                                                             )
+                                                             )
+                                     },
+                         static_routes=[StaticRoute(network=Network(network='192.168.1.0',
+                                                                    mask=24,
+                                                                    wildcard='0.0.0.255'
+                                                                    ),
+                                                    next_hop='12.345.32.1',
+                                                    interface='f0/0')
+                                        ],
+                         ospf=OSPFInformation(router_id='1.1.1.1',
+                                              auto_cost_reference_bandwidth=1000,
+                                              default_information_originate=False,
+                                              default_metric_of_redistributed_routes=10,
+                                              distance=110,
+                                              maximum_paths=2,
+                                              passive_interface_default=False,
+                                              redistribution=Redistribution(is_redistribute_static=True,
+                                                                            is_redistribute_bgp=False,
+                                                                            is_redistribute_rip=False,
+                                                                            is_redistribute_connected=True
+                                                                            ),
+                                              areas={'0': OSPFArea(id='0',
+                                                                   is_authentication_message_digest=False,
+                                                                   type='NSSA',
+                                                                   networks={
+                                                                       '10.0.0.0/16': Network(
+                                                                           network='10.0.0.0',
+                                                                           mask=None,
+                                                                           wildcard='0.0.255.255'
+                                                                       )
+                                                                   }
+                                                                   ),
+                                                     '10': OSPFArea(id='10',
+                                                                    is_authentication_message_digest=True,
+                                                                    type='NSSA',
+                                                                    networks={
+                                                                        '25.0.0.0/16': Network(
+                                                                            network='25.0.0.0',
+                                                                            mask=None,
+                                                                            wildcard='0.0.255.255'
+                                                                        )
+                                                                    }
+                                                                    ),
+                                                     '20': OSPFArea(id='20',
+                                                                    is_authentication_message_digest=True,
+                                                                    type='NSSA',
+                                                                    networks={
+                                                                        '25.0.0.0/16': Network(
+                                                                            network='25.0.0.0',
+                                                                            mask=None,
+                                                                            wildcard='0.0.255.255'
+                                                                        )
+                                                                    }
+                                                                    )
+                                                     }
+                                              ),
+                         rip=RIPInformation(auto_summary=True,
+                                            default_information_originate=False,
+                                            default_metric_of_redistributed_routes=14,
+                                            distance=115,
+                                            maximum_paths=2,
+                                            version=2,
+                                            redistribution=Redistribution(is_redistribute_static=True,
+                                                                          is_redistribute_bgp=False,
+                                                                          is_redistribute_ospf=False,
+                                                                          is_redistribute_connected=True,
+                                                                          ),
+                                            networks={'10.1.0.0': Network(network='10.1.0.0', mask=24),
+                                                      '192.168.3.0': Network(network='192.168.3.0', mask=24)}
+                                            ),
+                         bgp=BGPInformation(autonomous_system=666,
+                                            router_id='1.1.1.1',
+                                            default_information_originate=False,
+                                            default_metric_of_redistributed_routes=5,
+                                            timers=BGPTimers(keep_alive=20,
+                                                             hold_time=60
+                                                             ),
+                                            networks={'10.1.0.0 255.255.255.0': Network(network='10.1.0.0', mask=24)},
+                                            redistribution=Redistribution(is_redistribute_ospf=False,
+                                                                          is_redistribute_connected=True,
+                                                                          is_redistribute_static=False,
+                                                                          is_redistribute_rip=True),
+                                            neighbors={'10.22.33.2': BGPNeighbor(ip_address='10.22.33.2',
+                                                                                 remote_as=456,
+                                                                                 state='COS',
+                                                                                 ebgp_multihop=3,
+                                                                                 next_hop_self=False,
+                                                                                 shutdown=False,
+                                                                                 timers=BGPTimers(keep_alive=30,
+                                                                                                  hold_time=90))}
+                                            )
+                         )
         }
-        # Loading data to listbox
-        for router in routers:
-            item_frame = tk.Frame(self.lstbxRouters)
-            item_frame.pack(fill='x')
-            label = tk.Label(item_frame, text=router)
-            label.pack(side='left', padx=5)
-            button = tk.Button(item_frame, text='Action')
-            button.pack(side='right')
 
-        # Buttons
-        btnAll=tk.Button(root)
-        btnAll["bg"] = "#f0f0f0"
-        btnAll["fg"] = "#000000"
-        btnAll["justify"] = "center"
-        btnAll["text"] = "All"
-        btnAll.place(x=5,y=5,width=70,height=30)
-        btnAll["command"] = self.btnAll_command
+        treeColumns = ()  # default
 
-        btnRIP=tk.Button(root)
-        btnRIP["bg"] = "#f0f0f0"
-        btnRIP["fg"] = "#000000"
-        btnRIP["justify"] = "center"
-        btnRIP["text"] = "RIP"
-        btnRIP.place(x=75,y=5,width=70,height=30)
-        btnRIP["command"] = self.btnRIP_command
+        # This frame contains scrollbars and treeview widget
+        treeFrame = tk.Frame(self.root)
+        treeFrame.grid(column=0, row=0, padx=2, pady=2, columnspan=4, rowspan=5, sticky='NSEW')
+        treeFrame.configure(bg=config.BG_COLOR)
+        treeFrame.grid_rowconfigure(0, weight=1)
+        treeFrame.grid_columnconfigure(0, weight=1)
 
-        btnOSPF=tk.Button(root)
-        btnOSPF["bg"] = "#f0f0f0"
-        btnOSPF["fg"] = "#000000"
-        btnOSPF["justify"] = "center"
-        btnOSPF["text"] = "OSPF"
-        btnOSPF.place(x=145,y=5,width=70,height=30)
-        btnOSPF["command"] = self.btnOSPF_command
+        verticalScrollbar = tk.Scrollbar(treeFrame, orient='vertical')
+        verticalScrollbar.grid(column=1, row=0, sticky='NS')
 
-        btnBGP=tk.Button(root)
-        btnBGP["bg"] = "#f0f0f0"
-        btnBGP["fg"] = "#000000"
-        btnBGP["justify"] = "center"
-        btnBGP["text"] = "BGP"
-        btnBGP.place(x=215,y=5,width=70,height=30)
-        btnBGP["command"] = self.btnBGP_command
+        horizontalScrollbar = tk.Scrollbar(treeFrame, orient='horizontal')
+        horizontalScrollbar.grid(column=0, row=1, sticky='EW')
 
-        btnAddRouter=tk.Button(root)
-        btnAddRouter["bg"] = "#f0f0f0"
-        btnAddRouter["fg"] = "#000000"
-        btnAddRouter["justify"] = "center"
-        btnAddRouter["text"] = "Add Router"
-        btnAddRouter.place(x=695,y=100,width=100,height=30)
-        btnAddRouter["command"] = self.btnAddRouter_command
+        self.tree = ttk.Treeview(treeFrame, columns=treeColumns, show='headings',
+                                 xscrollcommand=horizontalScrollbar.set, yscrollcommand=verticalScrollbar.set)
+        self.tree.grid(column=0, row=0, sticky='NSEW')
 
-        btnSSHPassword=tk.Button(root)
-        btnSSHPassword["bg"] = "#f0f0f0"
-        btnSSHPassword["fg"] = "#000000"
-        btnSSHPassword["justify"] = "center"
-        btnSSHPassword["text"] = "SSH Password"
-        btnSSHPassword.place(x=695, y=5, width=100, height=30)
-        btnSSHPassword["command"] = ssh_password_gui.SSHPasswordGUI
+        verticalScrollbar.config(command=self.tree.yview)
+        horizontalScrollbar.config(command=self.tree.xview)
 
-        btnLogOut=tk.Button(root)
-        btnLogOut["bg"] = "#f0f0f0"
-        btnLogOut["fg"] = "#000000"
-        btnLogOut["justify"] = "center"
-        btnLogOut["text"] = "Log out"
-        btnLogOut.place(x=725,y=735,width=70,height=30)
-        btnLogOut["command"] = self.btnLogOut_command
+        # Style configuration, font and fontsize -> changeable in config.py
+        style = ttk.Style()
+        style.configure('Custom.Treeview', font=(config.FONT, config.FONTSIZE))
+        style.configure('Treeview.Heading', font=(config.FONT, config.FONTSIZE))
+        self.tree.configure(style='Custom.Treeview')
 
-        btnQuit=tk.Button(root)
-        btnQuit["bg"] = "#f0f0f0"
-        btnQuit["fg"] = "#000000"
-        btnQuit["justify"] = "center"
-        btnQuit["text"] = "Quit"
-        btnQuit.place(x=725,y=765,width=70,height=30)
-        btnQuit["command"] = root.destroy
+        # MenuBar configuration
+        menubar = tk.Menu(self.root)
+        viewmenu = tk.Menu(menubar, tearoff=False)
+        viewmenu.add_command(label='All', command=self.show_view_all)
+        viewmenu.add_command(label='RIP', command=self.show_view_rip)
+        viewmenu.add_command(label='OSPF', command=self.show_view_ospf)
+        viewmenu.add_command(label='BGP', command=self.show_view_bgp)
+        menubar.add_cascade(label='View', menu=viewmenu)
 
-        root.mainloop()
+        filemenu = tk.Menu(menubar, tearoff=False)
 
-    def btnSSHPassword_command(self):
-        return
-    def btnLogOut_command(self):
-        return
-    def btnAddRouter_command(self):
-        return
-    def btnAll_command(self):
-        return
-    def btnRIP_command(self):
-        return
-    def btnBGP_command(self):
-        return
-    def btnOSPF_command(self):
-        return
+        def save_project():
+            files = [('All Files', '*.*'),
+                     ('L3 Project Files', '*.jkal')]
+            file = asksaveasfile(filetypes=files)
+        filemenu.add_command(label='Save project...', command=save_project)
+
+        def open_project():
+            files = [('All Files', '*.*'),
+                     ('L3 Project Files', '*.jkal')]
+            file = askopenfilename(filetypes=files)
+        filemenu.add_command(label='Open project...', command=open_project)
+
+        menubar.add_cascade(label='File', menu=filemenu)
+
+        self.root.config(menu=menubar)
+
+        # Frame containing SSH Button and Add Router
+        btnFrameAddSSH = tk.Frame(self.root)
+        btnFrameAddSSH.grid(column=5, row=0, padx=10)
+
+        self.btnAddRouter = tk.Button(btnFrameAddSSH, text='Add Router')
+        self.btnAddRouter.grid(column=0, row=0, sticky='EW')
+
+        btnSSHPassword = tk.Button(btnFrameAddSSH, text='SSH Password', padx=2, pady=2,
+                                   command=ssh_password_gui.SSHPasswordGUI)
+        btnSSHPassword.grid(column=0, row=1)
+
+        # Frame containing Logout and Quit buttons
+        btnFrameLogoutQuit = tk.Frame(self.root)
+        btnFrameLogoutQuit.grid(column=5, row=4, sticky='NESW', padx=10)
+        btnFrameLogoutQuit.configure(bg=config.BG_COLOR)
+        btnLogOut = tk.Button(btnFrameLogoutQuit, text='Log Out', command=self.log_out)
+        btnLogOut.grid(column=0, row=0, sticky='EWS')
+
+        QUIT_ICON = Image.open(config.QUIT_ICON_PATH)
+        QUIT_ICON = QUIT_ICON.resize((24, 24))
+        quit_icon = ImageTk.PhotoImage(QUIT_ICON)
+        btnQuit = tk.Button(btnFrameLogoutQuit, text='Quit', image=quit_icon, compound=tk.RIGHT,
+                            command=self.root.destroy)
+        btnQuit.grid(column=0, row=1, sticky='EWS')
+
+        consoleFrame = tk.Frame(self.root)
+        consoleScrollbar = tk.Scrollbar(consoleFrame, orient='vertical')
+        consoleScrollbar.pack(side='right', fill='y')
+
+        self.consoleBox = tk.Listbox(consoleFrame)
+        self.consoleBox.pack(side='left', fill='both', expand=True)
+        self.consoleBox.config(yscrollcommand=consoleScrollbar.set)
+
+        consoleScrollbar.config(command=self.consoleBox.yview)
+        consoleFrame.grid(column=0, row=5, sticky='NESW', padx=2, columnspan=4)
+
+        for i in range(1, 100):
+            self.console_command('test' + str(i))
+
+        # For first data insert load 'all' view
+        self.show_view_all()
+        self.root.mainloop()
+
+    # This function exits 'main_gui' view and launches loginGUI
+    def log_out(self) -> None:
+        self.root.destroy()
+        LoginGUI()
+        return None
+
+    # This function inserts data into treeview widget and binds <MB-3> according to 'all' view
+    def show_view_all(self) -> None:
+        self.clear_tree()
+
+        treeColumns = ('No', 'Hostname', 'Type', 'RIP', 'OSPF', 'BGP')
+        self.tree.configure(columns=treeColumns)
+
+        iid = 0
+        for i, (router_name, router) in enumerate(self.devices.items(), start=1):
+
+            rip = ''
+            if router.rip is not None:
+                rip = 'Enabled'
+            ospf = ''
+            if router.ospf is not None:
+                ospf = 'Enabled'
+            bgp = ''
+            if router.bgp is not None:
+                bgp = 'Enabled'
+
+            values = (i, router.name, router.type, rip, ospf, bgp)
+            self.tree.insert('', tk.END, values=values, iid=iid)
+
+            iid += 1
+
+        self.tree.configure(columns=treeColumns)
+
+        self.tree.heading(treeColumns[0], text='No', anchor='w')
+        self.tree.column(treeColumns[0], minwidth=30, width=30, stretch=False)
+
+        self.tree.heading(treeColumns[1], text='Hostname', anchor='w')
+        self.tree.column(treeColumns[1], minwidth=70, width=70, stretch=True)
+
+        self.tree.heading(treeColumns[2], text='Type', anchor='w')
+        self.tree.column(treeColumns[2], minwidth=50, width=50, stretch=True)
+
+        self.tree.heading(treeColumns[3], text='RIP', anchor='w')
+        self.tree.column(treeColumns[3], minwidth=50, width=50, stretch=True)
+
+        self.tree.heading(treeColumns[4], text='OSPF', anchor='w')
+        self.tree.column(treeColumns[4], minwidth=50, width=50, stretch=True)
+
+        self.tree.heading(treeColumns[5], text='BGP', anchor='w')
+        self.tree.column(treeColumns[5], minwidth=50, width=50, stretch=True)
+
+        # This function defines pop-up menu for 'all' view
+        def show_menu_all(event):
+            item = self.tree.identify_row(event.y)
+            self.tree.selection_set(item)
+            if item:
+                try:
+                    hostname = self.tree.item(item)['values'][1]
+                    selected_router = self.devices.get(hostname)
+                    menu.post(event.x_root, event.y_root)
+                    menu.entryconfigure('SSH Addresses', command=lambda: SSHConnectionsGUI(selected_router))
+                    menu.entryconfigure('Interfaces', command=lambda: show_interfaces_details(selected_router))
+                    menu.entryconfigure('Static routes', command=lambda: show_static_routes(selected_router))
+                except IndexError():
+                    pass
+
+        # This function launches InterfacesDetails window when 'Interfaces' is clicked from menu on <MB-3>
+        def show_interfaces_details(selected_router: Router):
+            if selected_router:
+                InterfacesDetails(selected_router)
+            return None
+
+        def show_static_routes(selected_router: Router) -> None:
+            if selected_router:
+                StaticRoutesGUI(selected_router)
+            return None
+
+        def show_ssh_addresses(selected_router: Router) -> None:
+            if selected_router:
+                SSHConnectionsGUI(selected_router)
+            return None
+
+        menu = tk.Menu(self.root, tearoff=False)
+        menu.add_command(label='SSH Addresses', command=show_ssh_addresses)
+        menu.add_command(label='Interfaces', command=show_interfaces_details)
+        menu.add_command(label='Static routes', command=show_static_routes)
+        self.tree.bind('<Button-3>', show_menu_all)
+
+        def add_router_all():
+            AddRouterGUI(self)
+
+        self.btnAddRouter.config(command=add_router_all)
+
+        return None
+
+    def show_view_rip(self) -> None:
+        self.clear_tree()
+
+        treeColumns = ('No', 'Hostname', 'Auto-summary', 'Default information originate', 'Default metric',
+                       'Distance', 'Maximum paths', 'Version')
+        self.tree.configure(columns=treeColumns)
+
+        self.tree.heading(treeColumns[0], text='No', anchor='w')
+        self.tree.column(treeColumns[0], minwidth=30, width=30, stretch=False)
+
+        self.tree.heading(treeColumns[1], text='Hostname', anchor='w')
+        self.tree.column(treeColumns[1], minwidth=70, width=70, stretch=False)
+
+        self.tree.heading(treeColumns[2], text='Auto-summary', anchor='w')
+        self.tree.column(treeColumns[2], minwidth=50, width=100, stretch=False)
+
+        self.tree.heading(treeColumns[3], text='Default information originate', anchor='w')
+        self.tree.column(treeColumns[3], minwidth=100, width=200, stretch=False)
+
+        self.tree.heading(treeColumns[4], text='Default metric', anchor='w')
+        self.tree.column(treeColumns[4], minwidth=70, width=100, stretch=False)
+
+        self.tree.heading(treeColumns[5], text='Distance', anchor='w')
+        self.tree.column(treeColumns[5], minwidth=50, width=70, stretch=False)
+
+        self.tree.heading(treeColumns[6], text='Maximum paths', anchor='w')
+        self.tree.column(treeColumns[6], minwidth=50, width=120, stretch=False)
+
+        self.tree.heading(treeColumns[7], text='Version', anchor='w')
+        self.tree.column(treeColumns[7], minwidth=50, width=70, stretch=False)
+
+        # Data insert
+        iid = 0
+        for i, (router_name, router) in enumerate(self.devices.items(), start=1):
+            if router.rip is not None:
+                values = (iid + 1, router.name, router.rip.auto_summary, router.rip.default_information_originate,
+                          router.rip.default_metric_of_redistributed_routes, router.rip.distance,
+                          router.rip.maximum_paths, router.rip.version)
+                self.tree.insert('', tk.END, iid=iid, values=values)
+                iid += 1
+
+        # This function shows menu when <MB-3> is clicked with treeview item selected
+        def show_menu_rip(event):
+            item = self.tree.identify_row(event.y)
+            self.tree.selection_set(item)
+            if item:
+                try:
+                    hostname = self.tree.item(item)['values'][1]
+                    selected_router = self.devices.get(hostname)
+                    if selected_router.rip is not None:
+                        menu.post(event.x_root, event.y_root)
+                        menu.entryconfigure('Edit', command=lambda: RIPEditGUI(selected_router, self))
+                        menu.entryconfigure('Networks', command=lambda: RIPNetworksGUI(selected_router))
+                        menu.entryconfigure('Redistribution', command=lambda: RIPRedistributionGUI(selected_router))
+                except IndexError:
+                    pass
+
+        menu = tk.Menu(self.root, tearoff=False)
+        menu.add_command(label='Edit', command=RIPEditGUI)
+        menu.add_command(label='Networks', command=RIPNetworkAddGUI)
+        menu.add_command(label='Redistribution', command=RIPRedistributionGUI)
+        self.tree.bind('<Button-3>', show_menu_rip)
+
+        def add_router_rip():
+            RIPAddRouterGUI(self)
+        self.btnAddRouter.config(command=add_router_rip)
+
+        return None
+
+    def show_view_bgp(self) -> None:
+        self.clear_tree()
+
+        treeColumns = ('No', 'Hostname', 'AS', 'Router ID', 'Default information originate',
+                       'Default metric of redistributed routers', 'Keep alive timer', 'Hold time timer')
+        self.tree.configure(columns=treeColumns)
+
+        self.tree.heading(treeColumns[0], text='No', anchor='w')
+        self.tree.column(treeColumns[0], minwidth=30, width=30, stretch=False)
+
+        self.tree.heading(treeColumns[1], text='Hostname', anchor='w')
+        self.tree.column(treeColumns[1], minwidth=70, width=70, stretch=False)
+
+        self.tree.heading(treeColumns[2], text='AS', anchor='w')
+        self.tree.column(treeColumns[2], minwidth=50, width=100, stretch=False)
+
+        self.tree.heading(treeColumns[3], text='Router ID', anchor='w')
+        self.tree.column(treeColumns[3], minwidth=80, width=80, stretch=False)
+
+        self.tree.heading(treeColumns[4], text='Default information originate', anchor='w')
+        self.tree.column(treeColumns[4], minwidth=70, width=200, stretch=False)
+
+        self.tree.heading(treeColumns[5], text='Default metric of redistributed routes', anchor='w')
+        self.tree.column(treeColumns[5], minwidth=50, width=230, stretch=False)
+
+        self.tree.heading(treeColumns[6], text='Keep alive timer', anchor='w')
+        self.tree.column(treeColumns[6], minwidth=50, width=120, stretch=False)
+
+        self.tree.heading(treeColumns[7], text='Hold time timer', anchor='w')
+        self.tree.column(treeColumns[7], minwidth=50, width=120, stretch=False)
+
+        # Data insert
+        iid = 0
+        for i, (router_name, router) in enumerate(self.devices.items(), start=1):
+            if router.bgp is not None:
+                values = (iid + 1, router.name, router.bgp.autonomous_system, router.bgp.router_id,
+                          router.bgp.default_information_originate, router.bgp.default_metric_of_redistributed_routes,
+                          router.bgp.timers.keep_alive, router.bgp.timers.hold_time)
+                self.tree.insert('', tk.END, iid=iid, values=values)
+                iid += 1
+
+        def show_menu_bgp(event):
+            item = self.tree.identify_row(event.y)
+            self.tree.selection_set(item)
+            if item:
+                try:
+                    hostname = self.tree.item(item)['values'][1]
+                    selected_router = self.devices.get(hostname)
+                    if selected_router.bgp is not None:
+                        menu.post(event.x_root, event.y_root)
+                        menu.entryconfigure('Edit', command=lambda: BGPEditGUI(selected_router, self))
+                        menu.entryconfigure('Neighbors', command=lambda: BGPNeighborsGUI(selected_router))
+                        menu.entryconfigure('Redistribution', command=lambda: BGPRedistributionGUI(selected_router))
+
+                except IndexError:
+                    pass
+
+        menu = tk.Menu(self.root, tearoff=False)
+        menu.add_command(label='Edit', command=BGPEditGUI)
+        menu.add_command(label='Neighbors', command=BGPNeighborsGUI)
+        menu.add_command(label='Redistribution', command=BGPRedistributionGUI)
+        self.tree.bind('<Button-3>', show_menu_bgp)
+
+        self.btnAddRouter.config(command=lambda: BGPAddRouterGUI(self))
+
+        return None
+
+    # This function inserts ospf data into treeview widget and binds <MB-3> according to 'ospf' view
+    def show_view_ospf(self) -> None:
+        self.clear_tree()
+
+        treeColumns = ('No', 'Hostname', 'Router ID', 'Areas', 'Auto cost bandwidth', 'Default information originate',
+                       'Default metric of redistributed routes', 'Distance', 'Maximum paths')
+        self.tree.configure(columns=treeColumns)
+
+        # Data insert
+        for iid, (router_name, router) in enumerate(self.devices.items(), start=1):
+            if router.ospf is not None:
+                router_areas = list(router.ospf.areas.keys())
+                ospf_area = router_areas[0]
+
+                values = (iid, router.name, router.ospf.router_id, ospf_area, router.ospf.auto_cost_reference_bandwidth,
+                          router.ospf.default_information_originate, router.ospf.default_metric_of_redistributed_routes,
+                          router.ospf.distance, router.ospf.maximum_paths)
+                self.tree.insert('', tk.END, values=values, iid=iid)
+
+                if len(router_areas) > 1:
+                    for area in router_areas[1:]:
+                        values = ('', router.name, '', router.ospf.areas[area].id)
+                        self.tree.insert(iid, tk.END, values=values)
+
+        self.tree.heading(treeColumns[0], text='No', anchor='w')
+        self.tree.column(treeColumns[0], minwidth=30, width=30, stretch=False)
+
+        self.tree.heading(treeColumns[1], text='Hostname', anchor='w')
+        self.tree.column(treeColumns[1], minwidth=70, width=70, stretch=False)
+
+        self.tree.heading(treeColumns[2], text='Router ID', anchor='w')
+        self.tree.column(treeColumns[2], minwidth=70, width=70, stretch=False)
+
+        self.tree.heading(treeColumns[3], text='Areas', anchor='w')
+        self.tree.column(treeColumns[3], minwidth=50, width=50, stretch=False)
+
+        self.tree.heading(treeColumns[4], text='Auto cost reference bandwidth', anchor='w')
+        self.tree.column(treeColumns[4], minwidth=50, width=200, stretch=False)
+
+        self.tree.heading(treeColumns[5], text='Default information originate', anchor='w')
+        self.tree.column(treeColumns[5], minwidth=50, width=200, stretch=False)
+
+        self.tree.heading(treeColumns[6], text='Default metric of redistributed routes', anchor='w')
+        self.tree.column(treeColumns[6], minwidth=50, width=230, stretch=False)
+
+        self.tree.heading(treeColumns[7], text='Distance', anchor='w')
+        self.tree.column(treeColumns[7], minwidth=50, width=70, stretch=False)
+
+        self.tree.heading(treeColumns[8], text='Maximum paths', anchor='w')
+        self.tree.column(treeColumns[8], minwidth=50, width=100, stretch=False)
+
+        # This function shows menu when <MB-3> is clicked with treeview item selected
+        def show_menu_ospf(event):
+            item = self.tree.identify_row(event.y)
+            self.tree.selection_set(item)
+            if item:
+                try:
+                    hostname = str(self.tree.item(item)['values'][1])
+                    selected_router = self.get_router(hostname)
+                    if selected_router.ospf is not None:
+                        area = self.tree.item(item)['values'][3]
+                        selected_area = selected_router.ospf.areas.get(str(area))
+
+                        menu.post(event.x_root, event.y_root)
+                        menu.entryconfigure('Interfaces', command=lambda: show_interfaces_details(selected_router))
+                        menu.entryconfigure('Area', command=lambda: run_ospf_area_configuration_gui(selected_router,
+                                                                                                    selected_area))
+                        menu.entryconfigure('Redistribution', command=lambda: show_redistribution(selected_router))
+                except IndexError:
+                    pass
+
+        def show_interfaces_details(selected_router: Router) -> None:
+            if selected_router:
+                OSPFInterfaceDetailsGUI(selected_router)
+            return None
+
+        def run_ospf_area_configuration_gui(selected_router: Router, selected_area: OSPFArea) -> None:
+            if selected_area:
+                OSPFAreaConfigurationGUI(selected_router, selected_area, self)
+            return None
+
+        def show_redistribution(selected_router: Router) -> None:
+            if selected_router:
+                OSPFRedistributionGUI(selected_router)
+            return None
+
+        menu = tk.Menu(self.root, tearoff=False)
+        menu.add_command(label='Interfaces', command=OSPFInterfaceDetailsGUI)
+        menu.add_command(label='Area', command=OSPFAreaConfigurationGUI)
+        menu.add_command(label='Redistribution', command=OSPFRedistributionGUI)
+        self.tree.bind('<Button-3>', show_menu_ospf)
+
+        self.btnAddRouter.config(command=lambda: OSPFAddRouterGUI(self))
+
+        return None
+
+    # This function clears contents of treeview
+    def clear_tree(self) -> None:
+        for item in self.tree.get_children():
+            self.tree.delete(item)
+        treeColumns = ()
+        self.tree.configure(columns=treeColumns)
+        return None
+
+    def console_command(self, text: str) -> None:
+        self.consoleBox.insert(tk.END, text)
+        return None
+
+    def update_rip_tree(self, rip: RIPInformation) -> None:
+        item = self.tree.selection()
+        self.tree.item(item, values=(self.tree.item(item)['values'][0], self.tree.item(item)['values'][1],
+                                     rip.auto_summary, rip.default_information_originate,
+                                     rip.default_metric_of_redistributed_routes, rip.distance,
+                                     rip.maximum_paths, rip.version))
+        return None
+
+    def update_bgp_tree(self, bgp: BGPInformation) -> None:
+        item = self.tree.selection()
+        self.tree.item(item, values=(self.tree.item(item)['values'][0], self.tree.item(item)['values'][1],
+                                     bgp.autonomous_system, bgp.router_id, bgp.default_information_originate,
+                                     bgp.default_metric_of_redistributed_routes, bgp.timers.keep_alive,
+                                     bgp.timers.hold_time))
+        return None
+
+    def router_exists(self, hostname: str) -> bool:
+        for k, router in enumerate(self.devices.values(), start=1):
+            if router.name == hostname:
+                return True
+        return False
+
+    def add_router_all(self, router: Router) -> None:
+        self.devices[router.name] = router
+        last_item = self.tree.get_children()[-1]
+        last_index = self.tree.index(last_item)
+        no = last_index + 2
+        values = (no, router.name, router.type, '', '', '')
+        self.tree.insert('', tk.END, values=values)
+        return None
+
+    def add_router_rip(self, router: Router) -> None:
+        self.devices[router.name] = router
+        last_item = self.tree.get_children()[-1]
+        last_index = self.tree.index(last_item)
+        no = last_index + 2
+        values = (no, router.name, router.rip.auto_summary, router.rip.default_information_originate,
+                  router.rip.default_metric_of_redistributed_routes, router.rip.distance,
+                  router.rip.maximum_paths, router.rip.version)
+        self.tree.insert('', tk.END, values=values)
+        return None
+
+    def add_router_ospf(self, router: Router) -> None:
+        self.devices[router.name] = router
+        last_item = self.tree.get_children()[-1]
+        last_index = self.tree.index(last_item)
+        no = last_index + 2
+
+        values = (no, router.name, router.ospf.router_id, list(router.ospf.areas.keys())[0])
+        self.tree.insert('', tk.END, values=values)
+        return None
+
+    def add_router_bgp(self, router: Router) -> None:
+        self.devices[router.name] = router
+        last_item = self.tree.get_children()[-1]
+        last_index = self.tree.index(last_item)
+        no = last_index + 2
+
+        values = (no, router.name, router.bgp.autonomous_system, router.bgp.router_id,
+                  router.bgp.default_information_originate, router.bgp.default_metric_of_redistributed_routes,
+                  router.bgp.timers.keep_alive, router.bgp.timers.hold_time)
+        self.tree.insert('', tk.END, values=values)
+        return None
+
+    def get_router(self, hostname: str) -> Router:
+        return self.devices.get(hostname)
+
+    def get_devices(self) -> dict:
+        return self.devices
+
 
 if __name__ == "__main__":
     MainGUI()
