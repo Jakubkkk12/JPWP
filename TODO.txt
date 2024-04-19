@@ -1,0 +1,22 @@
+1 - Brak okienka Login
+2 - Tylko główne okienko
+3 - Dodać przycisk umożliwiający dodanie username i hasła, który bedzie użyty do ssh
+4 - Jak rozwija się lista np. w OSPF aby zobaczyć areas, dodać ** w kolumnie No aby zaznaczyć aktualny poziom
+DONE: 5 - Wybór pliku tylko z .jkal
+6 - Po wyborze pliku dodanie okienka które pozyska hasło (klucz AES - 16znaków podstawowych ACSII) od urzytkkownika
+7 - To samo do opcji Save as...
+8 - Dodać opcję Save (Nie będzie pytać urzytkownika o gdzie zapisać plik, TYLKO zapyta o klucz jakim zapisać)
+9 - Dodać obsłógę Ctrl+S do Save
+DONE: 10 - Dodać klasę Project (zawiera: path, dict_devices, current_user, metody do zapisu/otwarcia projektu)
+DONE: 11 - ZREFAKTORYZOWAC FRONTEDNT dla klasy Projekt
+12 - Dodać przycisk w ALL SET enable password (wybór routerów i nadanie im hasła enable)
+13 - Umożliwić dostęp do zmiennej user w okienkach zmiany/dodani usawien na router
+14 - Nie dodaje rozszerzenia na koniec pliku i nie zwraca str tylko IO
+15 - W OSPF Redystrybucja ciągle jest zaznaczone RIP (coś w GUI)
+16 - nie modyfikujemy Autonomms system bo to wymaga postaienia całego bgp od nowa 
+17 - Brak update source
+18 - Potrzebuję informacji newtork i maske aby usunac staticroute
+
+Zadania dla studentów:
+ZADANIE1:
+Zrefaktoruj kod tak aby zrobić jedno uniwersalne okienko RedistributionGUI (zamiast BGPRedistributionGUI, OSPFRedistributionGUI i RIPRedistributionGUI) i móc je zaaplikować do wszystkich protokołów routingu.
