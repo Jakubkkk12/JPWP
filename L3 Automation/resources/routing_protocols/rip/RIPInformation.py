@@ -14,6 +14,10 @@ class RIPInformation:
     redistribution: Redistribution = None
     networks: dict[str, Network] = None
 
+    def __post_init__(self):
+        if self.redistribution is None:
+            self.redistribution = Redistribution()
+
     def is_auto_summary_different(self, new_auto_summary_value: bool) -> bool:
         if self.auto_summary == new_auto_summary_value:
             return False

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from resources.devices.NetworkDevice import NetworkDevice
+from resources.devices.Router import Router
 from resources.user.User import User
 from resources.login_and_dataloading.operating_on_project_files import (get_aes_cipher, get_device,
                                                                         get_list_of_devices_in_json_from)
@@ -8,8 +8,12 @@ from resources.login_and_dataloading.operating_on_project_files import (get_aes_
 @dataclass(slots=True, kw_only=True)
 class Project:
     file_path: str = ''
-    devices: dict[str, NetworkDevice]
+    devices: dict[str, Router] = None
     current_user: User = None
+
+    def __post_init__(self):
+        if self.devices is None:
+            self.devices = {}
 
     def check_file_extension(self) -> None:
         if not self.file_path.endswith('.jkal'):

@@ -30,6 +30,10 @@ class BGPInformation:
     networks: dict[str, Network] = None
     neighbors: dict[str, BGPNeighbor] = None
 
+    def __post_init__(self):
+        if self.redistribution is None:
+            self.redistribution = Redistribution()
+
     def is_router_id_different(self, new_router_id_value: str) -> bool:
         if self.router_id == new_router_id_value:
             return False
