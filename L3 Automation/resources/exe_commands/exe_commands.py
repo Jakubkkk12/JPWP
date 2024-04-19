@@ -3,9 +3,10 @@ from netmiko import BaseConnection
 from resources.devices.Router import Router
 from resources.user.User import User
 from resources.routing_protocols.StaticRoute import StaticRoute
-from resources.routing_protocols.rip import RIPInformation
-from resources.routing_protocols.ospf import OSPFInformation, OSPFArea
-from resources.routing_protocols.bgp import BGPInformation
+from resources.routing_protocols.rip.RIPInformation import RIPInformation
+from resources.routing_protocols.ospf.OSPFInformation import OSPFInformation
+from resources.routing_protocols.ospf.OSPFArea import OSPFArea
+from resources.routing_protocols.bgp.BGPInformation import BGPInformation
 from resources.routing_protocols import Redistribution
 from resources.interfaces import RouterInterface
 
@@ -16,6 +17,7 @@ from resources.interfaces import RouterInterface
 def get_bgp(connection: BaseConnection | None, router: Router, user: User = None) -> BGPInformation | None:
     if 'cisco_ios' == router.type:
         return cisco.get_bgp(connection, router, user)
+    return None
 
 
 def update_bgp(router: Router, user: User, router_id: str, default_information_originate: bool,

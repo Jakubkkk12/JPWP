@@ -23,9 +23,10 @@ from resources.cisco.getting_static_routes import (get_static_routes, get_static
 from resources.devices.Router import Router
 from resources.user.User import User
 from resources.routing_protocols.StaticRoute import StaticRoute
-from resources.routing_protocols.rip import RIPInformation
-from resources.routing_protocols.ospf import OSPFInformation, OSPFArea
-from resources.routing_protocols.bgp import BGPInformation
+from resources.routing_protocols.rip.RIPInformation import RIPInformation
+from resources.routing_protocols.ospf.OSPFArea import OSPFArea
+from resources.routing_protocols.ospf.OSPFInformation import OSPFInformation
+from resources.routing_protocols.bgp.BGPInformation import BGPInformation
 from resources.routing_protocols import Redistribution
 from resources.interfaces import RouterInterface
 
