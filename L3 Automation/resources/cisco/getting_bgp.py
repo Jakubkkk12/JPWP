@@ -13,6 +13,7 @@ from resources.cisco.getting_routing_protocol import (get_routing_protocol_defau
                                                       )
 from resources.constants import NETWORK_MASK_REVERSED, NETWORK_MASK
 
+
 ########################################################################################################################
 # Parsing functions:
 
@@ -105,7 +106,7 @@ def get_bgp_neighbor_remote_as(neighbor: str, sh_run_sec_bgp_output: str) -> int
     pattern = f'(neighbor {neighbor} remote-as .*)'
     match = re.search(pattern, sh_run_sec_bgp_output)
     if match:
-        remote_as = int(match.group()[len(f'(neighbor {neighbor} remote-as)'):])
+        remote_as = int(match.group()[len(f'neighbor {neighbor} remote-as'):])
         return remote_as
     return None
 
@@ -215,6 +216,7 @@ def get_bgp_information(sh_run_sec_bgp_output: str, sh_bgp_summary_output: str) 
                                               neighbors=neighbors)
     return bgp_info
 
+
 ########################################################################################################################
 # Configure functions:
 
@@ -305,10 +307,15 @@ def get_bgp_neighbor_conf_command_update_source(neighbor_id: str, update_source:
     return f'neighbor {neighbor_id} update-source {update_source}'
 
 
-def get_bgp_neighbor_conf_command_timers(neighbor_id: str, timers: BGPTimers, keep_alive: int, hold_on: int) -> str | None:
+def get_bgp_neighbor_conf_command_timers(neighbor_id: str, keep_alive: int, hold_on: int) -> str:
+    return f'neighbor {neighbor_id} timers {keep_alive} {hold_on}'
+
+
+def get_bgp_neighbor_conf_command_timers_as_str(neighbor_id: str, timers: BGPTimers, keep_alive: int,
+                                                hold_on: int) -> str | None:
     if (timers.is_keep_alive_different(new_keep_alive_value=keep_alive)
             or timers.is_hold_time_different(new_hold_time_value=hold_on)):
-        return f'neighbor {neighbor_id} timers {keep_alive} {hold_on}'
+        return get_bgp_neighbor_conf_command_timers(neighbor_id, keep_alive, hold_on)
     return None
 
 
@@ -332,12 +339,30 @@ def get_bgp_conf_neighbor_commands_for_update_as_list(neighbors: dict[str, BGPNe
     if neighbors[neighbor_id].is_update_source_different(new_update_source_value=update_source):
         list_of_commands.append(get_bgp_neighbor_conf_command_update_source(neighbor_id, update_source))
 
-    bgp_neighbor_conf_command_timers: str | None = get_bgp_neighbor_conf_command_timers(neighbor_id,
-                                                                                        neighbors[neighbor_id].timers,
-                                                                                        keep_alive, hold_on)
+    bgp_neighbor_conf_command_timers: str | None = get_bgp_neighbor_conf_command_timers_as_str(neighbor_id,
+                                                                                               neighbors[
+                                                                                                   neighbor_id].timers,
+                                                                                               keep_alive, hold_on)
     if bgp_neighbor_conf_command_timers is not None:
         list_of_commands.append(bgp_neighbor_conf_command_timers)
 
     if len(list_of_commands) > 0:
         return list_of_commands
     return None
+
+
+def get_bgp_conf_neighbor_commands_for_add_as_list(neighbor_id: str,
+                                                   remote_as: int, ebgp_multihop: int, next_hop_self: bool,
+                                                   shutdown: bool, keep_alive: int,
+                                                   hold_on: int) -> list[str]:
+    list_of_commands: list[str] = [get_bgp_neighbor_conf_command_remote_as(neighbor_id, remote_as)]
+    if ebgp_multihop != 1:
+        list_of_commands.append(get_bgp_neighbor_conf_command_ebgp_multihop(neighbor_id, ebgp_multihop))
+    if next_hop_self is True:
+        list_of_commands.append(get_bgp_neighbor_conf_command_next_hop_self(neighbor_id, next_hop_self))
+    if shutdown is True:
+        list_of_commands.append(get_bgp_neighbor_conf_command_shutdown(neighbor_id, shutdown))
+    if keep_alive != 60 or hold_on != 180:
+        list_of_commands.append(get_bgp_neighbor_conf_command_timers(neighbor_id, keep_alive, hold_on))
+
+    return list_of_commands

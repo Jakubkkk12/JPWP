@@ -1,14 +1,14 @@
-
 import tkinter as tk
 import tkinter.ttk
 from python_guis.gui_resources import config
 from python_guis.bgp.bgp_neighbor_add_gui import BGPNeighborAddGUI
 from resources.routing_protocols.bgp.BGPNeighbor import BGPNeighbor
 from resources.devices.Router import Router
-
+from resources.user.User import User
+from resources.exe_commands.exe_commands import remove_bgp_neighbor, get_bgp
 
 class BGPNeighborsGUI:
-    def __init__(self, router: Router):
+    def __init__(self, main_gui, router: Router, user: User):
         root = tk.Toplevel()
 
         # title
@@ -89,14 +89,17 @@ class BGPNeighborsGUI:
 
         treeFrame.grid(column=0, row=3, columnspan=2, sticky='NEWS')
 
-        def add_neighbor(router, self):
-            BGPNeighborAddGUI(router, self)
+        def add_neighbor(main_gui, bgp_neighbors_gui, router, user):
+            BGPNeighborAddGUI(main_gui, bgp_neighbors_gui, router, user)
 
         def remove_neighbor() -> None:
             item = self.tree.selection()
             ip = self.tree.item(item)['values'][1]
 
-            del router.bgp.neighbors[ip]
+            completed, output = remove_bgp_neighbor(router, user, ip)
+            if completed:
+                main_gui.console_commands(output)
+                router.bgp = get_bgp(None, router, user)
             self.tree.delete(item)
 
             # Update No
@@ -105,7 +108,7 @@ class BGPNeighborsGUI:
                 self.tree.item(child, values=(i,) + self.tree.item(child, 'values')[1:])
 
         buttonFrame = tk.Frame(root)
-        btnAdd = tk.Button(buttonFrame, text='Add', command=lambda: add_neighbor(router, self))
+        btnAdd = tk.Button(buttonFrame, text='Add', command=lambda: add_neighbor(main_gui, self, router, user))
         btnAdd.pack()
         btnRemove = tk.Button(buttonFrame, text='Remove', command=remove_neighbor)
         btnRemove.pack()

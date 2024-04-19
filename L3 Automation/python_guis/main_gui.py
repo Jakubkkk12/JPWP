@@ -639,8 +639,8 @@ class MainGUI:
                     selected_router = self.project.devices.get(hostname)
                     if selected_router.bgp is not None:
                         menu.post(event.x_root, event.y_root)
-                        menu.entryconfigure('Edit', command=lambda: BGPEditGUI(selected_router, self))
-                        menu.entryconfigure('Neighbors', command=lambda: BGPNeighborsGUI(selected_router))
+                        menu.entryconfigure('Edit', command=lambda: BGPEditGUI(self, selected_router, self.project.current_user))
+                        menu.entryconfigure('Neighbors', command=lambda: BGPNeighborsGUI(self, selected_router, self.project.current_user))
                         menu.entryconfigure('Redistribution', command=lambda: BGPRedistributionGUI(self,
                                                                                                    selected_router,
                                                                                                    self.project.current_user))

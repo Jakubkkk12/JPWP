@@ -4,13 +4,12 @@ from tkinter import messagebox
 
 from resources.devices.Router import Router
 from python_guis.gui_resources import config
-from resources.routing_protocols.bgp.BGPInformation import BGPInformation
-from resources.routing_protocols.bgp.BGPTimers import BGPTimers
-from resources.routing_protocols.rip.RIPInformation import RIPInformation
+from resources.exe_commands.exe_commands import update_bgp, get_bgp
+from resources.user.User import User
 
-
+# todo punkt 16
 class BGPEditGUI:
-    def __init__(self, router: Router, main_gui):
+    def __init__(self, main_gui, router: Router, user: User):
         root = tk.Toplevel()
         main_gui = main_gui
 
@@ -128,15 +127,13 @@ class BGPEditGUI:
 
         def apply_changes():
             if validate_changes():
-                timers = BGPTimers(keep_alive=int(entryKeepAlive.get()), hold_time=int(entryHoldTime.get()))
-                bgp = BGPInformation(autonomous_system=int(entryAutonomousSystem.get()),
-                                     router_id=get_id_address(),
-                                     default_information_originate=varDefaultInformationOriginate.get(),
-                                     default_metric_of_redistributed_routes=int(entryDefaultMetric.get()),
-                                     timers=timers)
-                router.bgp = bgp
-
-                main_gui.update_bgp_tree(bgp)
+                completed, output = update_bgp(router, user, get_id_address(), varDefaultInformationOriginate.get(),
+                                               int(entryDefaultMetric.get()), int(entryKeepAlive.get()),
+                                               int(entryHoldTime.get()))
+                if completed:
+                    router.bgp = get_bgp(None, router, user)
+                    main_gui.console_commands(output)
+                    main_gui.update_bgp_tree(router.bgp)
                 root.destroy()
 
         btnFrame = tk.Frame(root)

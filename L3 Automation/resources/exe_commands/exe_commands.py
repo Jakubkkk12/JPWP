@@ -45,6 +45,18 @@ def update_bgp_neighbor(router: Router, user: User, neighbor_id: str, remote_as:
                                          update_source, keep_alive, hold_on)
 
 
+def remove_bgp_neighbor(router: Router, user: User, neighbor_id: str):
+    if 'cisco_ios' == router.type:
+        return cisco.remove_bgp_neighbor(router, user, neighbor_id)
+
+
+def add_bgp_neighbor(router: Router, user: User, neighbor_id: str, remote_as: int, ebgp_multihop: int,
+                     next_hop_self: bool, shutdown: bool, keep_alive: int, hold_on: int) -> tuple[bool, str | None]:
+    if 'cisco_ios' == router.type:
+        return cisco.add_bgp_neighbor(router, user, neighbor_id, remote_as, ebgp_multihop, next_hop_self, shutdown,
+                                      keep_alive, hold_on)
+
+
 ########################################################################################################################
 # Section StaticRoutes
 
@@ -110,17 +122,20 @@ def update_ospf(router: Router, user: User, router_id: str, auto_cost_reference_
                                  passive_interface_default)
 
 
-def update_ospf_area(router: Router, user: User, area: OSPFArea, authentication_message_digest: bool, area_type: str) -> tuple[bool, str | None]:
+def update_ospf_area(router: Router, user: User, area: OSPFArea, authentication_message_digest: bool, area_type: str) -> \
+tuple[bool, str | None]:
     if 'cisco_ios' == router.type:
         return cisco.update_ospf_area(router, user, area, authentication_message_digest, area_type)
 
 
-def add_ospf_area_networks(router: Router, user: User, area: OSPFArea, network_and_wildcard: list[list[str]]) -> tuple[bool, str | None]:
+def add_ospf_area_networks(router: Router, user: User, area: OSPFArea, network_and_wildcard: list[list[str]]) -> tuple[
+    bool, str | None]:
     if 'cisco_ios' == router.type:
         return cisco.add_ospf_area_networks(router, user, area, network_and_wildcard)
 
 
-def remove_ospf_area_networks(router: Router, user: User, area: OSPFArea, network_and_wildcard: list[list[str]]) -> tuple[bool, str | None]:
+def remove_ospf_area_networks(router: Router, user: User, area: OSPFArea, network_and_wildcard: list[list[str]]) -> \
+tuple[bool, str | None]:
     if 'cisco_ios' == router.type:
         return cisco.remove_ospf_area_networks(router, user, area, network_and_wildcard)
 
@@ -130,16 +145,19 @@ def remove_ospf_area_networks(router: Router, user: User, area: OSPFArea, networ
 
 
 def update_redistribution(router: Router, user: User, routing_protocol: str, redistribution: Redistribution, ospf: bool,
-                          rip: bool, bgp: bool, static: bool, connected: bool, subnets_on: bool) -> tuple[bool, str | None]:
+                          rip: bool, bgp: bool, static: bool, connected: bool, subnets_on: bool) -> tuple[
+    bool, str | None]:
     if 'cisco_ios' == router.type:
         return cisco.update_redistribution(router, user, routing_protocol, redistribution, ospf, rip, bgp, static,
                                            connected, subnets_on)
+
 
 ########################################################################################################################
 # Section RouterInterface
 
 
-def get_all_interfaces(connection: BaseConnection | None, router: Router, user: User | None) -> dict[str, RouterInterface]:
+def get_all_interfaces(connection: BaseConnection | None, router: Router, user: User | None) -> dict[
+    str, RouterInterface]:
     if 'cisco_ios' == router.type:
         return cisco.get_all_interfaces(connection, router, user)
 

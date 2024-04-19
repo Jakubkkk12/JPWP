@@ -6,10 +6,13 @@ from resources.devices.Router import Router
 from python_guis.gui_resources import config
 from resources.routing_protocols.bgp.BGPNeighbor import BGPNeighbor
 from resources.routing_protocols.bgp.BGPTimers import BGPTimers
+from resources.user.User import User
+from resources.exe_commands.exe_commands import add_bgp_neighbor, get_bgp
 
 
+# todo punkt 17
 class BGPNeighborAddGUI:
-    def __init__(self, router: Router, bgp_neighbors_gui):
+    def __init__(self, main_gui, bgp_neighbors_gui, router: Router, user: User):
         self.hostname = router.name
         self.bgp_neighbors_gui = bgp_neighbors_gui
 
@@ -155,14 +158,15 @@ class BGPNeighborAddGUI:
                 shutdown = varShutdown.get()
                 keepAliveTimer = int(entryKeepAliveTimer.get())
                 holdTimeTimer = int(entryHoldTimeTimer.get())
-                neighbor = BGPNeighbor(ip_address=ip, remote_as=remoteAS, state='Established',
-                                       ebgp_multihop=ebgpMultihop, next_hop_self=nextHopSelf, shutdown=shutdown,
-                                       timers=BGPTimers(keep_alive=keepAliveTimer, hold_time=holdTimeTimer)
-                                       )
 
-                self.bgp_neighbors_gui.insert_neighbor(neighbor)
-                clean_entries()
-                messagebox.showinfo('Neighbor added', 'Neighbor added', parent=root)
+                completed, output = add_bgp_neighbor(router, user, ip, remoteAS, ebgpMultihop, nextHopSelf, shutdown,
+                                                     keepAliveTimer, holdTimeTimer)
+
+                if completed:
+                    main_gui.console_commands(output)
+                    router.bgp = get_bgp(None, router, user)
+                    clean_entries()
+                    messagebox.showinfo('Neighbor added', 'Neighbor added', parent=root)
 
         btnFrame = tk.Frame(root)
         btnApply = tk.Button(btnFrame, text='Apply', command=apply_neighbor)
