@@ -3,11 +3,12 @@ from tkinter import messagebox
 
 from resources.devices.Router import Router
 from python_guis.gui_resources import config
-from resources.routing_protocols.Redistribution import Redistribution
+from resources.user.User import User
+from resources.exe_commands.exe_commands import update_redistribution, get_ospf
 
-
+# TODO punkt 15
 class OSPFRedistributionGUI:
-    def __init__(self, router: Router):
+    def __init__(self, main_gui, router: Router, user: User):
         self.selected_router = router
         self.hostname = router.name
 
@@ -78,13 +79,15 @@ class OSPFRedistributionGUI:
             connected = varConnected.get()
             rip = varRIP.get()
             bgp = varBGP.get()
-            redistribution = Redistribution(is_redistribute_static=static,
-                                            is_redistribute_connected=connected,
-                                            is_redistribute_rip=rip,
-                                            is_redistribute_bgp=bgp)
-            router.ospf.redistribution = redistribution
-            messagebox.showinfo('Success', 'Changes Applied', parent=root)
 
+            completed, output = update_redistribution(router, user, 'ospf', router.ospf.redistribution,
+                                                      router.ospf.redistribution.is_redistribute_ospf, rip, bgp, static,
+                                                      connected, subnets_on=True)
+
+            if completed:
+                main_gui.console_commands(output)
+                router.ospf = get_ospf(None, router, user)
+                messagebox.showinfo('Success', 'Changes Applied', parent=root)
             root.destroy()
 
         btnFrame = tk.Frame(root)

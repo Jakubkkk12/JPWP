@@ -3,11 +3,12 @@ from tkinter import messagebox
 
 from resources.devices.Router import Router
 from python_guis.gui_resources import config
-from resources.routing_protocols.Redistribution import Redistribution
+from resources.user.User import User
+from resources.exe_commands.exe_commands import update_redistribution, get_rip
 
 
 class RIPRedistributionGUI:
-    def __init__(self, router: Router):
+    def __init__(self, main_gui, router: Router, user: User):
         self.selected_router = router
         self.hostname = router.name
 
@@ -72,19 +73,21 @@ class RIPRedistributionGUI:
             pass
 
         def apply_changes():
-
             static = varStatic.get()
             connected = varConnected.get()
             ospf = varOSPF.get()
             bgp = varBGP.get()
-            redistribution = Redistribution(is_redistribute_static=static,
-                                            is_redistribute_connected=connected,
-                                            is_redistribute_ospf=ospf,
-                                            is_redistribute_bgp=bgp)
-            router.rip.redistribution = redistribution
-            messagebox.showinfo('Success', 'Changes Applied', parent=root)
 
+            completed, output = update_redistribution(router, user, 'rip', router.rip.redistribution, ospf,
+                                                      router.rip.redistribution.is_redistribute_rip, bgp, static,
+                                                      connected, subnets_on=False)
+
+            if completed:
+                main_gui.console_commands(output)
+                router.rip = get_rip(None, router, user)
+                messagebox.showinfo('Success', 'Changes Applied', parent=root)
             root.destroy()
+
 
         btnFrame = tk.Frame(root)
         btnApply = tk.Button(btnFrame, text='Apply', command=apply_changes)
