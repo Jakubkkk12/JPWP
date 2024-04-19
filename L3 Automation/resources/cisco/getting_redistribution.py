@@ -95,7 +95,7 @@ def get_conf_command_for_static(static: bool, subnets: str) -> str:
 
 
 def get_conf_command_for_connected(connected: bool, subnets: str) -> str:
-    if connected is True:
+    if connected:
         return f'redistribute connected {subnets}'
     return f'no redistribute connected'
 

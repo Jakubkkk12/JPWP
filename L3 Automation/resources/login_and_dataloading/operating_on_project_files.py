@@ -13,7 +13,6 @@ def get_aes_cipher(aes_key: str, aes_iv: bytes = None) -> Crypto.Cipher:
             cipher = AES.new(aes_key, AES.MODE_OFB)
         else:
             cipher = AES.new(aes_key, AES.MODE_OFB, aes_iv)
-        print(cipher)
     except ValueError:
         raise Exception('Wrong key format')
     return cipher
