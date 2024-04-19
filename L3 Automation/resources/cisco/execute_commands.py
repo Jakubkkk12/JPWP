@@ -33,7 +33,7 @@ from resources.interfaces import RouterInterface
 # Section: BGP
 
 
-def get_bgp(connection: BaseConnection | None, router: Router = None, user: User = None) -> BGPInformation:
+def get_bgp(connection: BaseConnection | None, router: Router, user: User | None) -> BGPInformation | None:
     was_connection_given = False if connection is None else True
     if not was_connection_given:
         connection = create_connection_to_router(router, user)
@@ -114,7 +114,7 @@ def update_bgp_neighbor(router: Router, user: User, neighbor_id: str, remote_as:
 # Section StaticRoutes
 
 
-def get_static_r(connection: BaseConnection | None, router: Router = None, user: User = None) -> list[StaticRoute]:
+def get_static_r(connection: BaseConnection | None, router: Router, user: User | None) -> list[StaticRoute]:
     was_connection_given = False if connection is None else True
     if not was_connection_given:
         connection = create_connection_to_router(router, user)
@@ -128,8 +128,8 @@ def get_static_r(connection: BaseConnection | None, router: Router = None, user:
     return get_static_routes(sh_run_sec_ip_route_output)
 
 
-def add_static_route(router: Router, user: User, network: str, network_mask: int, route_distance: int = 1,
-                     next_hop: str = None, interface_name: str = None) -> tuple[bool, str | None]:
+def add_static_route(router: Router, user: User, network: str, network_mask: int, route_distance: int,
+                     next_hop: str | None, interface_name: str | None) -> tuple[bool, str | None]:
     command: str = get_static_route_conf_command(network, network_mask, route_distance, next_hop, interface_name)
     connection = create_connection_to_router(router, user)
     connection.enable()
@@ -150,7 +150,7 @@ def remove_static_route(router: Router, user: User, network: str, network_mask: 
 # Section RIP
 
 
-def get_rip(connection: BaseConnection | None, router: Router = None, user: User = None) -> RIPInformation:
+def get_rip(connection: BaseConnection | None, router: Router, user: User | None) -> RIPInformation | None:
     was_connection_given = False if connection is None else True
     if not was_connection_given:
         connection = create_connection_to_router(router, user)
@@ -212,7 +212,7 @@ def remove_rip_networks(router: Router, user: User, networks: list[str]) -> tupl
 # Section OSPF
 
 
-def get_ospf(connection: BaseConnection | None, router: Router = None, user: User = None) -> OSPFInformation:
+def get_ospf(connection: BaseConnection | None, router: Router, user: User | None) -> OSPFInformation | None:
     was_connection_given = False if connection is None else True
     if not was_connection_given:
         connection = create_connection_to_router(router, user)
@@ -323,7 +323,7 @@ def update_redistribution(router: Router, user: User, routing_protocol: str, red
 # Section RouterInterface
 
 
-def get_all_interfaces(connection: BaseConnection | None, router: Router = None, user: User = None) -> dict[str, RouterInterface]:
+def get_all_interfaces(connection: BaseConnection | None, router: Router, user: User | None) -> dict[str, RouterInterface]:
     was_connection_given = False if connection is None else True
     if not was_connection_given:
         connection = create_connection_to_router(router, user)
