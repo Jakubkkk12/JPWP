@@ -3,10 +3,12 @@ import tkinter.ttk
 from python_guis.gui_resources import config
 from python_guis.static.static_route_add_gui import StaticRouteAddGUI
 from resources.devices.Router import Router
+from resources.user.User import User
+from resources.exe_commands.exe_commands import remove_static_route, get_static_routes
 
 
 class StaticRoutesGUI:
-    def __init__(self, router: Router):
+    def __init__(self, main_gui, router: Router, user: User):
         self.selected_router = router
         self.hostname = router.name
         self.int_name = ''
@@ -80,12 +82,18 @@ class StaticRoutesGUI:
         except TypeError:
             pass
 
-        def add_route(router):
-            StaticRouteAddGUI(router, self)
+        def add_route(main_gui, router, user):
+            StaticRouteAddGUI(main_gui, self, router, user)
 
         def remove_route() -> None:
             item = self.tree.selection()
-            self.tree.delete(item)
+            # todo 18
+            network = ...
+            network_mask = ...
+            completed, output = remove_static_route(router, user, network, network_mask)
+            if completed:
+                main_gui.console_commands(output)
+                router.static_routes = get_static_routes(None, router, user)
 
             # Update No
             children = self.tree.get_children()
@@ -93,7 +101,7 @@ class StaticRoutesGUI:
                 self.tree.item(child, values=(i,) + self.tree.item(child, 'values')[1:])
 
         buttonFrame = tk.Frame(root)
-        btnAdd = tk.Button(buttonFrame, text='Add', command=lambda: add_route(router))
+        btnAdd = tk.Button(buttonFrame, text='Add', command=lambda: add_route(main_gui, router, user))
         btnAdd.pack()
         btnRemove = tk.Button(buttonFrame, text='Remove', command=remove_route)
         btnRemove.pack()

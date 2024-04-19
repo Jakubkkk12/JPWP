@@ -368,13 +368,16 @@ class MainGUI:
             aes_key = 'zzzzxxxxccccvvvv'
             self.project.open_project(aes_key)
             self.show_view_all()
-            from resources.exe_commands.exe_commands import get_rip, get_ospf, get_bgp
+            from resources.exe_commands.exe_commands import get_rip, get_ospf, get_bgp, get_all_interfaces, get_static_routes
             for name, device in self.project.devices.items():
                 self.project.devices[name].enable_password = 'ZSEDCxzaqwe'
                 print(self.project.devices[name].enable_password)
                 self.project.devices[name].rip = get_rip(None, self.project.devices[name], self.project.current_user)
                 self.project.devices[name].ospf = get_ospf(None, self.project.devices[name], self.project.current_user)
                 self.project.devices[name].bgp = get_bgp(None, self.project.devices[name], self.project.current_user)
+                self.project.devices[name].interfaces = get_all_interfaces(None, self.project.devices[name],
+                                                                           self.project.current_user)
+                self.project.devices[name].static_routes = get_static_routes(None, self.project.devices[name], self.project.current_user)
             print(self.project.devices)
 
         filemenu.add_command(label='Open project...', command=open_project)
@@ -485,7 +488,8 @@ class MainGUI:
                     menu.post(event.x_root, event.y_root)
                     menu.entryconfigure('SSH Addresses', command=lambda: SSHConnectionsGUI(selected_router))
                     menu.entryconfigure('Interfaces', command=lambda: show_interfaces_details(selected_router))
-                    menu.entryconfigure('Static routes', command=lambda: show_static_routes(selected_router))
+                    menu.entryconfigure('Static routes', command=lambda: show_static_routes(self, selected_router,
+                                                                                            self.project.current_user))
                 except IndexError():
                     pass
 
@@ -495,9 +499,9 @@ class MainGUI:
                 InterfacesDetails(selected_router)
             return None
 
-        def show_static_routes(selected_router: Router) -> None:
+        def show_static_routes(main_gui, selected_router: Router, user: User) -> None:
             if selected_router:
-                StaticRoutesGUI(selected_router)
+                StaticRoutesGUI(main_gui, selected_router, user)
             return None
 
         def show_ssh_addresses(selected_router: Router) -> None:

@@ -6,10 +6,12 @@ from resources.devices.Router import Router
 from python_guis.gui_resources import config
 from resources.routing_protocols.Network import Network
 from resources.routing_protocols.StaticRoute import StaticRoute
+from resources.user.User import User
+from resources.exe_commands.exe_commands import add_static_route, get_static_routes
 
 
 class StaticRouteAddGUI:
-    def __init__(self, router: Router, static_routes_gui):
+    def __init__(self,main_gui, static_routes_gui, router: Router, user: User):
         self.hostname = router.name
         self.int_name = ''
         self.selected_router_iid = None
@@ -191,23 +193,19 @@ class StaticRouteAddGUI:
                 distance = get_distance()
 
                 if int_name == '-':
-                    staticroute = StaticRoute(network=Network(network=destination, mask=mask),
-                                              next_hop=next_hop,
-                                              interface='',
-                                              distance=distance)
-                    clean_entries()
-                    self.static_routes_gui.insert_route(staticroute)
-                    router.static_routes.append(staticroute)
-                    messagebox.showinfo('Route Added', 'Route Added', parent=root)
+                    completed, output = add_static_route(router, user, destination, mask, distance, next_hop)
+                    if completed:
+                        main_gui.console_commands(output)
+                        router.static_routes = get_static_routes(None, router, user)
+                        messagebox.showinfo('Route Added', 'Route Added', parent=root)
                 else:
-                    staticroute = StaticRoute(network=Network(network=destination, mask=mask),
-                                              next_hop='',
-                                              interface=int_name,
-                                              distance=distance)
-                    clean_entries()
-                    self.static_routes_gui.insert_route(staticroute)
-                    router.static_routes.append(staticroute)
-                    messagebox.showinfo('Route Added', 'Route Added', parent=root)
+                    completed, output = add_static_route(router, user, destination, mask, distance, next_hop, int_name)
+                    if completed:
+                        main_gui.console_commands(output)
+                        router.static_routes = get_static_routes(None, router, user)
+                        messagebox.showinfo('Route Added', 'Route Added', parent=root)
+                clean_entries()
+
 
         btnApply = tk.Button(root, text='Apply', command=apply_route)
         btnApply.pack(pady=5)
