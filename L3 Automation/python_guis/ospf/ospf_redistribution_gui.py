@@ -4,7 +4,8 @@ from tkinter import messagebox
 from resources.devices.Router import Router
 from python_guis.gui_resources import config
 from resources.user.User import User
-from resources.exe_commands.exe_commands import update_redistribution, get_ospf
+from resources.connect_frontend_with_backend.frontend_backend_functions import redistribution
+import threading
 
 # TODO punkt 15
 class OSPFRedistributionGUI:
@@ -80,14 +81,10 @@ class OSPFRedistributionGUI:
             rip = varRIP.get()
             bgp = varBGP.get()
 
-            completed, output = update_redistribution(router, user, 'ospf', router.ospf.redistribution,
-                                                      router.ospf.redistribution.is_redistribute_ospf, rip, bgp, static,
-                                                      connected, subnets_on=True)
-
-            if completed:
-                main_gui.console_commands(output)
-                router.ospf = get_ospf(None, router, user)
-                messagebox.showinfo('Success', 'Changes Applied', parent=root)
+            threading.Thread(target=redistribution,
+                             args=(main_gui, router, user, 'ospf', router.ospf.redistribution,
+                                   router.ospf.redistribution.is_redistribute_ospf, rip, bgp, static,
+                                   connected)).start()
             root.destroy()
 
         btnFrame = tk.Frame(root)

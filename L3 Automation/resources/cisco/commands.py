@@ -29,7 +29,7 @@ from resources.routing_protocols.rip.RIPInformation import RIPInformation
 from resources.routing_protocols.ospf.OSPFArea import OSPFArea
 from resources.routing_protocols.ospf.OSPFInformation import OSPFInformation
 from resources.routing_protocols.bgp.BGPInformation import BGPInformation
-from resources.routing_protocols import Redistribution
+from resources.routing_protocols.Redistribution import Redistribution
 from resources.interfaces import RouterInterface
 
 
@@ -282,6 +282,27 @@ def remove_ospf_area_networks(router: Router, user: User, area: OSPFArea, networ
 
 ########################################################################################################################
 # Section Redistribution
+
+
+def get_redistribution(connection: BaseConnection | None, router: Router, user: User | None, routing_protocol: str) -> Redistribution | None:
+    was_connection_given = False if connection is None else True
+    if not was_connection_given:
+        connection = create_connection_to_router(router, user)
+        connection.enable()
+
+    if routing_protocol == 'rip':
+        sh_run_sec_routing_protocol_output: str = connection.send_command("show run | sec rip")
+    elif routing_protocol == 'ospf':
+        sh_run_sec_routing_protocol_output: str = connection.send_command("show run | sec ospf")
+    elif routing_protocol == 'bgp':
+        sh_run_sec_routing_protocol_output: str = connection.send_command("show run | sec bgp")
+    else:
+        raise ValueError(f"Unknown routing protocol: {routing_protocol}")
+
+    if not was_connection_given:
+        close_connection(connection)
+
+    return get_routing_protocol_redistribution(sh_run_sec_routing_protocol_output)
 
 
 def update_redistribution(router: Router, user: User, routing_protocol: str, redistribution: Redistribution, ospf: bool,

@@ -4,8 +4,8 @@ from tkinter import messagebox
 from resources.devices.Router import Router
 from python_guis.gui_resources import config
 from resources.user.User import User
-from resources.exe_commands.exe_commands import update_redistribution, get_bgp
-
+from resources.connect_frontend_with_backend.frontend_backend_functions import redistribution
+import threading
 
 class BGPRedistributionGUI:
     def __init__(self, main_gui, router: Router, user: User):
@@ -79,14 +79,10 @@ class BGPRedistributionGUI:
             ospf = varOSPF.get()
             rip = varRIP.get()
 
-            completed, output = update_redistribution(router, user, 'bgp', router.bgp.redistribution, ospf,
-                                                      rip, router.bgp.redistribution.is_redistribute_bgp, static,
-                                                      connected, subnets_on=False)
-
-            if completed:
-                main_gui.console_commands(output)
-                router.bgp = get_bgp(None, router, user)
-                messagebox.showinfo('Success', 'Changes Applied', parent=root)
+            threading.Thread(target=redistribution,
+                             args=(main_gui, router, user, 'bgp', router.bgp.redistribution, ospf,
+                                   rip, router.bgp.redistribution.is_redistribute_bgp, static,
+                                   connected)).start()
             root.destroy()
 
         btnFrame = tk.Frame(root)

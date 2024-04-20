@@ -4,7 +4,8 @@ from tkinter import messagebox
 from resources.devices.Router import Router
 from python_guis.gui_resources import config
 from resources.user.User import User
-from resources.exe_commands.exe_commands import update_redistribution, get_rip
+from resources.connect_frontend_with_backend.frontend_backend_functions import redistribution
+import threading
 
 
 class RIPRedistributionGUI:
@@ -78,16 +79,11 @@ class RIPRedistributionGUI:
             ospf = varOSPF.get()
             bgp = varBGP.get()
 
-            completed, output = update_redistribution(router, user, 'rip', router.rip.redistribution, ospf,
-                                                      router.rip.redistribution.is_redistribute_rip, bgp, static,
-                                                      connected, subnets_on=False)
-
-            if completed:
-                main_gui.console_commands(output)
-                router.rip = get_rip(None, router, user)
-                messagebox.showinfo('Success', 'Changes Applied', parent=root)
+            threading.Thread(target=redistribution,
+                             args=(main_gui, router, user, 'rip', router.rip.redistribution, ospf,
+                                   router.rip.redistribution.is_redistribute_rip, bgp, static,
+                                   connected)).start()
             root.destroy()
-
 
         btnFrame = tk.Frame(root)
         btnApply = tk.Button(btnFrame, text='Apply', command=apply_changes)

@@ -7,11 +7,12 @@ from python_guis.gui_resources import config
 from resources.routing_protocols.Network import Network
 from resources.routing_protocols.StaticRoute import StaticRoute
 from resources.user.User import User
-from resources.exe_commands.exe_commands import add_static_route, get_static_routes
+from resources.connect_frontend_with_backend.frontend_backend_functions import add_static_route
+import threading
 
 
 class StaticRouteAddGUI:
-    def __init__(self,main_gui, static_routes_gui, router: Router, user: User):
+    def __init__(self, main_gui, static_routes_gui, router: Router, user: User):
         self.hostname = router.name
         self.int_name = ''
         self.selected_router_iid = None
@@ -109,6 +110,7 @@ class StaticRouteAddGUI:
         entryDistance.pack(side='right')
         entryDistance.insert(0, '1')
         distanceFrame.pack()
+
         def get_destination() -> str:
             return (entryIPDestinationFirst.get() + '.' + entryIPDestinationSecond.get() + '.' +
                     entryIPDestinationThird.get() + '.' + entryIPDestinationFourth.get())
@@ -192,20 +194,9 @@ class StaticRouteAddGUI:
                 int_name = interfaceVariable.get()
                 distance = get_distance()
 
-                if int_name == '-':
-                    completed, output = add_static_route(router, user, destination, mask, distance, next_hop)
-                    if completed:
-                        main_gui.console_commands(output)
-                        router.static_routes = get_static_routes(None, router, user)
-                        messagebox.showinfo('Route Added', 'Route Added', parent=root)
-                else:
-                    completed, output = add_static_route(router, user, destination, mask, distance, next_hop, int_name)
-                    if completed:
-                        main_gui.console_commands(output)
-                        router.static_routes = get_static_routes(None, router, user)
-                        messagebox.showinfo('Route Added', 'Route Added', parent=root)
+                threading.Thread(target=add_static_route,
+                                 args=(main_gui, router, user, destination, mask, distance, next_hop, int_name)).start()
                 clean_entries()
-
 
         btnApply = tk.Button(root, text='Apply', command=apply_route)
         btnApply.pack(pady=5)

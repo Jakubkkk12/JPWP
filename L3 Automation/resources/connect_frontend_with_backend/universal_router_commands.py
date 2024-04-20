@@ -7,7 +7,7 @@ from resources.routing_protocols.rip.RIPInformation import RIPInformation
 from resources.routing_protocols.ospf.OSPFInformation import OSPFInformation
 from resources.routing_protocols.ospf.OSPFArea import OSPFArea
 from resources.routing_protocols.bgp.BGPInformation import BGPInformation
-from resources.routing_protocols import Redistribution
+from resources.routing_protocols.Redistribution import Redistribution
 from resources.interfaces import RouterInterface
 
 
@@ -142,6 +142,11 @@ tuple[bool, str | None]:
 
 ########################################################################################################################
 # Section Redistribution
+
+
+def get_redistribution(connection: BaseConnection | None, router: Router, user: User | None, routing_protocol: str) -> Redistribution | None:
+    if 'cisco_ios' == router.type:
+        return cisco.get_redistribution(connection, router, user, routing_protocol)
 
 
 def update_redistribution(router: Router, user: User, routing_protocol: str, redistribution: Redistribution, ospf: bool,
