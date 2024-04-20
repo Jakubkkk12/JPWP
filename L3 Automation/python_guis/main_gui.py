@@ -576,8 +576,8 @@ class MainGUI:
                     selected_router = self.project.devices.get(hostname)
                     if selected_router.rip is not None:
                         menu.post(event.x_root, event.y_root)
-                        menu.entryconfigure('Edit', command=lambda: RIPEditGUI(selected_router, self))
-                        menu.entryconfigure('Networks', command=lambda: RIPNetworksGUI(selected_router))
+                        menu.entryconfigure('Edit', command=lambda: RIPEditGUI(self, selected_router, self.project.current_user))
+                        menu.entryconfigure('Networks', command=lambda: RIPNetworksGUI(self, selected_router, self.project.current_user))
                         menu.entryconfigure('Redistribution', command=lambda: RIPRedistributionGUI(self,
                                                                                                    selected_router,
                                                                                                    self.project.current_user))
@@ -591,7 +591,7 @@ class MainGUI:
         self.tree.bind('<Button-3>', show_menu_rip)
 
         def add_router_rip():
-            RIPAddRouterGUI(self)
+            RIPAddRouterGUI(self, self.project.current_user)
         self.btnAddRouter.config(command=add_router_rip)
 
         return None

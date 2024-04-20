@@ -1,13 +1,16 @@
+import threading
 import tkinter as tk
 import tkinter.ttk
 from python_guis.gui_resources import config
 from python_guis.rip.rip_network_add_gui import RIPNetworkAddGUI
+from resources.connect_frontend_with_backend.frontend_backend_functions import remove_rip_networks
 from resources.devices.Router import Router
 from resources.routing_protocols.Network import Network
+from resources.user.User import User
 
 
 class RIPNetworksGUI:
-    def __init__(self, router: Router):
+    def __init__(self, main_gui, router: Router, user: User):
         root = tk.Toplevel()
 
         # title
@@ -60,23 +63,23 @@ class RIPNetworksGUI:
             pass
         treeFrame.grid(column=0, row=3, columnspan=2, sticky='NEWS')
 
-        def add_network(router, self):
-            RIPNetworkAddGUI(router, self)
+        def add_network(router):
+            RIPNetworkAddGUI(main_gui, self, router, user)
 
         def remove_network() -> None:
             item = self.tree.selection()
             ip = self.tree.item(item)['values'][1]
 
-            del router.rip.networks[ip]
-            self.tree.delete(item)
+            threading.Thread(target=remove_rip_networks,
+                             args=(main_gui, router, user, [ip])).start()
 
-            # Update No
-            children = self.tree.get_children()
-            for i, child in enumerate(children, start=1):
-                self.tree.item(child, values=(i,) + self.tree.item(child, 'values')[1:])
+            # Update No todo 22
+            # children = self.tree.get_children()
+            # for i, child in enumerate(children, start=1):
+            #     self.tree.item(child, values=(i,) + self.tree.item(child, 'values')[1:])
 
         buttonFrame = tk.Frame(root)
-        btnAdd = tk.Button(buttonFrame, text='Add', command=lambda: add_network(router, self))
+        btnAdd = tk.Button(buttonFrame, text='Add', command=lambda: add_network(router))
         btnAdd.pack()
         btnRemove = tk.Button(buttonFrame, text='Remove', command=remove_network)
         btnRemove.pack()

@@ -1,13 +1,16 @@
+import threading
 import tkinter as tk
 from tkinter import messagebox
 
+from resources.connect_frontend_with_backend.frontend_backend_functions import update_rip
 from resources.devices.Router import Router
 from python_guis.gui_resources import config
 from resources.routing_protocols.rip.RIPInformation import RIPInformation
+from resources.user.User import User
 
 
 class RIPEditGUI:
-    def __init__(self, router: Router, main_gui):
+    def __init__(self, main_gui, router: Router, user: User):
         root = tk.Toplevel()
         main_gui = main_gui
 
@@ -93,14 +96,12 @@ class RIPEditGUI:
 
         def apply_changes():
             if validate_changes():
-                rip = RIPInformation(auto_summary=varAutoSummary.get(),
-                                     default_information_originate=varDefaultInformationOriginate.get(),
-                                     default_metric_of_redistributed_routes=int(entryDefaultMetric.get()),
-                                     distance=int(entryDistance.get()), maximum_paths=int(entryMaximumPaths.get()),
-                                     version=int(versionVariable.get()))
-                router.rip = rip
+                threading.Thread(target=update_rip,
+                                 args=(main_gui, router, user, varAutoSummary.get(),
+                                       varDefaultInformationOriginate.get(), int(entryDefaultMetric.get()),
+                                       int(entryDistance.get()), int(entryMaximumPaths.get()),
+                                       int(versionVariable.get()))).start()
 
-                main_gui.update_rip_tree(rip)
                 root.destroy()
 
         btnFrame = tk.Frame(root)

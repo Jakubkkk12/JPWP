@@ -1,14 +1,17 @@
 import ipaddress
+import threading
 import tkinter as tk
 from tkinter import messagebox
 
+from resources.connect_frontend_with_backend.frontend_backend_functions import add_rip_networks
 from resources.devices.Router import Router
 from python_guis.gui_resources import config
 from resources.routing_protocols.Network import Network
+from resources.user.User import User
 
-
+# todo 21
 class RIPNetworkAddGUI:
-    def __init__(self, router: Router, rip_networks_gui):
+    def __init__(self, main_gui, rip_networks_gui, router: Router, user: User):
         self.hostname = router.name
         self.rip_networks_gui = rip_networks_gui
 
@@ -95,11 +98,10 @@ class RIPNetworkAddGUI:
             if validate_network():
                 network = get_network()
                 mask = get_mask()
-                network = Network(network=network, mask=mask)
 
-                router.rip.networks[network.network] = network
-                self.rip_networks_gui.insert_network(network)
-                messagebox.showinfo('Network added', 'Network added', parent=root)
+                threading.Thread(target=add_rip_networks,
+                                 args=(main_gui, router, user, [network])).start()
+
                 clean_entries()
 
         btnApply = tk.Button(root, text='Apply', command=apply_network)

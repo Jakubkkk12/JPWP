@@ -87,6 +87,15 @@ def remove_static_route(router: Router, user: User, network: str, network_mask: 
 # Section RIP
 
 
+def enable_rip(router: Router, user: User, auto_summary: bool, default_information_originate: bool,
+               default_metric_of_redistributed_routes: int, distance: int, maximum_paths: int, version: int,
+               networks: list[str]) -> tuple[
+    bool, str | None]:
+    if 'cisco_ios' == router.type:
+        return cisco.enable_rip(router, user, auto_summary, default_information_originate,
+                                default_metric_of_redistributed_routes, distance, maximum_paths, version, networks)
+
+
 def get_rip(connection: BaseConnection | None, router: Router, user: User = None) -> RIPInformation | None:
     if 'cisco_ios' == router.type:
         return cisco.get_rip(connection, router, user)

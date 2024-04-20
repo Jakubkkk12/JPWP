@@ -1,12 +1,15 @@
+import threading
 import tkinter as tk
 from tkinter import messagebox
 
 from python_guis.gui_resources import config
+from resources.connect_frontend_with_backend.frontend_backend_functions import enable_rip
 from resources.routing_protocols.rip.RIPInformation import RIPInformation
+from resources.user.User import User
 
 
 class RIPAddRouterGUI:
-    def __init__(self, main_gui):
+    def __init__(self, main_gui, user: User):
         self.main_gui = main_gui
 
         root = tk.Toplevel()
@@ -104,16 +107,13 @@ class RIPAddRouterGUI:
         def add_router():
             if validate_router():
                 router = main_gui.get_router(varHostname.get())
-                rip = RIPInformation(auto_summary=varAutoSummary.get(),
-                                     default_information_originate=varDefaultInformationOriginate.get(),
-                                     default_metric_of_redistributed_routes=int(entryDefaultMetric.get()),
-                                     distance=int(entryDistance.get()),
-                                     maximum_paths=int(entryMaximumPaths.get()),
-                                     version=int(varVersion.get()))
-                router.rip = rip
-
-                main_gui.add_router_rip(router)
-                messagebox.showinfo('Success', 'Router updated successfully', parent=root)
+                 #todo 23
+                network: str = '44.44.44.44'
+                threading.Thread(target=enable_rip,
+                                 args=(main_gui, router, user, varAutoSummary.get(),
+                                       varDefaultInformationOriginate.get(), int(entryDefaultMetric.get()),
+                                       int(entryDistance.get()), int(entryMaximumPaths.get()),
+                                       int(varVersion.get()), [network])).start()
 
                 root.destroy()
 

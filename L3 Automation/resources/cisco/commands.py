@@ -20,7 +20,8 @@ from resources.cisco.getting_redistribution import (get_routing_protocol_redistr
 from resources.cisco.getting_rip_information import (get_rip_information,
                                                      get_rip_conf_basic_commands_for_update_as_list,
                                                      get_rip_conf_networks_commands_as_list,
-                                                     get_rip_no_conf_networks_commands_as_list)
+                                                     get_rip_no_conf_networks_commands_as_list,
+                                                     get_rip_conf_basic_commands_for_enable_as_list)
 from resources.cisco.getting_static_routes import (get_static_routes, get_static_route_conf_command,
                                                    get_static_route_no_conf_command)
 from resources.devices.Router import Router
@@ -184,6 +185,22 @@ def get_rip(connection: BaseConnection | None, router: Router, user: User | None
         close_connection(connection)
 
     return get_rip_information(sh_run_sec_rip_output)
+
+
+def enable_rip(router: Router, user: User, auto_summary: bool, default_information_originate: bool,
+               default_metric_of_redistributed_routes: int, distance: int, maximum_paths: int, version: int,
+               networks: list[str]) -> tuple[
+    bool, str | None]:
+    commands: list[str] = get_rip_conf_basic_commands_for_enable_as_list(auto_summary,
+                                                                         default_information_originate,
+                                                                         default_metric_of_redistributed_routes,
+                                                                         distance, maximum_paths, version)
+    commands.extend(get_rip_conf_networks_commands_as_list(networks))
+    if commands is None:
+        return False, None
+
+    output: str = execute_conf_commands(router, user, commands)
+    return True, output
 
 
 def update_rip(router: Router, user: User, auto_summary: bool, default_information_originate: bool,

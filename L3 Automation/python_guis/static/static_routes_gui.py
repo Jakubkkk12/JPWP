@@ -95,10 +95,10 @@ class StaticRoutesGUI:
             threading.Thread(target=remove_static_route,
                              args=(main_gui, self, item, router, user, network, network_mask)).start()
 
-            # Update NoS
-            children = self.tree.get_children()
-            for i, child in enumerate(children, start=1):
-                self.tree.item(child, values=(i,) + self.tree.item(child, 'values')[1:])
+            # Update NoS todo 22
+            # children = self.tree.get_children()
+            # for i, child in enumerate(children, start=1):
+            #     self.tree.item(child, values=(i,) + self.tree.item(child, 'values')[1:])
 
         buttonFrame = tk.Frame(root)
         btnAdd = tk.Button(buttonFrame, text='Add', command=lambda: add_route(main_gui, router, user))

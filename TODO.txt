@@ -20,6 +20,10 @@ DONE: 11 - ZREFAKTORYZOWAC FRONTEDNT dla klasy Projekt
                                  args=(main_gui, router, user, ip, remoteAS, ebgpMultihop, nextHopSelf, shutdown, keepAliveTimer, holdTimeTimer)).start() // to do wstawienia 
 20 - brak Networks w BGP // threading.Thread(target=add_bgp_networks, args=(main_gui, router, user, network_and_mask)).start()
                 threading.Thread(target=remove_bgp_networks, args=(main_gui, router, user, network_and_mask)).start() // to do wstawienia 
+21 - W RIP nie podaje sie mask przy dawaniu network
+22 - inna obsługa graficznego usuwania rzeczy z listy treeview 
+23 - w rip add router potrzebna jest jeden network
+
 
 Zadania dla studentów:
 ZADANIE1:

@@ -82,6 +82,35 @@ def get_rip_conf_command_auto_summary(auto_summary: bool) -> str:
     return 'no auto-summary'
 
 
+def get_rip_conf_basic_commands_for_enable_as_list(auto_summary: bool,
+                                                   default_information_originate: bool,
+                                                   default_metric_of_redistributed_routes: int, distance: int,
+                                                   maximum_paths: int, version: int) -> list[str] | None:
+    list_of_commands: list[str] = ['router rip']
+    if auto_summary is False:
+        list_of_commands.append(get_rip_conf_command_auto_summary(auto_summary))
+
+    if default_information_originate is True:
+        list_of_commands.append(get_conf_command_default_information_originate(default_information_originate))
+
+    if default_metric_of_redistributed_routes != 1:
+        list_of_commands.append(get_conf_command_default_metric_of_redistributed_routes(
+            default_metric_of_redistributed_routes))
+
+    if distance != 120:
+        list_of_commands.append(get_conf_command_distance(distance))
+
+    if maximum_paths != 4:
+        list_of_commands.append(get_conf_command_maximum_paths(maximum_paths))
+
+    if version != 1:
+        list_of_commands.append(get_conf_command_version(version))
+
+    if len(list_of_commands) > 0:
+        return list_of_commands
+    return None
+
+
 def get_rip_conf_basic_commands_for_update_as_list(rip: RIPInformation, auto_summary: bool,
                                                    default_information_originate: bool,
                                                    default_metric_of_redistributed_routes: int, distance: int,
