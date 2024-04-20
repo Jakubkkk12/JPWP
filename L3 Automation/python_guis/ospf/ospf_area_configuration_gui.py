@@ -5,10 +5,11 @@ from python_guis.ospf.ospf_network_add_gui import OSPFNetworkAddGUI
 from resources.devices.Router import Router
 from resources.routing_protocols.ospf.OSPFArea import OSPFArea
 from resources.routing_protocols.Network import Network
+from resources.user.User import User
 
 
 class OSPFAreaConfigurationGUI:
-    def __init__(self, router: Router, area: OSPFArea, main_gui):
+    def __init__(self, router: Router, user: User, area: OSPFArea, main_gui):
         self.main_gui = main_gui
         self.area = area
 
@@ -93,7 +94,7 @@ class OSPFAreaConfigurationGUI:
         treeFrame.grid(column=0, row=3, columnspan=2, sticky='NEWS')
 
         def add_network(router, area):
-            OSPFNetworkAddGUI(router, area, self)
+            OSPFNetworkAddGUI(main_gui, router, user, area, self)
 
         def remove_network() -> None:
             item = self.tree.selection()

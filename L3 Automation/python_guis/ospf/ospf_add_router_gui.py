@@ -1,16 +1,20 @@
 import ipaddress
+import threading
 import tkinter as tk
 from tkinter import messagebox
 
 from python_guis.gui_resources import config
+from resources.connect_frontend_with_backend.frontend_backend_functions import enable_ospf
 from resources.routing_protocols.Network import Network
 from resources.routing_protocols.ospf.OSPFArea import OSPFArea
 from resources.routing_protocols.ospf.OSPFInformation import OSPFInformation
 from resources import constants
+from resources.user.User import User
 
 
+#todo
 class OSPFAddRouterGUI:
-    def __init__(self, main_gui):
+    def __init__(self, main_gui, user: User):
         self.main_gui = main_gui
 
         root = tk.Toplevel()
@@ -150,7 +154,7 @@ class OSPFAddRouterGUI:
         lblType = tk.Label(root, text='Type:')
         lblType.grid(row=12, column=0)
         varType = tk.StringVar()
-        typeOptions = ['backbone area', 'standard area', 'stub area', 'totally stub area', 'NSSA']
+        typeOptions = ['standard', 'stub', 'nssa']
         varType.set(typeOptions[1])
         optionMenuType = tk.OptionMenu(root, varType, *typeOptions)
         optionMenuType.grid(row=12, column=1)
@@ -218,25 +222,14 @@ class OSPFAddRouterGUI:
         def add_router():
             if validate_router():
                 router = main_gui.get_router(varHostname.get())
-                network = Network(network=get_network(), mask=int(entryMask.get()),
-                                  wildcard=constants.WILDCARD_MASK[int(entryMask.get())])
-                area = OSPFArea(id=entryAreaId.get(),
-                                is_authentication_message_digest=varIsAuthenticationMessageDigest.get(),
-                                type=varType.get(),
-                                networks={network.network: network})
 
-                ospf = OSPFInformation(router_id=get_router_id(),
-                                       auto_cost_reference_bandwidth=int(entryAutoCostReferenceBandwidth.get()),
-                                       default_information_originate=varDefaultInformationOriginate.get(),
-                                       default_metric_of_redistributed_routes=int(
-                                           entryDefaultMetricOfRedistributedRoutes.get()),
-                                       distance=int(entryDistance.get()),
-                                       maximum_paths=int(entryMaximumPaths.get()),
-                                       passive_interface_default=varPassiveInterface.get(),
-                                       areas={entryAreaId.get(): area})
-                router.ospf = ospf
-                main_gui.add_router_ospf(router)
-                messagebox.showinfo('Success', 'Router updated successfully', parent=root)
+                threading.Thread(target=enable_ospf,
+                                 args=(main_gui, router, user, get_router_id(),
+                                       int(entryAutoCostReferenceBandwidth.get()),varDefaultInformationOriginate.get(),
+                                       int(entryDefaultMetricOfRedistributedRoutes.get()), int(entryDistance.get()),
+                                       int(entryMaximumPaths.get()), varPassiveInterface.get(), entryAreaId.get(),
+                                       [[get_network(), constants.WILDCARD_MASK[int(entryMask.get())]]],
+                                       varIsAuthenticationMessageDigest.get(), varType.get(),)).start()
 
                 root.destroy()
 

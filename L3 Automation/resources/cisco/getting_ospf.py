@@ -217,6 +217,41 @@ def get_ospf_command_passive_interface_default(passive_interface_default: bool) 
     return 'no passive-interface default'
 
 
+def get_ospf_base_conf_commands_for_enable_as_list(router_id: str, auto_cost_reference_bandwidth: int,
+                                                   default_information_originate: bool,
+                                                   default_metric_of_redistributed_routes: int, distance: int,
+                                                   maximum_paths: int, passive_interface_default: bool, area_id: str,
+                                                   area_authentication_message_digest: bool, area_type: str) -> list[str]:
+
+    list_of_commands: list[str] = [f'router ospf 1', get_ospf_command_router_id(router_id)]
+    if auto_cost_reference_bandwidth != 100:
+        list_of_commands.append(get_ospf_command_auto_cost_reference_bandwidth(auto_cost_reference_bandwidth))
+
+    if default_information_originate is True:
+        list_of_commands.append(get_conf_command_default_information_originate(default_information_originate))
+
+    if default_metric_of_redistributed_routes != 10:
+        list_of_commands.append(get_conf_command_default_metric_of_redistributed_routes(
+            default_metric_of_redistributed_routes))
+
+    if distance != 110:
+        list_of_commands.append(get_conf_command_distance(distance))
+
+    if maximum_paths != 4:
+        list_of_commands.append(get_conf_command_maximum_paths(maximum_paths))
+
+    if passive_interface_default is True:
+        list_of_commands.append(get_ospf_command_passive_interface_default(passive_interface_default))
+
+    if area_authentication_message_digest is True:
+        list_of_commands.append(get_ospf_area_base_conf_command_authentication_message_digest(area_id,
+                                                                                              area_authentication_message_digest))
+
+    list_of_commands.extend(get_ospf_area_base_conf_command_type_as_list(area_id, '', area_type))
+
+    return list_of_commands
+
+
 def get_ospf_base_conf_commands_for_update_as_list(ospf: OSPFInformation, router_id: str,
                                                    auto_cost_reference_bandwidth: int,
                                                    default_information_originate: bool,
@@ -294,6 +329,7 @@ def get_ospf_area_base_conf_commands_for_update_as_list(area: OSPFArea, authenti
 
 def get_ospf_area_conf_networks_commands_as_list(area_id: str, network_and_wildcard: list[list[str]]) -> list[str] | None:
     list_of_commands: list[str] = []
+    print(network_and_wildcard)
 
     for network, wildcard in network_and_wildcard:
         list_of_commands.append(f'network {network} {wildcard} area {area_id}')

@@ -1,15 +1,19 @@
+import threading
 import tkinter as tk
 from tkinter import messagebox
 
+from resources.connect_frontend_with_backend.frontend_backend_functions import add_ospf_area_networks
 from resources.devices.Router import Router
 from python_guis.gui_resources import config
 from resources.routing_protocols.Network import Network
 from resources.routing_protocols.ospf.OSPFArea import OSPFArea
 import ipaddress
 
+from resources.user.User import User
+
 
 class OSPFNetworkAddGUI:
-    def __init__(self, router: Router, ospf_area: OSPFArea, ospf_config_gui):
+    def __init__(self, main_gui, router: Router, user: User, ospf_area: OSPFArea, ospf_config_gui):
         self.hostname = router.name
         self.area = ospf_area
         self.ospf_config_gui = ospf_config_gui
@@ -106,14 +110,12 @@ class OSPFNetworkAddGUI:
                 mask = get_mask()
                 from resources import constants
                 wildcard = constants.WILDCARD_MASK[str(mask)]
-                messagebox.showinfo('Network added', 'Network added', parent=root)
 
-                network = Network(network=network,
-                                  mask=mask,
-                                  wildcard=wildcard)
-                router.ospf.areas[self.area.id].networks[network.network] = network
+                threading.Thread(target=add_ospf_area_networks,
+                                 args=(main_gui, router, user, ospf_area, [network, wildcard])).start()
 
-                self.ospf_config_gui.insert_network(network)
+                # todo 666
+                # self.ospf_config_gui.insert_network(network)
                 clean_entries()
 
         btnApply = tk.Button(root, text='Apply', command=apply_network)

@@ -1,13 +1,16 @@
+import threading
 import tkinter as tk
 import tkinter.ttk
 from python_guis.gui_resources import config
 from python_guis.ospf.ospf_network_add_gui import OSPFNetworkAddGUI
+from resources.connect_frontend_with_backend.frontend_backend_functions import remove_ospf_area_networks
 from resources.devices.Router import Router
 from resources.routing_protocols.Network import Network
+from resources.user.User import User
 
 
 class OSPFNetworksGUI:
-    def __init__(self, router: Router, area_id):
+    def __init__(self, main_gui, router: Router, user: User, area_id):
         area = str(area_id)
         root = tk.Toplevel()
 
@@ -61,10 +64,17 @@ class OSPFNetworksGUI:
         treeFrame.grid(column=0, row=3, columnspan=2, sticky='NEWS')
 
         def add_network(router, area, self):
-            OSPFNetworkAddGUI(router, area, self)
+            OSPFNetworkAddGUI(main_gui, router, user, router.ospf.areas[area], self)
 
         def remove_network() -> None:
             item = self.tree.selection()
+            # todo 29
+            network_and_wildcard = [network, wildcard]
+            threading.Thread(target=remove_ospf_area_networks,
+                             args=(main_gui, router, user, router.ospf.areas[area], network_and_wildcard)).start()
+
+
+            # TODO 666
             self.tree.delete(item)
             # Update No
             children = self.tree.get_children()

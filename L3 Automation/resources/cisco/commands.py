@@ -14,7 +14,8 @@ from resources.cisco.getting_interface import (get_interfaces_name, get_base_int
 from resources.cisco.getting_ospf import (get_ospf_information, get_ospf_base_conf_commands_for_update_as_list,
                                           get_ospf_area_base_conf_commands_for_update_as_list,
                                           get_ospf_area_conf_networks_commands_as_list,
-                                          get_ospf_area_no_conf_networks_commands_as_list)
+                                          get_ospf_area_no_conf_networks_commands_as_list,
+                                          get_ospf_base_conf_commands_for_enable_as_list)
 from resources.cisco.getting_redistribution import (get_routing_protocol_redistribution,
                                                     get_redistribution_conf_commands_as_list)
 from resources.cisco.getting_rip_information import (get_rip_information,
@@ -242,6 +243,23 @@ def remove_rip_networks(router: Router, user: User, networks: list[str]) -> tupl
 
 ########################################################################################################################
 # Section OSPF
+def enable_ospf(router: Router, user: User, router_id: str, auto_cost_reference_bandwidth: int,
+                default_information_originate: bool, default_metric_of_redistributed_routes: int, distance: int,
+                maximum_paths: int, passive_interface_default: bool, area_id: str, network_and_wildcard: list[list[str]],
+                area_authentication_message_digest: bool, area_type: str) -> tuple[bool, str | None]:
+    commands: list[str] = get_ospf_base_conf_commands_for_enable_as_list(router_id, auto_cost_reference_bandwidth,
+                                                                         default_information_originate,
+                                                                         default_metric_of_redistributed_routes,
+                                                                         distance, maximum_paths,
+                                                                         passive_interface_default, area_id,
+                                                                         area_authentication_message_digest, area_type)
+    commands.extend(get_ospf_area_conf_networks_commands_as_list(area_id, network_and_wildcard))
+
+    if commands is None:
+        return False, None
+
+    output: str = execute_conf_commands(router, user, commands)
+    return True, output
 
 
 def get_ospf(connection: BaseConnection | None, router: Router, user: User | None) -> OSPFInformation | None:

@@ -121,6 +121,15 @@ def remove_rip_networks(router: Router, user: User, networks: list[str]) -> tupl
 
 ########################################################################################################################
 # Section OSPF
+def enable_ospf(router: Router, user: User, router_id: str, auto_cost_reference_bandwidth: int,
+                default_information_originate: bool, default_metric_of_redistributed_routes: int, distance: int,
+                maximum_paths: int, passive_interface_default: bool, area_id: str, network_and_wildcard: list[list[str]],
+                area_authentication_message_digest: bool, area_type: str) -> tuple[bool, str | None]:
+    if 'cisco_ios' == router.type:
+        return cisco.enable_ospf(router, user, router_id, auto_cost_reference_bandwidth, default_information_originate,
+                                 default_metric_of_redistributed_routes, distance, maximum_paths,
+                                 passive_interface_default, area_id, network_and_wildcard,
+                                 area_authentication_message_digest, area_type)
 
 
 def get_ospf(connection: BaseConnection | None, router: Router, user: User | None) -> OSPFInformation | None:
@@ -137,8 +146,7 @@ def update_ospf(router: Router, user: User, router_id: str, auto_cost_reference_
                                  passive_interface_default)
 
 
-def update_ospf_area(router: Router, user: User, area: OSPFArea, authentication_message_digest: bool, area_type: str) -> \
-tuple[bool, str | None]:
+def update_ospf_area(router: Router, user: User, area: OSPFArea, authentication_message_digest: bool, area_type: str) -> tuple[bool, str | None]:
     if 'cisco_ios' == router.type:
         return cisco.update_ospf_area(router, user, area, authentication_message_digest, area_type)
 
@@ -149,8 +157,7 @@ def add_ospf_area_networks(router: Router, user: User, area: OSPFArea, network_a
         return cisco.add_ospf_area_networks(router, user, area, network_and_wildcard)
 
 
-def remove_ospf_area_networks(router: Router, user: User, area: OSPFArea, network_and_wildcard: list[list[str]]) -> \
-tuple[bool, str | None]:
+def remove_ospf_area_networks(router: Router, user: User, area: OSPFArea, network_and_wildcard: list[list[str]]) -> tuple[bool, str | None]:
     if 'cisco_ios' == router.type:
         return cisco.remove_ospf_area_networks(router, user, area, network_and_wildcard)
 

@@ -761,7 +761,7 @@ class MainGUI:
         menu.add_command(label='Redistribution', command=OSPFRedistributionGUI)
         self.tree.bind('<Button-3>', show_menu_ospf)
 
-        self.btnAddRouter.config(command=lambda: OSPFAddRouterGUI(self))
+        self.btnAddRouter.config(command=lambda: OSPFAddRouterGUI(self, self.project.current_user))
 
         return None
 
