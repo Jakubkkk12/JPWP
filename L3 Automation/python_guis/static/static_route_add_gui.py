@@ -195,7 +195,7 @@ class StaticRouteAddGUI:
                 distance = get_distance()
 
                 threading.Thread(target=add_static_route,
-                                 args=(main_gui, router, user, destination, mask, distance, next_hop, int_name)).start()
+                                 args=(main_gui, self, router, user, destination, mask, distance, next_hop, int_name)).start()
                 clean_entries()
 
         btnApply = tk.Button(root, text='Apply', command=apply_route)

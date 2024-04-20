@@ -16,6 +16,10 @@ DONE: 11 - ZREFAKTORYZOWAC FRONTEDNT dla klasy Projekt
 16 - nie modyfikujemy Autonomms system bo to wymaga postaienia całego bgp od nowa 
 17 - Brak update source
 18 - Potrzebuję informacji newtork i maske aby usunac staticroute
+19 - edit bgp neighbor do zrobienia // threading.Thread(target=update_bgp_neighbor,
+                                 args=(main_gui, router, user, ip, remoteAS, ebgpMultihop, nextHopSelf, shutdown, keepAliveTimer, holdTimeTimer)).start() // to do wstawienia 
+20 - brak Networks w BGP // threading.Thread(target=add_bgp_networks, args=(main_gui, router, user, network_and_mask)).start()
+                threading.Thread(target=remove_bgp_networks, args=(main_gui, router, user, network_and_mask)).start() // to do wstawienia 
 
 Zadania dla studentów:
 ZADANIE1:

@@ -5,7 +5,8 @@ from resources.cisco.getting_bgp import (get_bgp_information, get_bgp_base_conf_
                                          get_bgp_conf_neighbor_commands_for_update_as_list,
                                          get_bgp_conf_neighbor_commands_for_add_as_list,
                                          get_bgp_conf_networks_commands_as_list,
-                                         get_bgp_no_conf_networks_commands_as_list)
+                                         get_bgp_no_conf_networks_commands_as_list,
+                                         get_bgp_base_conf_commands_for_enable_as_list)
 from resources.cisco.getting_interface import (get_interfaces_name, get_base_interface_information,
                                                get_interface_base_conf_commands_for_update_as_list,
                                                get_interface_ospf_information,
@@ -50,6 +51,23 @@ def get_bgp(connection: BaseConnection | None, router: Router, user: User | None
         close_connection(connection)
 
     return get_bgp_information(sh_run_sec_bgp_output, sh_bgp_summary_output)
+
+
+def enable_bgp(router: Router, user: User, autonomous_system: int, router_id: str, default_information_originate: bool,
+               default_metric_of_redistributed_routes: int, keep_alive: int, hold_on: int,
+               network_and_mask: list[list[str, int]]) -> tuple[bool, str | None]:
+    enable_commands: list[str] = get_bgp_base_conf_commands_for_enable_as_list(autonomous_system, router_id,
+                                                                               default_information_originate,
+                                                                               default_metric_of_redistributed_routes,
+                                                                               keep_alive, hold_on)
+    network_commands: list[str] = get_bgp_conf_networks_commands_as_list(network_and_mask)
+    commands: list[str] = enable_commands
+    commands.extend(network_commands)
+    if commands is None:
+        return False, None
+
+    output: str = execute_conf_commands(router, user, commands)
+    return True, output
 
 
 def update_bgp(router: Router, user: User, router_id: str, default_information_originate: bool,
@@ -284,7 +302,8 @@ def remove_ospf_area_networks(router: Router, user: User, area: OSPFArea, networ
 # Section Redistribution
 
 
-def get_redistribution(connection: BaseConnection | None, router: Router, user: User | None, routing_protocol: str) -> Redistribution | None:
+def get_redistribution(connection: BaseConnection | None, router: Router, user: User | None,
+                       routing_protocol: str) -> Redistribution | None:
     was_connection_given = False if connection is None else True
     if not was_connection_given:
         connection = create_connection_to_router(router, user)

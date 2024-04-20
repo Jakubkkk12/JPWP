@@ -3,7 +3,7 @@ import tkinter as tk
 import tkinter.ttk
 from python_guis.gui_resources import config
 from python_guis.static.static_route_add_gui import StaticRouteAddGUI
-from resources.connect_frontend_with_backend.frontend_backend_functions import add_static_route
+from resources.connect_frontend_with_backend.frontend_backend_functions import remove_static_route
 from resources.devices.Router import Router
 from resources.user.User import User
 
@@ -89,11 +89,11 @@ class StaticRoutesGUI:
         def remove_route() -> None:
             item = self.tree.selection()
             # todo 18
-            network = ...
-            network_mask = ...
+            network = self.tree.item(item, 'values')[1]
+            network_mask = int(self.tree.item(item, 'values')[2])
 
-            threading.Thread(target=add_static_route,
-                             args=(main_gui, router, user, network, network_mask)).start()
+            threading.Thread(target=remove_static_route,
+                             args=(main_gui, self, item, router, user, network, network_mask)).start()
 
             # Update NoS
             children = self.tree.get_children()

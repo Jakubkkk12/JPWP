@@ -1,13 +1,12 @@
 import ipaddress
+import threading
 import tkinter as tk
 from tkinter import messagebox
 
 from resources.devices.Router import Router
 from python_guis.gui_resources import config
-from resources.routing_protocols.bgp.BGPNeighbor import BGPNeighbor
-from resources.routing_protocols.bgp.BGPTimers import BGPTimers
 from resources.user.User import User
-from resources.exe_commands.exe_commands import add_bgp_neighbor, get_bgp
+from resources.connect_frontend_with_backend.frontend_backend_functions import add_bgp_neighbor
 
 
 # todo punkt 17
@@ -159,14 +158,10 @@ class BGPNeighborAddGUI:
                 keepAliveTimer = int(entryKeepAliveTimer.get())
                 holdTimeTimer = int(entryHoldTimeTimer.get())
 
-                completed, output = add_bgp_neighbor(router, user, ip, remoteAS, ebgpMultihop, nextHopSelf, shutdown,
-                                                     keepAliveTimer, holdTimeTimer)
-
-                if completed:
-                    main_gui.console_commands(output)
-                    router.bgp = get_bgp(None, router, user)
-                    clean_entries()
-                    messagebox.showinfo('Neighbor added', 'Neighbor added', parent=root)
+                threading.Thread(target=add_bgp_neighbor,
+                                 args=(main_gui, router, user, ip, remoteAS, ebgpMultihop, nextHopSelf, shutdown,
+                                       keepAliveTimer, holdTimeTimer)).start()
+                clean_entries()
 
         btnFrame = tk.Frame(root)
         btnApply = tk.Button(btnFrame, text='Apply', command=apply_neighbor)

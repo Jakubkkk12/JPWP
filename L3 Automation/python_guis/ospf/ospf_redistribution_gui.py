@@ -4,7 +4,7 @@ from tkinter import messagebox
 from resources.devices.Router import Router
 from python_guis.gui_resources import config
 from resources.user.User import User
-from resources.connect_frontend_with_backend.frontend_backend_functions import redistribution
+from resources.connect_frontend_with_backend.frontend_backend_functions import update_redistribution
 import threading
 
 # TODO punkt 15
@@ -81,7 +81,7 @@ class OSPFRedistributionGUI:
             rip = varRIP.get()
             bgp = varBGP.get()
 
-            threading.Thread(target=redistribution,
+            threading.Thread(target=update_redistribution,
                              args=(main_gui, router, user, 'ospf', router.ospf.redistribution,
                                    router.ospf.redistribution.is_redistribute_ospf, rip, bgp, static,
                                    connected)).start()

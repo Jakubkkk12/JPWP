@@ -1,11 +1,13 @@
 import ipaddress
+import threading
 import tkinter as tk
 from tkinter import messagebox
 
+from resources.connect_frontend_with_backend.frontend_backend_functions import update_bgp
 from resources.devices.Router import Router
 from python_guis.gui_resources import config
-from resources.exe_commands.exe_commands import update_bgp, get_bgp
 from resources.user.User import User
+
 
 # todo punkt 16
 class BGPEditGUI:
@@ -127,13 +129,10 @@ class BGPEditGUI:
 
         def apply_changes():
             if validate_changes():
-                completed, output = update_bgp(router, user, get_id_address(), varDefaultInformationOriginate.get(),
-                                               int(entryDefaultMetric.get()), int(entryKeepAlive.get()),
-                                               int(entryHoldTime.get()))
-                if completed:
-                    router.bgp = get_bgp(None, router, user)
-                    main_gui.console_commands(output)
-                    main_gui.update_bgp_tree(router.bgp)
+                threading.Thread(target=update_bgp,
+                                 args=(main_gui, router, user, get_id_address(), varDefaultInformationOriginate.get(),
+                                       int(entryDefaultMetric.get()), int(entryKeepAlive.get()),
+                                       int(entryHoldTime.get()))).start()
                 root.destroy()
 
         btnFrame = tk.Frame(root)

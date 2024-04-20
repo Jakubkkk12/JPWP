@@ -5,9 +5,11 @@ import resources.connect_frontend_with_backend.universal_router_commands as univ
 import netmiko
 
 
-def redistribution(main_gui, router: Router, user: User, routing_protocol: str,
-                   routing_protocol_redistribution: Redistribution, ospf: bool, rip: bool, bgp: bool, static: bool,
-                   connected: bool) -> None:
+## Redistribution
+def update_redistribution(main_gui, router: Router, user: User, routing_protocol: str,
+                          routing_protocol_redistribution: Redistribution, ospf: bool, rip: bool, bgp: bool,
+                          static: bool,
+                          connected: bool) -> None:
     try:
         if routing_protocol == 'ospf':
             completed, output = universal_router_commands.update_redistribution(router, user, routing_protocol,
@@ -39,7 +41,8 @@ def redistribution(main_gui, router: Router, user: User, routing_protocol: str,
     return None
 
 
-def add_static_route(main_gui, router: Router, user: User, network: str, network_mask: int, route_distance: int,
+## Static Route
+def add_static_route(main_gui, add_static_route, router: Router, user: User, network: str, network_mask: int, route_distance: int,
                      next_hop: str, interface_name: str) -> None:
     try:
         if interface_name == '-':
@@ -55,10 +58,11 @@ def add_static_route(main_gui, router: Router, user: User, network: str, network
     if completed:
         main_gui.console_commands(output)
         router.static_routes = universal_router_commands.get_static_routes(None, router, user)
+        #add_static_route.update
     return None
 
 
-def remove_static_route(main_gui, router: Router, user: User, network: str, network_mask: int) -> None:
+def remove_static_route(main_gui, static_route_gui, item, router: Router, user: User, network: str, network_mask: int) -> None:
     try:
         completed, output = universal_router_commands.remove_static_route(router, user, network, network_mask)
     except netmiko.exceptions.NetMikoTimeoutException:
@@ -68,4 +72,113 @@ def remove_static_route(main_gui, router: Router, user: User, network: str, netw
     if completed:
         main_gui.console_commands(output)
         router.static_routes = universal_router_commands.get_static_routes(None, router, user)
+        static_route_gui.tree.delete(item)
     return None
+
+
+## BGP
+def enable_bgp(main_gui, router: Router, user: User, autonomous_system: int, router_id: str, default_information_originate: bool,
+               default_metric_of_redistributed_routes: int, keep_alive: int, hold_on: int,
+               network_and_mask: list[list[str, int]]) -> None:
+    try:
+        completed, output = universal_router_commands.enable_bgp(router, user,autonomous_system, router_id, default_information_originate,
+                                                                 default_metric_of_redistributed_routes, keep_alive,
+                                                                 hold_on, network_and_mask)
+    except netmiko.exceptions.NetMikoTimeoutException:
+        main_gui.console_commands(f'Cannot connect to {router.name}')
+        return None
+
+    if completed:
+        main_gui.console_commands(output)
+        router.bgp = universal_router_commands.get_bgp(None, router, user)
+        main_gui.update_bgp_tree(router.bgp)
+    return None
+
+
+def update_bgp(main_gui, router: Router, user: User, router_id: str, default_information_originate: bool,
+               default_metric_of_redistributed_routes: int, keep_alive: int, hold_on: int) -> None:
+    try:
+        completed, output = universal_router_commands.update_bgp(router, user, router_id, default_information_originate,
+                                                                 default_metric_of_redistributed_routes, keep_alive,
+                                                                 hold_on)
+    except netmiko.exceptions.NetMikoTimeoutException:
+        main_gui.console_commands(f'Cannot connect to {router.name}')
+        return None
+
+    if completed:
+        main_gui.console_commands(output)
+        router.bgp = universal_router_commands.get_bgp(None, router, user)
+        main_gui.update_bgp_tree(router.bgp)
+    return None
+
+
+def add_bgp_neighbor(main_gui, router: Router, user: User, neighbor_id: str, remote_as: int, ebgp_multihop: int,
+                     next_hop_self: bool, shutdown: bool, keep_alive: int, hold_on: int) -> None:
+    try:
+        completed, output = universal_router_commands.add_bgp_neighbor(router, user, neighbor_id, remote_as,
+                                                                       ebgp_multihop, next_hop_self, shutdown,
+                                                                       keep_alive, hold_on)
+    except netmiko.exceptions.NetMikoTimeoutException:
+        main_gui.console_commands(f'Cannot connect to {router.name}')
+        return None
+
+    if completed:
+        main_gui.console_commands(output)
+        router.bgp = universal_router_commands.get_bgp(None, router, user)
+    return None
+
+
+def remove_bgp_neighbor(main_gui, router: Router, user: User, neighbor_id: str) -> None:
+    try:
+        completed, output = universal_router_commands.remove_bgp_neighbor(router, user, neighbor_id)
+    except netmiko.exceptions.NetMikoTimeoutException:
+        main_gui.console_commands(f'Cannot connect to {router.name}')
+        return None
+
+    if completed:
+        main_gui.console_commands(output)
+        router.bgp = universal_router_commands.get_bgp(None, router, user)
+    return None
+
+
+def update_bgp_neighbor(main_gui, router: Router, user: User, neighbor_id: str, remote_as: int, ebgp_multihop: int,
+                        next_hop_self: bool, shutdown: bool, keep_alive: int, hold_on: int) -> None:
+    try:
+        completed, output = universal_router_commands.update_bgp_neighbor(router, user, neighbor_id, remote_as,
+                                                                          ebgp_multihop, next_hop_self, shutdown,
+                                                                          keep_alive, hold_on)
+    except netmiko.exceptions.NetMikoTimeoutException:
+        main_gui.console_commands(f'Cannot connect to {router.name}')
+        return None
+
+    if completed:
+        main_gui.console_commands(output)
+        router.bgp = universal_router_commands.get_bgp(None, router, user)
+    return None
+
+
+def add_bgp_networks(main_gui, router: Router, user: User, network_and_mask: list[list[str, int]]) -> None:
+    try:
+        completed, output = universal_router_commands.add_bgp_networks(router, user, network_and_mask)
+    except netmiko.exceptions.NetMikoTimeoutException:
+        main_gui.console_commands(f'Cannot connect to {router.name}')
+        return None
+
+    if completed:
+        main_gui.console_commands(output)
+        router.bgp = universal_router_commands.get_bgp(None, router, user)
+    return None
+
+
+def remove_bgp_networks(main_gui, router: Router, user: User, network_and_mask: list[list[str, int]]) -> None:
+    try:
+        completed, output = universal_router_commands.remove_bgp_networks(router, user, network_and_mask)
+    except netmiko.exceptions.NetMikoTimeoutException:
+        main_gui.console_commands(f'Cannot connect to {router.name}')
+        return None
+
+    if completed:
+        main_gui.console_commands(output)
+        router.bgp = universal_router_commands.get_bgp(None, router, user)
+    return None
+

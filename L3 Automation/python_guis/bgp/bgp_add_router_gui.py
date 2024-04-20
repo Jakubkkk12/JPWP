@@ -1,18 +1,18 @@
 import ipaddress
+import threading
 import tkinter as tk
 from tkinter import messagebox
 
 from python_guis.gui_resources import config
+from resources.connect_frontend_with_backend.frontend_backend_functions import enable_bgp
 from resources.routing_protocols.Network import Network
 from resources.routing_protocols.bgp.BGPInformation import BGPInformation
 from resources.routing_protocols.bgp.BGPTimers import BGPTimers
-from resources.routing_protocols.ospf.OSPFArea import OSPFArea
-from resources.routing_protocols.ospf.OSPFInformation import OSPFInformation
-from resources import constants
+from resources.user.User import User
 
 
 class BGPAddRouterGUI:
-    def __init__(self, main_gui):
+    def __init__(self, main_gui, user: User):
         self.main_gui = main_gui
 
         root = tk.Toplevel()
@@ -179,19 +179,12 @@ class BGPAddRouterGUI:
         def add_router():
             if validate_router():
                 router = main_gui.get_router(varHostname.get())
-                network = Network(network=get_network(), mask=int(entryMask.get()))
-                timers = BGPTimers(keep_alive=int(entryKeepAliveTimer.get()), hold_time=int(entryHoldTimeTimer.get()))
-
-                bgp = BGPInformation(autonomous_system=int(entryAS.get()), router_id=get_router_id(),
-                                     default_information_originate=varDefaultInformationOriginate.get(),
-                                     default_metric_of_redistributed_routes=int(
-                                         entryDefaultMetricOfRedistributedRoutes.get()),
-                                     timers=timers, networks={network.network: network})
-                router.bgp = bgp
-
-                main_gui.add_router_bgp(router)
-                messagebox.showinfo('Success', 'Router updated successfully', parent=root)
-
+                threading.Thread(target=enable_bgp,
+                                 args=(main_gui, router, user, int(entryAS.get()), get_router_id(),
+                                       varDefaultInformationOriginate.get(),
+                                       int(entryDefaultMetricOfRedistributedRoutes.get()),
+                                       int(entryKeepAliveTimer.get()), int(entryHoldTimeTimer.get()),
+                                       [[get_network(), int(entryMask.get())]])).start()
                 root.destroy()
 
         btnFrame = tk.Frame(root)

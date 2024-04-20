@@ -368,7 +368,10 @@ class MainGUI:
             aes_key = 'zzzzxxxxccccvvvv'
             self.project.open_project(aes_key)
             self.show_view_all()
-            from resources.exe_commands.exe_commands import get_rip, get_ospf, get_bgp, get_all_interfaces, get_static_routes
+            from resources.connect_frontend_with_backend.universal_router_commands import (get_rip, get_ospf, get_bgp, get_all_interfaces,
+                                                                                           get_static_routes)
+            import threading
+
             for name, device in self.project.devices.items():
                 self.project.devices[name].enable_password = 'ZSEDCxzaqwe'
                 print(self.project.devices[name].enable_password)
@@ -378,7 +381,7 @@ class MainGUI:
                 self.project.devices[name].interfaces = get_all_interfaces(None, self.project.devices[name],
                                                                            self.project.current_user)
                 self.project.devices[name].static_routes = get_static_routes(None, self.project.devices[name], self.project.current_user)
-            print(self.project.devices)
+
 
         filemenu.add_command(label='Open project...', command=open_project)
 
@@ -658,7 +661,7 @@ class MainGUI:
         menu.add_command(label='Redistribution', command=BGPRedistributionGUI)
         self.tree.bind('<Button-3>', show_menu_bgp)
 
-        self.btnAddRouter.config(command=lambda: BGPAddRouterGUI(self))
+        self.btnAddRouter.config(command=lambda: BGPAddRouterGUI(self, self.project.current_user))
 
         return None
 

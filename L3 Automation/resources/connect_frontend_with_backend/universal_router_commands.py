@@ -13,6 +13,12 @@ from resources.interfaces import RouterInterface
 
 ########################################################################################################################
 # Section: BGP
+def enable_bgp(router: Router, user: User, autonomous_system: int, router_id: str, default_information_originate: bool,
+               default_metric_of_redistributed_routes: int, keep_alive: int, hold_on: int,
+               network_and_mask: list[list[str, int]]) -> tuple[bool, str | None]:
+    if 'cisco_ios' == router.type:
+        return cisco.enable_bgp(router, user, autonomous_system, router_id, default_information_originate,
+                                default_metric_of_redistributed_routes, keep_alive, hold_on,network_and_mask)
 
 def get_bgp(connection: BaseConnection | None, router: Router, user: User = None) -> BGPInformation | None:
     if 'cisco_ios' == router.type:

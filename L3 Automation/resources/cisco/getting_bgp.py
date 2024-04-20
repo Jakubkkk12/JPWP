@@ -225,10 +225,34 @@ def get_bgp_conf_command_router_id(router_id: str) -> str:
     return f'bgp router-id {router_id}'
 
 
-def get_bgp_conf_command_timers(timers: BGPTimers, keep_alive: int, hold_on: int) -> str | None:
+def get_bgp_conf_command_timers(keep_alive: int, hold_on: int) -> str:
+    return f'timers bgp {keep_alive} {hold_on}'
+
+
+def get_bgp_conf_command_timers_as_str(timers: BGPTimers, keep_alive: int, hold_on: int) -> str | None:
     if (timers.is_keep_alive_different(new_keep_alive_value=keep_alive)
             or timers.is_hold_time_different(new_hold_time_value=hold_on)):
-        return f'timers bgp {keep_alive} {hold_on}'
+        return get_bgp_conf_command_timers(keep_alive=keep_alive, hold_on=hold_on)
+    return None
+
+
+def get_bgp_base_conf_commands_for_enable_as_list(autonomous_system: int, router_id: str,
+                                                  default_information_originate: bool,
+                                                  default_metric_of_redistributed_routes: int, keep_alive: int,
+                                                  hold_on: int) -> list[str] | None:
+    list_of_commands: list[str] = [f'router bgp {autonomous_system}',
+                                   get_bgp_conf_command_router_id(router_id)]
+    if default_information_originate is True:
+        list_of_commands.append(get_conf_command_default_information_originate(default_information_originate))
+    if default_metric_of_redistributed_routes != 1:
+        list_of_commands.append(get_conf_command_default_metric_of_redistributed_routes(
+            default_metric_of_redistributed_routes
+        ))
+    if keep_alive != 60 or hold_on != 180:
+        list_of_commands.append(get_bgp_conf_command_timers(keep_alive, hold_on))
+
+    if len(list_of_commands) > 0:
+        return list_of_commands
     return None
 
 
@@ -250,7 +274,7 @@ def get_bgp_base_conf_commands_for_update_as_list(bgp: BGPInformation, router_id
             default_metric_of_redistributed_routes
         ))
 
-    bgp_conf_command_timers: str | None = get_bgp_conf_command_timers(bgp.timers, keep_alive, hold_on)
+    bgp_conf_command_timers: str | None = get_bgp_conf_command_timers_as_str(bgp.timers, keep_alive, hold_on)
     if bgp_conf_command_timers is not None:
         list_of_commands.append(bgp_conf_command_timers)
 

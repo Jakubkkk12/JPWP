@@ -1,11 +1,13 @@
+import threading
 import tkinter as tk
 import tkinter.ttk
 from python_guis.gui_resources import config
 from python_guis.bgp.bgp_neighbor_add_gui import BGPNeighborAddGUI
+from resources.connect_frontend_with_backend.frontend_backend_functions import remove_bgp_neighbor
 from resources.routing_protocols.bgp.BGPNeighbor import BGPNeighbor
 from resources.devices.Router import Router
 from resources.user.User import User
-from resources.exe_commands.exe_commands import remove_bgp_neighbor, get_bgp
+from resources.connect_frontend_with_backend.universal_router_commands import remove_bgp_neighbor, get_bgp
 
 class BGPNeighborsGUI:
     def __init__(self, main_gui, router: Router, user: User):
@@ -96,11 +98,8 @@ class BGPNeighborsGUI:
             item = self.tree.selection()
             ip = self.tree.item(item)['values'][1]
 
-            completed, output = remove_bgp_neighbor(router, user, ip)
-            if completed:
-                main_gui.console_commands(output)
-                router.bgp = get_bgp(None, router, user)
-            self.tree.delete(item)
+            threading.Thread(target=remove_bgp_neighbor,
+                             args=(main_gui, router, user, ip)).start()
 
             # Update No
             children = self.tree.get_children()
