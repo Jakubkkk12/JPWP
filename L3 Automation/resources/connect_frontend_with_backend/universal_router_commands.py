@@ -182,6 +182,11 @@ def get_all_interfaces(connection: BaseConnection | None, router: Router, user: 
         return cisco.get_all_interfaces(connection, router, user)
 
 
+def get_interface(connection: BaseConnection | None, router: Router, user: User | None, interface_name: str) -> RouterInterface:
+    if 'cisco_ios' == router.type:
+        return cisco.get_interface(connection, router, user, interface_name)
+
+
 def update_interface_basic(router: Router, user: User, router_interface: RouterInterface, description: str,
                            ip_address: str, subnet: int, duplex: str, speed: str, mtu: int) -> tuple[bool, str | None]:
     if 'cisco_ios' == router.type:

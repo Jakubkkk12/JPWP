@@ -503,7 +503,7 @@ class MainGUI:
         # This function launches InterfacesDetails window when 'Interfaces' is clicked from menu on <MB-3>
         def show_interfaces_details(selected_router: Router):
             if selected_router:
-                InterfacesDetails(selected_router)
+                InterfacesDetails(self, selected_router, self.project.current_user)
             return None
 
         def show_static_routes(main_gui, selected_router: Router, user: User) -> None:
@@ -742,7 +742,7 @@ class MainGUI:
 
         def show_interfaces_details(selected_router: Router) -> None:
             if selected_router:
-                OSPFInterfaceDetailsGUI(selected_router)
+                OSPFInterfaceDetailsGUI(self, selected_router, self.project.current_user)
             return None
 
         def run_ospf_area_configuration_gui(selected_router: Router, selected_area: OSPFArea) -> None:

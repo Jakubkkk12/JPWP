@@ -1,4 +1,5 @@
 from resources.devices.Router import Router
+from resources.interfaces.RouterInterface import RouterInterface
 from resources.routing_protocols.Redistribution import Redistribution
 from resources.user.User import User
 from resources.connections.configure_connection import create_connection_to_router, close_connection
@@ -269,4 +270,42 @@ def add_rip_networks(main_gui, router: Router, user: User, networks: list[str]) 
     if completed:
         main_gui.console_commands(output)
         router.rip = universal_router_commands.get_rip(None, router, user)
+    return None
+
+
+# OSPF
+
+# RouterInterface
+def update_interface_basic(main_gui, router: Router, user: User, router_interface: RouterInterface, description: str,
+                           ip_address: str, subnet: int, duplex: str, speed: str, mtu: int) -> None:
+    try:
+        completed, output = universal_router_commands.update_interface_basic(router, user, router_interface, description, ip_address, subnet, duplex, speed, mtu)
+    except netmiko.exceptions.NetMikoTimeoutException:
+        main_gui.console_commands(f'Cannot connect to {router.name}')
+        return None
+
+    if completed:
+        main_gui.console_commands(output)
+        router.interfaces[router_interface.name] = universal_router_commands.get_interface(None, router, user,
+                                                                                           router_interface.name)
+    return None
+
+
+def update_interface_ospf(main_gui, router: Router, user: User, router_interface: RouterInterface, network_type: str,
+                          cost: int, priority: int, authentication_message_digest: bool, authentication_password: str,
+                          hello_timer: int, dead_timer: int, retransmit_timer: int) -> None:
+    try:
+        completed, output = universal_router_commands.update_interface_ospf(router, user, router_interface,
+                                                                            network_type, cost, priority,
+                                                                            authentication_message_digest,
+                                                                            authentication_password, hello_timer,
+                                                                            dead_timer, retransmit_timer)
+    except netmiko.exceptions.NetMikoTimeoutException:
+        main_gui.console_commands(f'Cannot connect to {router.name}')
+        return None
+
+    if completed:
+        main_gui.console_commands(output)
+        router.interfaces[router_interface.name] = universal_router_commands.get_interface(None, router, user,
+                                                                                           router_interface.name)
     return None

@@ -6,11 +6,14 @@ from python_guis.interface.interface_edit_all_gui import EditInterfaceGUI
 from python_guis.interface.interface_errors_gui import InterfaceErrorsGUI
 from python_guis.interface.interface_statistics_gui import InterfaceStatisticsGUI
 from resources.devices.Router import Router
+from resources.user.User import User
 
 
 class InterfacesDetails:
-    def __init__(self, router: Router):
+    def __init__(self, main_gui, router: Router, user: User):
         self.selected_router = router
+        self.user = user
+        self.main_gui = main_gui
         self.hostname = router.name
         self.int_name = ''
         self.selected_router_iid = None
@@ -105,7 +108,7 @@ class InterfacesDetails:
         self.tree.bind('<Button-3>', show_menu_interfaces)
 
     def edit_interface(self) -> None:
-        EditInterfaceGUI(self.selected_router, self.int_name, self.selected_router_iid, self)
+        EditInterfaceGUI(self.main_gui, self.selected_router, self.user, self.int_name, self.selected_router_iid, self)
         return None
 
     def show_interface_statistics(self) -> None:

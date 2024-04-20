@@ -1,14 +1,17 @@
+import threading
 import tkinter as tk
 from tkinter import messagebox
 
+from resources.connect_frontend_with_backend.frontend_backend_functions import update_interface_ospf
 from resources.devices.Router import Router
 from python_guis.gui_resources import config
 from resources.interfaces.InterfaceOSPFInformation import InterfaceOSPFInformation
 from resources.routing_protocols.ospf.OSPFTimers import OSPFTimers
+from resources.user.User import User
 
 
 class EditInterfaceOSPFGUI:
-    def __init__(self, router: Router, int_name: str, iid: int, ospf_interfaces_details_gui):
+    def __init__(self, main_gui, router: Router, user: User, int_name: str, iid: int, ospf_interfaces_details_gui):
         root = tk.Toplevel()
         ospf_interfaces_details_gui = ospf_interfaces_details_gui
 
@@ -158,14 +161,17 @@ class EditInterfaceOSPFGUI:
                 hello_timer = get_hello_timer()
                 dead_timer = get_dead_timer()
                 retransmit_timer = get_retransmit_timer()
+                # todo 28
+                authentication_message_digest: bool = ...
+                authentication_password: str = ...
 
-                timers = OSPFTimers(hello_timer=hello_timer, dead_timer=dead_timer, retransmit_timer=retransmit_timer)
-                ospf = InterfaceOSPFInformation(network_type=network_type, cost=cost,
-                                                passive_interface=passive_interface, priority=priority, timers=timers)
-                router.interfaces[int_name].ospf = ospf
+                # todo 27
+                # ospf_interfaces_details_gui.update_interface_details(iid, int_name, router.interfaces[int_name].ospf)
 
-                ospf_interfaces_details_gui.update_interface_details(iid, int_name, router.interfaces[int_name].ospf)
-
+                threading.Thread(target=update_interface_ospf,
+                                 args=(main_gui, router, user, router.interfaces[int_name], network_type, cost,
+                                       priority, authentication_message_digest, authentication_password, hello_timer,
+                                       dead_timer, retransmit_timer)).start()
                 root.destroy()
 
         btnFrame = tk.Frame(root, pady=10)

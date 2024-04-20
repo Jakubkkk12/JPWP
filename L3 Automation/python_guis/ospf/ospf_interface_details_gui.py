@@ -4,11 +4,14 @@ from tkinter import ttk
 from python_guis.gui_resources import config
 from python_guis.interface.interface_edit_ospf_gui import EditInterfaceOSPFGUI
 from resources.devices.Router import Router
+from resources.user.User import User
 
 
 class OSPFInterfaceDetailsGUI:
-    def __init__(self, router: Router):
+    def __init__(self, main_gui, router: Router, user: User):
         self.selected_router = router
+        self.user = user
+        self.main_gui = main_gui
         self.hostname = router.name
         self.int_name = ''
         self.selected_router_iid = None
@@ -117,7 +120,7 @@ class OSPFInterfaceDetailsGUI:
         self.tree.bind('<Button-3>', show_menu_interfaces)
 
     def edit_interface_ospf(self) -> None:
-        EditInterfaceOSPFGUI(self.selected_router, self.int_name, self.selected_router_iid, self)
+        EditInterfaceOSPFGUI(self.main_gui, self.selected_router, self.user, self.int_name, self.selected_router_iid, self)
         return None
 
     def update_interface_details(self, iid: int, name: str, ospf) -> None:

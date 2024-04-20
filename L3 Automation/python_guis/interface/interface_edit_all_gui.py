@@ -1,12 +1,15 @@
+import threading
 import tkinter as tk
 from tkinter import messagebox
 
+from resources.connect_frontend_with_backend.frontend_backend_functions import update_interface_basic
 from resources.devices.Router import Router
 from python_guis.gui_resources import config
+from resources.user.User import User
 
 
 class EditInterfaceGUI:
-    def __init__(self, router: Router, int_name: str, iid: int, interfaces_details_gui):
+    def __init__(self, main_gui, router: Router, user: User, int_name: str, iid: int, interfaces_details_gui):
         root = tk.Toplevel()
         self.interfaces_details_gui = interfaces_details_gui
 
@@ -163,14 +166,13 @@ class EditInterfaceGUI:
 
         def apply_changes():
             if validate_changes():
-                router.interfaces[int_name].ip_address = get_ip_address()
-                router.interfaces[int_name].subnet = get_mask()
-                router.interfaces[int_name].statistics.information.mtu = get_mtu()
-                router.interfaces[int_name].statistics.information.duplex = duplexVariable.get()
-                router.interfaces[int_name].statistics.information.speed = speedVariable.get()
-                router.interfaces[int_name].description = get_description()
+                # todo 26
+                #self.interfaces_details_gui.update_interface_details(iid, router.interfaces[int_name])
 
-                self.interfaces_details_gui.update_interface_details(iid, router.interfaces[int_name])
+                threading.Thread(target=update_interface_basic,
+                                 args=(main_gui, router, user, router.interfaces[int_name], get_description(),
+                                       get_ip_address(), get_mask(), duplexVariable.get(), speedVariable.get(),
+                                       get_mtu())).start()
 
                 root.destroy()
 

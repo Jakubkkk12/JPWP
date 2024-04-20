@@ -32,7 +32,7 @@ from resources.routing_protocols.ospf.OSPFArea import OSPFArea
 from resources.routing_protocols.ospf.OSPFInformation import OSPFInformation
 from resources.routing_protocols.bgp.BGPInformation import BGPInformation
 from resources.routing_protocols.Redistribution import Redistribution
-from resources.interfaces import RouterInterface
+from resources.interfaces.RouterInterface import RouterInterface
 
 
 ########################################################################################################################
@@ -390,6 +390,24 @@ def get_all_interfaces(connection: BaseConnection | None, router: Router, user: 
         close_connection(connection)
 
     return interfaces
+
+
+def get_interface(connection: BaseConnection | None, router: Router, user: User | None, interface_name: str) -> RouterInterface:
+    was_connection_given = False if connection is None else True
+    if not was_connection_given:
+        connection = create_connection_to_router(router, user)
+        connection.enable()
+
+    sh_int_name_output: str = connection.send_command(f"show int {interface_name}")
+    sh_ip_ospf_int_name_output: str = connection.send_command(f'show ip ospf interface {interface_name}')
+
+    router_interface: RouterInterface = get_base_interface_information(interface_name, sh_int_name_output)
+    router_interface.ospf = get_interface_ospf_information(sh_ip_ospf_int_name_output)
+
+    if not was_connection_given:
+        close_connection(connection)
+
+    return router_interface
 
 
 def update_interface_basic(router: Router, user: User, router_interface: RouterInterface, description: str,
