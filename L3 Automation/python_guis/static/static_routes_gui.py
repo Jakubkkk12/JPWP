@@ -1,10 +1,11 @@
+import threading
 import tkinter as tk
 import tkinter.ttk
 from python_guis.gui_resources import config
 from python_guis.static.static_route_add_gui import StaticRouteAddGUI
+from resources.connect_frontend_with_backend.frontend_backend_functions import add_static_route
 from resources.devices.Router import Router
 from resources.user.User import User
-from resources.exe_commands.exe_commands import remove_static_route, get_static_routes
 
 
 class StaticRoutesGUI:
@@ -90,12 +91,11 @@ class StaticRoutesGUI:
             # todo 18
             network = ...
             network_mask = ...
-            completed, output = remove_static_route(router, user, network, network_mask)
-            if completed:
-                main_gui.console_commands(output)
-                router.static_routes = get_static_routes(None, router, user)
 
-            # Update No
+            threading.Thread(target=add_static_route,
+                             args=(main_gui, router, user, network, network_mask)).start()
+
+            # Update NoS
             children = self.tree.get_children()
             for i, child in enumerate(children, start=1):
                 self.tree.item(child, values=(i,) + self.tree.item(child, 'values')[1:])
