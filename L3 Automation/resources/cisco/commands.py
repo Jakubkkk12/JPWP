@@ -1,5 +1,6 @@
 from netmiko import BaseConnection
-from resources.connections.configure_connection import create_connection_to_router, close_connection
+from resources.connections.configure_connection import (create_connection_to_router, close_connection,
+                                                        execute_conf_commands)
 from resources.cisco.getting_bgp import (get_bgp_information, get_bgp_base_conf_commands_for_update_as_list,
                                          get_bgp_conf_neighbor_commands_for_update_as_list,
                                          get_bgp_conf_neighbor_commands_for_add_as_list,
@@ -61,10 +62,7 @@ def update_bgp(router: Router, user: User, router_id: str, default_information_o
         return False, None
 
     commands.insert(0, f'router bgp {router.bgp.autonomous_system}')
-    connection = create_connection_to_router(router, user)
-    connection.enable()
-    output: str = connection.send_config_set(commands)
-    close_connection(connection)
+    output: str = execute_conf_commands(router, user, commands)
     return True, output
 
 
@@ -75,10 +73,7 @@ def add_bgp_networks(router: Router, user: User, network_and_mask: list[list[str
         return False, None
 
     commands.insert(0, f'router bgp {router.bgp.autonomous_system}')
-    connection = create_connection_to_router(router, user)
-    connection.enable()
-    output: str = connection.send_config_set(commands)
-    close_connection(connection)
+    output: str = execute_conf_commands(router, user, commands)
     return True, output
 
 
@@ -89,10 +84,7 @@ def remove_bgp_networks(router: Router, user: User, network_and_mask: list[list[
         return False, None
 
     commands.insert(0, f'router bgp {router.bgp.autonomous_system}')
-    connection = create_connection_to_router(router, user)
-    connection.enable()
-    output: str = connection.send_config_set(commands)
-    close_connection(connection)
+    output: str = execute_conf_commands(router, user, commands)
     return True, output
 
 
@@ -107,19 +99,13 @@ def update_bgp_neighbor(router: Router, user: User, neighbor_id: str, remote_as:
         return False, None
 
     commands.insert(0, f'router bgp {router.bgp.autonomous_system}')
-    connection = create_connection_to_router(router, user)
-    connection.enable()
-    output: str = connection.send_config_set(commands)
-    close_connection(connection)
+    output: str = execute_conf_commands(router, user, commands)
     return True, output
 
 
 def remove_bgp_neighbor(router: Router, user: User, neighbor_id: str):
     commands: list[str] = [f'router bgp {router.bgp.autonomous_system}', f'no neighbor {neighbor_id}']
-    connection = create_connection_to_router(router, user)
-    connection.enable()
-    output: str = connection.send_config_set(commands)
-    close_connection(connection)
+    output: str = execute_conf_commands(router, user, commands)
     return True, output
 
 
@@ -129,10 +115,7 @@ def add_bgp_neighbor(router: Router, user: User, neighbor_id: str, remote_as: in
     commands: list[str] = get_bgp_conf_neighbor_commands_for_add_as_list(neighbor_id, remote_as, ebgp_multihop,
                                                                          next_hop_self, shutdown, keep_alive, hold_on)
     commands.insert(0, f'router bgp {router.bgp.autonomous_system}')
-    connection = create_connection_to_router(router, user)
-    connection.enable()
-    output: str = connection.send_config_set(commands)
-    close_connection(connection)
+    output: str = execute_conf_commands(router, user, commands)
     return True, output
 
 
@@ -157,19 +140,13 @@ def get_static_r(connection: BaseConnection | None, router: Router, user: User |
 def add_static_route(router: Router, user: User, network: str, network_mask: int, route_distance: int,
                      next_hop: str | None, interface_name: str | None) -> tuple[bool, str | None]:
     command: str = get_static_route_conf_command(network, network_mask, route_distance, next_hop, interface_name)
-    connection = create_connection_to_router(router, user)
-    connection.enable()
-    output: str = connection.send_config_set(command)
-    close_connection(connection)
+    output: str = execute_conf_commands(router, user, command)
     return True, output
 
 
 def remove_static_route(router: Router, user: User, network: str, network_mask: int) -> tuple[bool, str | None]:
     command: str = get_static_route_no_conf_command(network, network_mask)
-    connection = create_connection_to_router(router, user)
-    connection.enable()
-    output: str = connection.send_config_set(command)
-    close_connection(connection)
+    output: str = execute_conf_commands(router, user, command)
     return True, output
 
 
@@ -202,10 +179,7 @@ def update_rip(router: Router, user: User, auto_summary: bool, default_informati
         return False, None
 
     commands.insert(0, 'router rip')
-    connection = create_connection_to_router(router, user)
-    connection.enable()
-    output: str = connection.send_config_set(commands)
-    close_connection(connection)
+    output: str = execute_conf_commands(router, user, commands)
     return True, output
 
 
@@ -216,10 +190,7 @@ def add_rip_networks(router: Router, user: User, networks: list[str]) -> tuple[b
         return False, None
 
     commands.insert(0, 'router rip')
-    connection = create_connection_to_router(router, user)
-    connection.enable()
-    output: str = connection.send_config_set(commands)
-    close_connection(connection)
+    output: str = execute_conf_commands(router, user, commands)
     return True, output
 
 
@@ -230,10 +201,7 @@ def remove_rip_networks(router: Router, user: User, networks: list[str]) -> tupl
         return False, None
 
     commands.insert(0, 'router rip')
-    connection = create_connection_to_router(router, user)
-    connection.enable()
-    output: str = connection.send_config_set(commands)
-    close_connection(connection)
+    output: str = execute_conf_commands(router, user, commands)
     return True, output
 
 
@@ -272,10 +240,7 @@ def update_ospf(router: Router, user: User, router_id: str, auto_cost_reference_
         return False, None
 
     commands.insert(0, f'router ospf {router.ospf.process_id}')
-    connection = create_connection_to_router(router, user)
-    connection.enable()
-    output: str = connection.send_config_set(commands)
-    close_connection(connection)
+    output: str = execute_conf_commands(router, user, commands)
     return True, output
 
 
@@ -287,10 +252,7 @@ def update_ospf_area(router: Router, user: User, area: OSPFArea, authentication_
         return False, None
 
     commands.insert(0, f'router ospf {router.ospf.process_id}')
-    connection = create_connection_to_router(router, user)
-    connection.enable()
-    output: str = connection.send_config_set(commands)
-    close_connection(connection)
+    output: str = execute_conf_commands(router, user, commands)
     return True, output
 
 
@@ -302,10 +264,7 @@ def add_ospf_area_networks(router: Router, user: User, area: OSPFArea, network_a
         return False, None
 
     commands.insert(0, f'router ospf {router.ospf.process_id}')
-    connection = create_connection_to_router(router, user)
-    connection.enable()
-    output: str = connection.send_config_set(commands)
-    close_connection(connection)
+    output: str = execute_conf_commands(router, user, commands)
     return True, output
 
 
@@ -317,10 +276,7 @@ def remove_ospf_area_networks(router: Router, user: User, area: OSPFArea, networ
         return False, None
 
     commands.insert(0, f'router ospf {router.ospf.process_id}')
-    connection = create_connection_to_router(router, user)
-    connection.enable()
-    output: str = connection.send_config_set(commands)
-    close_connection(connection)
+    output: str = execute_conf_commands(router, user, commands)
     return True, output
 
 
@@ -348,10 +304,7 @@ def update_redistribution(router: Router, user: User, routing_protocol: str, red
     else:
         raise ValueError(f'Cannot be {routing_protocol}')
 
-    connection = create_connection_to_router(router, user)
-    connection.enable()
-    output: str = connection.send_config_set(commands)
-    close_connection(connection)
+    output: str = execute_conf_commands(router, user, commands)
     return True, output
 
 
@@ -390,10 +343,7 @@ def update_interface_basic(router: Router, user: User, router_interface: RouterI
         return False, None
 
     commands.insert(0, f'interface {router_interface.name}')
-    connection = create_connection_to_router(router, user)
-    connection.enable()
-    output: str = connection.send_config_set(commands)
-    close_connection(connection)
+    output: str = execute_conf_commands(router, user, commands)
     return True, output
 
 
@@ -408,8 +358,5 @@ def update_interface_ospf(router: Router, user: User, router_interface: RouterIn
         return False, None
 
     commands.insert(0, f'interface {router_interface.name}')
-    connection = create_connection_to_router(router, user)
-    connection.enable()
-    output: str = connection.send_config_set(commands)
-    close_connection(connection)
+    output: str = execute_conf_commands(router, user, commands)
     return True, output

@@ -1,4 +1,4 @@
-import resources.cisco.execute_commands as cisco
+import resources.cisco.commands as cisco
 from netmiko import BaseConnection
 from resources.devices.Router import Router
 from resources.user.User import User

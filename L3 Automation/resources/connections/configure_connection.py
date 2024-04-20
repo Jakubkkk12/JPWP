@@ -33,3 +33,22 @@ def close_connection(connection: netmiko.BaseConnection) -> None:
     connection.disconnect()
 
 
+def execute_conf_commands(router: Router, user: User, commands: str | list[str],
+                          connection: netmiko.BaseConnection | None = None) -> str:
+    is_connection = False if connection is None else True
+    if not is_connection:
+        connection = create_connection_to_router(router, user)
+        connection.enable()
+
+    output: str = connection.send_config_set(commands)
+
+    if not is_connection:
+        close_connection(connection)
+
+    try:
+        _: list = output.splitlines()[2:-2]
+        _.insert(0, f'Configuring {router.name}')
+        _.append(f'End')
+        return '\n'.join(_)
+    except IndexError:
+        return f'Execution on {router.name} failed'
