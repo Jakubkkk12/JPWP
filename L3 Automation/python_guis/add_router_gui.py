@@ -1,14 +1,17 @@
 import ipaddress
+import threading
 import tkinter as tk
 from tkinter import messagebox
 
 from gui_resources import config
+from resources.connect_frontend_with_backend.frontend_backend_functions import get_info_router
 from resources.devices.Router import Router
 from resources.ssh.SSHInformation import SSHInformation
+from resources.user.User import User
 
 
 class AddRouterGUI:
-    def __init__(self, main_gui):
+    def __init__(self, main_gui, user: User):
         self.main_gui = main_gui
 
         root = tk.Toplevel()
@@ -74,7 +77,7 @@ class AddRouterGUI:
         lblType = tk.Label(root, text='Type:')
         lblType.grid(row=4, column=0)
         varOption = tk.StringVar()
-        options = ['cisco']  # 'mikrotik', 'juniper', 'huawei', 'other']
+        options = ['cisco_ios']  # 'mikrotik', 'juniper', 'huawei', 'other']
         optionType = tk.OptionMenu(root, varOption, *options)
         optionType.grid(row=4, column=1)
 
@@ -121,9 +124,15 @@ class AddRouterGUI:
             if validate_router():
                 router = Router(name=entryHostname.get(),
                                 ssh_information=SSHInformation(ip_addresses={get_address(): get_address()}),
-                                type=varOption.get())
+                                type=varOption.get(),
+                                # todo 24
+                                enable_password='ZSEDCxzaqwe')
                 main_gui.add_router_all(router)
                 messagebox.showinfo('Success', 'Router added successfully', parent=root)
+
+                threading.Thread(target=get_info_router,
+                                 args=(main_gui, router, user)).start()
+
                 clean_entries()
 
         btnFrame = tk.Frame(root)

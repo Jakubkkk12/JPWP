@@ -23,7 +23,9 @@ DONE: 11 - ZREFAKTORYZOWAC FRONTEDNT dla klasy Projekt
 21 - W RIP nie podaje sie mask przy dawaniu network
 22 - inna obsługa graficznego usuwania rzeczy z listy treeview 
 23 - w rip add router potrzebna jest jeden network
-
+24 - zapist pytać o sshpasword można o enable (w addrouter)
+25 - zrobić odświerzanie ALL
+666 - ZROBIĆ ODŚWIERZANIE WSZYSTKIEGO (po załadowaniu danych po addroouter i przejscie do RIP nie wyswietla sie w RIP pomimo że należy)
 
 Zadania dla studentów:
 ZADANIE1:

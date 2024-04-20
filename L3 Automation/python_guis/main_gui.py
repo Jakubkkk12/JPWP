@@ -24,6 +24,7 @@ from python_guis.rip.rip_networks_gui import RIPNetworksGUI
 from python_guis.rip.rip_redistribution_gui import RIPRedistributionGUI
 from python_guis.ssh.ssh_connections_gui import SSHConnectionsGUI
 from python_guis.static.static_routes_gui import StaticRoutesGUI
+from resources.connect_frontend_with_backend.frontend_backend_functions import get_info_router
 
 from resources.devices.Router import Router
 from resources.interfaces.InterfaceOSPFInformation import InterfaceOSPFInformation
@@ -381,6 +382,9 @@ class MainGUI:
                 self.project.devices[name].interfaces = get_all_interfaces(None, self.project.devices[name],
                                                                            self.project.current_user)
                 self.project.devices[name].static_routes = get_static_routes(None, self.project.devices[name], self.project.current_user)
+                # TODO po zrobieniu 25 usunąć tamto i katywować to (konieczna modyfikacja get_info_router
+                # threading.Thread(target=get_info_router,
+                #                  args=(self, self.project.devices[name], self.project.current_user)).start()
 
 
         filemenu.add_command(label='Open project...', command=open_project)
@@ -519,7 +523,7 @@ class MainGUI:
         self.tree.bind('<Button-3>', show_menu_all)
 
         def add_router_all():
-            AddRouterGUI(self)
+            AddRouterGUI(self, self.project.current_user)
 
         self.btnAddRouter.config(command=add_router_all)
 

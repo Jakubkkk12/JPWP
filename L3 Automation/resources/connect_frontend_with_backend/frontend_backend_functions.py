@@ -1,8 +1,28 @@
 from resources.devices.Router import Router
 from resources.routing_protocols.Redistribution import Redistribution
 from resources.user.User import User
+from resources.connections.configure_connection import create_connection_to_router, close_connection
 import resources.connect_frontend_with_backend.universal_router_commands as universal_router_commands
 import netmiko
+
+
+## Add Router
+def get_info_router(main_gui, router: Router, user: User) -> None:
+    try:
+        connection = create_connection_to_router(router, user)
+        router.interfaces = universal_router_commands.get_all_interfaces(connection, router, user)
+        router.static_routes = universal_router_commands.get_static_routes(connection, router, user)
+        router.rip = universal_router_commands.get_rip(connection, router, user)
+        router.bgp = universal_router_commands.get_bgp(connection, router, user)
+        router.ospf = universal_router_commands.get_ospf(connection, router, user)
+        close_connection(connection)
+    except netmiko.exceptions.NetMikoTimeoutException:
+        main_gui.console_commands(f'Cannot connect to {router.name}')
+        return None
+
+    # todo do usunięcia po beta
+    main_gui.console_commands(f'I {router.name}')
+    return None
 
 
 ## Redistribution
@@ -75,6 +95,7 @@ def remove_static_route(main_gui, static_route_gui, item, router: Router, user: 
         main_gui.console_commands(output)
         router.static_routes = universal_router_commands.get_static_routes(None, router, user)
         static_route_gui.tree.delete(item)
+        # todo BEZ tego bo ma być funkcja odświerz
     return None
 
 
