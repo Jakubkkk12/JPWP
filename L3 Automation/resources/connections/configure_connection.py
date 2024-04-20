@@ -47,8 +47,9 @@ def execute_conf_commands(router: Router, user: User, commands: str | list[str],
 
     try:
         _: list = output.splitlines()[2:-2]
-        _.insert(0, f'Configuring {router.name}')
-        _.append(f'End')
-        return '\n'.join(_)
     except IndexError:
         return f'Execution on {router.name} failed'
+    else:
+        _.insert(0, f'Configuring {router.name}')
+        _.append(f'End')
+    return '\n'.join(_)
