@@ -329,7 +329,6 @@ def get_ospf_area_base_conf_commands_for_update_as_list(area: OSPFArea, authenti
 
 def get_ospf_area_conf_networks_commands_as_list(area_id: str, network_and_wildcard: list[list[str]]) -> list[str] | None:
     list_of_commands: list[str] = []
-    print(network_and_wildcard)
 
     for network, wildcard in network_and_wildcard:
         list_of_commands.append(f'network {network} {wildcard} area {area_id}')

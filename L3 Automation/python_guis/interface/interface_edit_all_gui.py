@@ -103,7 +103,7 @@ class EditInterfaceGUI:
         lblSpeed.grid(column=0, row=3)
 
         def get_speed_options() -> list[str]:
-            if router.type == 'cisco':
+            if router.type == 'cisco_ios':
                 if 'GigabitEthernet' in int_name:
                     return ['1000 Mbps', '100 Mbps', '10 Mbps']
                 if 'FastEthernet' in int_name:

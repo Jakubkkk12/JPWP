@@ -13,7 +13,7 @@ from resources.user.User import User
 
 
 class OSPFNetworkAddGUI:
-    def __init__(self, main_gui, router: Router, user: User, ospf_area: OSPFArea, ospf_config_gui):
+    def __init__(self, main_gui, ospf_config_gui, router: Router, user: User, ospf_area: OSPFArea):
         self.hostname = router.name
         self.area = ospf_area
         self.ospf_config_gui = ospf_config_gui
@@ -109,10 +109,10 @@ class OSPFNetworkAddGUI:
                 network = get_network()
                 mask = get_mask()
                 from resources import constants
-                wildcard = constants.WILDCARD_MASK[str(mask)]
+                wildcard = constants.WILDCARD_MASK[mask]
 
                 threading.Thread(target=add_ospf_area_networks,
-                                 args=(main_gui, router, user, ospf_area, [network, wildcard])).start()
+                                 args=(main_gui, router, user, ospf_area, [[network, wildcard]])).start()
 
                 # todo 666
                 # self.ospf_config_gui.insert_network(network)

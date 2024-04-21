@@ -69,9 +69,7 @@ class OSPFNetworksGUI:
         def remove_network() -> None:
             item = self.tree.selection()
             # todo 29
-            network_and_wildcard = [network, wildcard]
-            threading.Thread(target=remove_ospf_area_networks,
-                             args=(main_gui, router, user, router.ospf.areas[area], network_and_wildcard)).start()
+
 
 
             # TODO 666

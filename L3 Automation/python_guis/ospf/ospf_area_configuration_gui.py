@@ -1,7 +1,9 @@
+import threading
 import tkinter as tk
 import tkinter.ttk
 from python_guis.gui_resources import config
 from python_guis.ospf.ospf_network_add_gui import OSPFNetworkAddGUI
+from resources.connect_frontend_with_backend.frontend_backend_functions import remove_ospf_area_networks
 from resources.devices.Router import Router
 from resources.routing_protocols.ospf.OSPFArea import OSPFArea
 from resources.routing_protocols.Network import Network
@@ -9,7 +11,7 @@ from resources.user.User import User
 
 
 class OSPFAreaConfigurationGUI:
-    def __init__(self, router: Router, user: User, area: OSPFArea, main_gui):
+    def __init__(self, main_gui, router: Router, user: User, area: OSPFArea):
         self.main_gui = main_gui
         self.area = area
 
@@ -94,21 +96,25 @@ class OSPFAreaConfigurationGUI:
         treeFrame.grid(column=0, row=3, columnspan=2, sticky='NEWS')
 
         def add_network(router, area):
-            OSPFNetworkAddGUI(main_gui, router, user, area, self)
+            OSPFNetworkAddGUI(main_gui, self, router, user, area)
 
         def remove_network() -> None:
             item = self.tree.selection()
-            ip = self.tree.item(item)['values'][1]
-            mask = str(self.tree.item(item)['values'][2])
-            network = ip + '/' + mask
+            network = self.tree.item(item)['values'][1]
+            wildcard = str(self.tree.item(item)['values'][3])
 
-            del router.ospf.areas[area.id].networks[network]
-            self.tree.delete(item)
+            network_and_wildcard = [[network, wildcard]]
+            threading.Thread(target=remove_ospf_area_networks,
+                             args=(main_gui, router, user, area, network_and_wildcard)).start()
 
-            # Update No
-            children = self.tree.get_children()
-            for i, child in enumerate(children, start=1):
-                self.tree.item(child, values=(i,) + self.tree.item(child, 'values')[1:])
+            # todo 666
+            # del router.ospf.areas[area.id].networks[network]
+            # self.tree.delete(item)
+            #
+            # # Update No
+            # children = self.tree.get_children()
+            # for i, child in enumerate(children, start=1):
+            #     self.tree.item(child, values=(i,) + self.tree.item(child, 'values')[1:])
 
         buttonFrame = tk.Frame(root)
         btnAdd = tk.Button(buttonFrame, text='Add', command=lambda: add_network(router, area))

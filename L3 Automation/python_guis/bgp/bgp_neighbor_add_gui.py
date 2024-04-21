@@ -151,7 +151,7 @@ class BGPNeighborAddGUI:
         def apply_neighbor():
             if validate_neighbor():
                 ip = get_ip()
-                remoteAS = int(entryRemoteAS.get())
+                remote_as = int(entryRemoteAS.get())
                 ebgpMultihop = int(entryEBGPMultihop.get())
                 nextHopSelf = varNextHopSelf.get()
                 shutdown = varShutdown.get()
@@ -159,7 +159,7 @@ class BGPNeighborAddGUI:
                 holdTimeTimer = int(entryHoldTimeTimer.get())
 
                 threading.Thread(target=add_bgp_neighbor,
-                                 args=(main_gui, router, user, ip, remoteAS, ebgpMultihop, nextHopSelf, shutdown,
+                                 args=(main_gui, router, user, ip, remote_as, ebgpMultihop, nextHopSelf, shutdown,
                                        keepAliveTimer, holdTimeTimer)).start()
                 clean_entries()
 

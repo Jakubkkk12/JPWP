@@ -1,17 +1,18 @@
 666 - ZROBIĆ ODŚWIERZANIE WSZYSTKIEGO - NOWY SYSTEM (po załadowaniu danych po addroouter i przejscie do RIP nie wyswietla sie w RIP pomimo że należy)
-777 - NAPRAWIĆ OSPF 
+DONE JK: 777 - NAPRAWIĆ OSPF 
+888 - Ujednolicenie konwencji 
 
 1 - Brak okienka Login
 2 - Tylko główne okienko
 3 - Dodać przycisk umożliwiający dodanie username i hasła, który bedzie użyty do ssh
 4 - Jak rozwija się lista np. w OSPF aby zobaczyć areas, dodać ** w kolumnie No aby zaznaczyć aktualny poziom
-DONE: 5 - Wybór pliku tylko z .jkal
+DONE JK: 5 - Wybór pliku tylko z .jkal
 6 - Po wyborze pliku dodanie okienka które pozyska hasło (klucz AES - 16znaków podstawowych ACSII) od urzytkkownika
 7 - To samo do opcji Save as...
 8 - Dodać opcję Save (Nie będzie pytać urzytkownika o gdzie zapisać plik, TYLKO zapyta o klucz jakim zapisać)
 9 - Dodać obsłógę Ctrl+S do Save
-DONE: 10 - Dodać klasę Project (zawiera: path, dict_devices, current_user, metody do zapisu/otwarcia projektu)
-DONE: 11 - ZREFAKTORYZOWAC FRONTEDNT dla klasy Projekt
+DONE JK: 10 - Dodać klasę Project (zawiera: path, dict_devices, current_user, metody do zapisu/otwarcia projektu)
+DONE JK: 11 - ZREFAKTORYZOWAC FRONTEDNT dla klasy Projekt
 12 - Dodać przycisk w ALL SET enable password (wybór routerów i nadanie im hasła enable)
 13 - Umożliwić dostęp do zmiennej user w okienkach zmiany/dodani usawien na router
 14 - Nie dodaje rozszerzenia na koniec pliku i nie zwraca str tylko IO
@@ -23,24 +24,29 @@ DONE: 11 - ZREFAKTORYZOWAC FRONTEDNT dla klasy Projekt
 20 - brak Networks w BGP // threading.Thread(target=add_bgp_networks, args=(main_gui, router, user, network_and_mask)).start()
                             threading.Thread(target=remove_bgp_networks, args=(main_gui, router, user, network_and_mask)).start() // to do wstawienia 
 21 - W RIP nie podaje sie mask przy dawaniu network
-22 - inna obsługa graficznego usuwania rzeczy z listy treeview 
+666 -> 22 - inna obsługa graficznego usuwania rzeczy z listy treeview 
 23 - w rip add router potrzebna jest jeden network
-24 - zapist pytać o sshpasword można o enable (w addrouter)
-25 - zrobić odświerzanie ALL
-26 - Nie wiem o co tu chodzi (odświerzenie danych) interface edit
-27 - Nie wiem o co tu chodzi (odświerzenie danych) interface ospf edit
+24 - zapist pytać o sshpasword można o enable (w addrouter) port domyślny 22
+DONE: 666 -> 25 - zrobić odświerzanie ALL
+666 -> 26 - Nie wiem o co tu chodzi (odświerzenie danych) interface edit
+666 -> 27 - Nie wiem o co tu chodzi (odświerzenie danych) interface ospf edit
 28 - brak pewnych pul w interface ospf edit
 29 - remove ospf network brak pewnych danych
 30 - Pzygotować okienko add AREA 
 31 - Brak możliwości update AREA // threading.Thread(target=update_ospf_area, args=(main_gui, router, user, area, authentication_message_digest, area_type)).start() //
 32 - Brak okienka EditOSPF // threading.Thread(target=update_ospf, args=(main_gui, router, user, router_id, auto_cost_reference_bandwidth, default_information_originate, default_metric_of_redistributed_routes, distance, maximum_paths, passive_interface_default)).start() //
-33 - OSPFNetworksGUI wygląda na to że to okienko nie jest podpięte.
+33 - Usunąć OSPFNetworksGUI 
 
-
+@@ AREA CONF zamiast OSPFNetworksGUI 
 
 Zadania dla studentów:
 ZADANIE1 (frontend):
 Zrefaktoruj kod tak aby zrobić jedno uniwersalne okienko RedistributionGUI (zamiast BGPRedistributionGUI, OSPFRedistributionGUI i RIPRedistributionGUI) i móc je zaaplikować do wszystkich protokołów routingu.
 
 ZADANIE2 (backend):
-Stosując przyjętą w projekcie konwencję napisz odpowiednie funkcje umożliwiające obsłużenie dodania AREA w OSPF. Popatrz na ospf_area_add_gui.py aby zobaczyć jakie dane są zwracane z okienka. Prawidłowo rozwiązane zadanie powinno składać się z dopisanych funkcji w: frontend_backend_functions.py, universal_router_commands.py, commands.py oraz getting_ospf.py.     
+Stosując przyjętą w projekcie konwencję napisz odpowiednie funkcje umożliwiające obsłużenie dodania AREA w OSPF. Popatrz na ospf_area_add_gui.py aby zobaczyć jakie dane są zwracane z okienka. Prawidłowo rozwiązane zadanie powinno składać się z dopisanych funkcji w: frontend_backend_functions.py, universal_router_commands.py, commands.py oraz getting_ospf.py. 
+
+ZADANIE3:
+
+
+T20min(GUI5mi + NETAUTO/DATACLASSES15min + GNS2min) -> Q5min -> P10min -> Z   

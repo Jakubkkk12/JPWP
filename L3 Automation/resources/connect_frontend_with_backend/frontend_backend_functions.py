@@ -8,10 +8,11 @@ import resources.connect_frontend_with_backend.universal_router_commands as univ
 import netmiko
 
 
-## Add Router
+## Info Router
 def get_info_router(main_gui, router: Router, user: User) -> None:
     try:
         connection = create_connection_to_router(router, user)
+        connection.enable()
         router.interfaces = universal_router_commands.get_all_interfaces(connection, router, user)
         router.static_routes = universal_router_commands.get_static_routes(connection, router, user)
         router.rip = universal_router_commands.get_rip(connection, router, user)
@@ -23,7 +24,8 @@ def get_info_router(main_gui, router: Router, user: User) -> None:
         return None
 
     # todo do usunięcia po beta
-    main_gui.console_commands(f'I {router.name}')
+    main_gui.console_commands(f'Pozyskano dane z {router.name}')
+    print(router)
     return None
 
 
@@ -64,7 +66,7 @@ def update_redistribution(main_gui, router: Router, user: User, routing_protocol
 
 
 ## Static Route
-def add_static_route(main_gui, add_static_route, router: Router, user: User, network: str, network_mask: int,
+def add_static_route(main_gui, add_static_route_gui, router: Router, user: User, network: str, network_mask: int,
                      route_distance: int,
                      next_hop: str, interface_name: str) -> None:
     try:
@@ -81,7 +83,7 @@ def add_static_route(main_gui, add_static_route, router: Router, user: User, net
     if completed:
         main_gui.console_commands(output)
         router.static_routes = universal_router_commands.get_static_routes(None, router, user)
-        # add_static_route.update
+        # add_static_route.update()
     return None
 
 

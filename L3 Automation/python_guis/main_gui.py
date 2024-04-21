@@ -348,6 +348,7 @@ class MainGUI:
             # TODO Punkt 14
             files = [('L3 Project Files', '*.jkal')]
             file = asksaveasfile(filetypes=files)
+            print(file.name)
             new_project = Project(file_path=file, devices=self.project.devices)
             ## TODO Punkt 7
             aes_key = 'zzzzxxxxccccvvvv'
@@ -375,16 +376,16 @@ class MainGUI:
 
             for name, device in self.project.devices.items():
                 self.project.devices[name].enable_password = 'ZSEDCxzaqwe'
-                print(self.project.devices[name].enable_password)
-                self.project.devices[name].rip = get_rip(None, self.project.devices[name], self.project.current_user)
-                self.project.devices[name].ospf = get_ospf(None, self.project.devices[name], self.project.current_user)
-                self.project.devices[name].bgp = get_bgp(None, self.project.devices[name], self.project.current_user)
-                self.project.devices[name].interfaces = get_all_interfaces(None, self.project.devices[name],
-                                                                           self.project.current_user)
-                self.project.devices[name].static_routes = get_static_routes(None, self.project.devices[name], self.project.current_user)
+                # print(self.project.devices[name].enable_password)
+                # self.project.devices[name].rip = get_rip(None, self.project.devices[name], self.project.current_user)
+                # self.project.devices[name].ospf = get_ospf(None, self.project.devices[name], self.project.current_user)
+                # self.project.devices[name].bgp = get_bgp(None, self.project.devices[name], self.project.current_user)
+                # self.project.devices[name].interfaces = get_all_interfaces(None, self.project.devices[name],
+                #                                                            self.project.current_user)
+                # self.project.devices[name].static_routes = get_static_routes(None, self.project.devices[name], self.project.current_user)
                 # TODO po zrobieniu 25 usunąć tamto i katywować to (konieczna modyfikacja get_info_router
-                # threading.Thread(target=get_info_router,
-                #                  args=(self, self.project.devices[name], self.project.current_user)).start()
+                threading.Thread(target=get_info_router,
+                                 args=(self, self.project.devices[name], self.project.current_user)).start()
 
 
         filemenu.add_command(label='Open project...', command=open_project)
@@ -747,7 +748,7 @@ class MainGUI:
 
         def run_ospf_area_configuration_gui(selected_router: Router, selected_area: OSPFArea) -> None:
             if selected_area:
-                OSPFAreaConfigurationGUI(selected_router, selected_area, self)
+                OSPFAreaConfigurationGUI(self, selected_router, self.project.current_user, selected_area)
             return None
 
         def show_redistribution(selected_router: Router) -> None:

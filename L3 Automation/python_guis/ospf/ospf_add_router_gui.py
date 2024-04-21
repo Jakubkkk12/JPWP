@@ -225,7 +225,7 @@ class OSPFAddRouterGUI:
 
                 threading.Thread(target=enable_ospf,
                                  args=(main_gui, router, user, get_router_id(),
-                                       int(entryAutoCostReferenceBandwidth.get()),varDefaultInformationOriginate.get(),
+                                       int(entryAutoCostReferenceBandwidth.get()), varDefaultInformationOriginate.get(),
                                        int(entryDefaultMetricOfRedistributedRoutes.get()), int(entryDistance.get()),
                                        int(entryMaximumPaths.get()), varPassiveInterface.get(), entryAreaId.get(),
                                        [[get_network(), constants.WILDCARD_MASK[int(entryMask.get())]]],
