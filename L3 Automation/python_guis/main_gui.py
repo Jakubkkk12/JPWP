@@ -15,7 +15,7 @@ from login_gui import LoginGUI
 from python_guis.bgp.bgp_edit_gui import BGPEditGUI
 from python_guis.bgp.bgp_neighbors_gui import BGPNeighborsGUI
 from python_guis.bgp.bgp_redistribution_gui import BGPRedistributionGUI
-from python_guis.interface.interfaces_details_gui import InterfacesDetails
+from python_guis.interface.interfaces_details_gui import InterfacesDetailsGUI
 from python_guis.ospf.ospf_area_configuration_gui import OSPFAreaConfigurationGUI
 from python_guis.ospf.ospf_interface_details_gui import OSPFInterfaceDetailsGUI
 from python_guis.ospf.ospf_redistribution_gui import OSPFRedistributionGUI
@@ -402,7 +402,7 @@ class MainGUI:
 
         btnSSHPassword = tk.Button(btnFrameAddSSH, text='SSH Password', padx=2, pady=2,
                                    command=ssh_password_gui.SSHPasswordGUI)
-        btnSSHPassword.grid(column=0, row=1)
+        btnSSHPassword.grid(column=0, row=1, sticky='EW')
 
         btnEnablePassword = tk.Button(btnFrameAddSSH, text='Enable Password', padx=2, pady=2,
                                         command=EnablePasswordGUI)
@@ -511,7 +511,7 @@ class MainGUI:
         # This function launches InterfacesDetails window when 'Interfaces' is clicked from menu on <MB-3>
         def show_interfaces_details(selected_router: Router):
             if selected_router:
-                InterfacesDetails(self, selected_router, self.project.current_user)
+                InterfacesDetailsGUI(self, selected_router, self.project.current_user)
             return None
 
         def show_static_routes(main_gui, selected_router: Router, user: User) -> None:
@@ -697,6 +697,7 @@ class MainGUI:
                 self.tree.insert('', tk.END, values=values, iid=iid)
 
                 if len(router_areas) > 1:
+                    self.tree.item(iid)['values'][3].join('*')
                     for area in router_areas[1:]:
                         values = ('', router.name, '', router.ospf.areas[area].id)
                         self.tree.insert(iid, tk.END, values=values)

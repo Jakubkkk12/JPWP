@@ -22,7 +22,7 @@ def get_info_router(main_gui, router: Router, user: User) -> None:
     except netmiko.exceptions.NetMikoTimeoutException:
         main_gui.console_commands(f'Cannot connect to {router.name}')
         return None
-
+    main_gui.update_all_tree()
     # todo do usunięcia po beta
     main_gui.console_commands(f'Pozyskano dane z {router.name}')
     print(router)
@@ -366,8 +366,8 @@ def remove_ospf_area_networks(main_gui, router: Router, user: User, area: OSPFAr
     return None
 
 # RouterInterface
-def update_interface_basic(main_gui, router: Router, user: User, router_interface: RouterInterface, description: str,
-                           ip_address: str, subnet: int, duplex: str, speed: str, mtu: int) -> None:
+def update_interface_basic(main_gui, interfaces_gui, router: Router, user: User, router_interface: RouterInterface,
+                           description: str, ip_address: str, subnet: int, duplex: str, speed: str, mtu: int) -> None:
     try:
         completed, output = universal_router_commands.update_interface_basic(router, user, router_interface, description, ip_address, subnet, duplex, speed, mtu)
     except netmiko.exceptions.NetMikoTimeoutException:
@@ -378,6 +378,7 @@ def update_interface_basic(main_gui, router: Router, user: User, router_interfac
         main_gui.console_commands(output)
         router.interfaces[router_interface.name] = universal_router_commands.get_interface(None, router, user,
                                                                                            router_interface.name)
+        interfaces_gui.update_window()
     return None
 
 

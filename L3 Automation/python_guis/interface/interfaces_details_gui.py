@@ -9,9 +9,9 @@ from resources.devices.Router import Router
 from resources.user.User import User
 
 
-class InterfacesDetails:
+class InterfacesDetailsGUI:
     def __init__(self, main_gui, router: Router, user: User):
-        self.selected_router = router
+        self.router = router
         self.user = user
         self.main_gui = main_gui
         self.hostname = router.name
@@ -71,19 +71,19 @@ class InterfacesDetails:
             i += 1
 
         self.tree.heading(treeColumns[0], text='No', anchor='w')
-        self.tree.column(treeColumns[0], width=30)
+        self.tree.column(treeColumns[0], width=30, stretch=False)
 
         self.tree.heading(treeColumns[1], text='Name', anchor='w')
-        self.tree.column(treeColumns[1], width=30)
+        self.tree.column(treeColumns[1], width=100, stretch=False)
 
         self.tree.heading(treeColumns[2], text='IP', anchor='w')
-        self.tree.column(treeColumns[2], width=30)
+        self.tree.column(treeColumns[2], width=100, stretch=False)
 
         self.tree.heading(treeColumns[3], text='Subnet', anchor='w')
-        self.tree.column(treeColumns[3], width=30)
+        self.tree.column(treeColumns[3], width=50, stretch=False)
 
         self.tree.heading(treeColumns[4], text='Description', anchor='w')
-        self.tree.column(treeColumns[4], width=50)
+        self.tree.column(treeColumns[4], width=100, stretch=False)
 
         def show_menu_interfaces(event) -> None:
             item = self.tree.identify_row(event.y)
@@ -108,18 +108,27 @@ class InterfacesDetails:
         self.tree.bind('<Button-3>', show_menu_interfaces)
 
     def edit_interface(self) -> None:
-        EditInterfaceGUI(self.main_gui, self.selected_router, self.user, self.int_name, self.selected_router_iid, self)
+        EditInterfaceGUI(self.main_gui, self, self.router, self.user, self.int_name, self.selected_router_iid)
         return None
 
     def show_interface_statistics(self) -> None:
-        InterfaceStatisticsGUI(self.selected_router, self.int_name)
+        InterfaceStatisticsGUI(self.router, self.int_name)
         return None
 
     def show_interface_errors(self) -> None:
-        InterfaceErrorsGUI(self.selected_router, self.int_name)
+        InterfaceErrorsGUI(self.router, self.int_name)
         return None
 
     def update_interface_details(self, iid, interface) -> None:
         self.tree.item(iid-1, values=(iid, interface.name, interface.ip_address, interface.subnet,
                                       interface.description))
         return None
+
+    def update_window(self) -> None:
+        self.tree.delete(*self.tree.get_children())
+        interfaces = self.router.interfaces
+        i = 1
+        for k, interface in interfaces.items():
+            values = (i, interface.name, interface.ip_address, interface.subnet, interface.description)
+            self.tree.insert('', tk.END, iid=i-1, values=values)
+            i += 1

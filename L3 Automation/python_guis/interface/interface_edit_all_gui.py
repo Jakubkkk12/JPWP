@@ -9,7 +9,7 @@ from resources.user.User import User
 
 
 class EditInterfaceGUI:
-    def __init__(self, main_gui, router: Router, user: User, int_name: str, iid: int, interfaces_details_gui):
+    def __init__(self, main_gui, interfaces_details_gui, router: Router, user: User, int_name: str, iid: int):
         root = tk.Toplevel()
         self.interfaces_details_gui = interfaces_details_gui
 
@@ -71,15 +71,17 @@ class EditInterfaceGUI:
         def get_description() -> str:
             return entryDescription.get()
 
-        def refill_with_current_ip():
-            ip_entries = [entryIPAddressFirst, entryIPAddressSecond, entryIPAddressThird, entryIPAddressFourth]
+        def refill_with_current_ip() -> None:
+            if router.interfaces[int_name].ip_address != 'unassigned':
+                ip_entries = [entryIPAddressFirst, entryIPAddressSecond, entryIPAddressThird, entryIPAddressFourth]
 
-            currentIP = router.interfaces[int_name].ip_address
-            octets = currentIP.split('.')
-            i = 0
-            for entry in ip_entries:
-                entry.insert(0, octets[i])
-                i += 1
+                currentIP = router.interfaces[int_name].ip_address
+                octets = currentIP.split('.')
+                i = 0
+                for entry in ip_entries:
+                    entry.insert(0, octets[i])
+                    i += 1
+            return None
 
         refill_with_current_ip()
         entryIPAddressFrame.grid(column=1, row=0)
@@ -99,24 +101,24 @@ class EditInterfaceGUI:
         optionMenuDuplex = tk.OptionMenu(root, duplexVariable, *duplexOptions)
         optionMenuDuplex.grid(column=1, row=2)
 
-        lblSpeed = tk.Label(root, text='Speed:')
-        lblSpeed.grid(column=0, row=3)
-
         def get_speed_options() -> list[str]:
             if router.type == 'cisco_ios':
                 if 'GigabitEthernet' in int_name:
                     return ['1000 Mbps', '100 Mbps', '10 Mbps']
                 if 'FastEthernet' in int_name:
                     return ['100 Mbps', '10 Mbps']
-                if 'f' in int_name:
-                    return ['100 Mbps', '10 Mbps']
+                if 'Serial' in int_name:
+                    return ['None']
             # todo: add other types
 
-        speedOptions = get_speed_options()
-        speedVariable = tk.StringVar(root)
-        speedVariable.set(router.interfaces[int_name].statistics.information.speed)
-        optionMenuSpeed = tk.OptionMenu(root, speedVariable, *speedOptions)
-        optionMenuSpeed.grid(column=1, row=3)
+        if 'Serial' not in int_name:
+            lblSpeed = tk.Label(root, text='Speed:')
+            lblSpeed.grid(column=0, row=3)
+            speedOptions = get_speed_options()
+            speedVariable = tk.StringVar(root)
+            speedVariable.set(router.interfaces[int_name].statistics.information.speed)
+            optionMenuSpeed = tk.OptionMenu(root, speedVariable, *speedOptions)
+            optionMenuSpeed.grid(column=1, row=3)
 
         lblMTU = tk.Label(root, text='MTU (bytes):')
         lblMTU.grid(column=0, row=4)
@@ -166,13 +168,16 @@ class EditInterfaceGUI:
 
         def apply_changes():
             if validate_changes():
-                # todo 26
-                #self.interfaces_details_gui.update_interface_details(iid, router.interfaces[int_name])
-
-                threading.Thread(target=update_interface_basic,
-                                 args=(main_gui, router, user, router.interfaces[int_name], get_description(),
-                                       get_ip_address(), get_mask(), duplexVariable.get(), speedVariable.get(),
-                                       get_mtu())).start()
+                if 'Serial' in int_name:
+                    threading.Thread(target=update_interface_basic,
+                                     args=(main_gui, interfaces_details_gui, router, user, router.interfaces[int_name],
+                                           get_description(), get_ip_address(), get_mask(), duplexVariable.get(), 'None'
+                                           , get_mtu())).start()
+                else:
+                    threading.Thread(target=update_interface_basic,
+                                     args=(main_gui, interfaces_details_gui, router, user, router.interfaces[int_name],
+                                           get_description(), get_ip_address(), get_mask(), duplexVariable.get(),
+                                           speedVariable.get(), get_mtu())).start()
 
                 root.destroy()
 
