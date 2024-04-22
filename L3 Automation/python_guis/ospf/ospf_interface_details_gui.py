@@ -5,6 +5,7 @@ from python_guis.gui_resources import config
 from python_guis.interface.interface_edit_ospf_gui import EditInterfaceOSPFGUI
 from resources.devices.Router import Router
 from resources.user.User import User
+from platform import platform
 
 
 class OSPFInterfaceDetailsGUI:
@@ -122,7 +123,10 @@ class OSPFInterfaceDetailsGUI:
         menu = tk.Menu(root, tearoff=False)
         menu.add_command(label='Edit', command=self.edit_interface_ospf)
 
-        self.tree.bind('<Button-3>', show_menu_interfaces)
+        if platform.system() == 'Windows':
+            self.tree.bind('<Button-3>', show_menu_interfaces)
+        if platform.system() == 'Darwin':
+            self.tree.bind('<Button-2>', show_menu_interfaces)
 
     def edit_interface_ospf(self) -> None:
         EditInterfaceOSPFGUI(self.main_gui, self.router, self.user, self.int_name, self.selected_router_iid, self)
