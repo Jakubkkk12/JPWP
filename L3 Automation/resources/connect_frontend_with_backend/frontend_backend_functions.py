@@ -66,7 +66,7 @@ def update_redistribution(main_gui, router: Router, user: User, routing_protocol
 
 
 ## Static Route
-def add_static_route(main_gui, add_static_route_gui, router: Router, user: User, network: str, network_mask: int,
+def add_static_route(main_gui, static_route_gui, router: Router, user: User, network: str, network_mask: int,
                      route_distance: int,
                      next_hop: str, interface_name: str) -> None:
     try:
@@ -83,11 +83,11 @@ def add_static_route(main_gui, add_static_route_gui, router: Router, user: User,
     if completed:
         main_gui.console_commands(output)
         router.static_routes = universal_router_commands.get_static_routes(None, router, user)
-        # add_static_route.update()
+        static_route_gui.update_window()
     return None
 
 
-def remove_static_route(main_gui, static_route_gui, item, router: Router, user: User, network: str,
+def remove_static_route(main_gui, static_route_gui, router: Router, user: User, network: str,
                         network_mask: int) -> None:
     try:
         completed, output = universal_router_commands.remove_static_route(router, user, network, network_mask)
@@ -98,8 +98,7 @@ def remove_static_route(main_gui, static_route_gui, item, router: Router, user: 
     if completed:
         main_gui.console_commands(output)
         router.static_routes = universal_router_commands.get_static_routes(None, router, user)
-        static_route_gui.tree.delete(item)
-        # todo BEZ tego bo ma być funkcja odświerz
+        static_route_gui.update_window()
     return None
 
 

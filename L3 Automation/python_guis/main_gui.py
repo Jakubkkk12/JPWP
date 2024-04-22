@@ -669,7 +669,6 @@ class MainGUI:
                         menu.entryconfigure('Redistribution', command=lambda: BGPRedistributionGUI(self,
                                                                                                    selected_router,
                                                                                                    self.project.current_user))
-
                 except IndexError:
                     pass
 
