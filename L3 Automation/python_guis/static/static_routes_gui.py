@@ -10,7 +10,7 @@ from resources.user.User import User
 
 class StaticRoutesGUI:
     def __init__(self, main_gui, router: Router, user: User):
-        self.selected_router = router
+        self.router = router
         self.hostname = router.name
         self.int_name = ''
         self.selected_router_iid = None
@@ -88,17 +88,11 @@ class StaticRoutesGUI:
 
         def remove_route() -> None:
             item = self.tree.selection()
-            # todo 18
-            network = self.tree.item(item, 'values')[1]
-            network_mask = int(self.tree.item(item, 'values')[2])
+            network = self.tree.item(item)['values'][1]
+            network_mask = int(self.tree.item(item)['values'][2])
 
             threading.Thread(target=remove_static_route,
-                             args=(main_gui, self, item, router, user, network, network_mask)).start()
-
-            # Update NoS todo 22
-            # children = self.tree.get_children()
-            # for i, child in enumerate(children, start=1):
-            #     self.tree.item(child, values=(i,) + self.tree.item(child, 'values')[1:])
+                             args=(main_gui, self, router, user, network, network_mask)).start()
 
         buttonFrame = tk.Frame(root)
         btnAdd = tk.Button(buttonFrame, text='Add', command=lambda: add_route(main_gui, router, user))
@@ -118,3 +112,12 @@ class StaticRoutesGUI:
         values = (no, staticroute.network.network, staticroute.network.mask, staticroute.next_hop, staticroute.interface,
                   staticroute.distance)
         self.tree.insert('', tk.END, values=values)
+
+    def update_window(self) -> None:
+        self.tree.delete(*self.tree.get_children())
+        i = 1
+        for route in self.router.static_routes:
+            values = (i, route.network.network, route.network.mask, route.next_hop, route.interface, route.distance)
+            self.tree.insert('', tk.END, iid=i-1, values=values)
+            i += 1
+

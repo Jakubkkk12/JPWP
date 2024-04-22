@@ -98,6 +98,7 @@ class StaticRouteAddGUI:
         interfaces = []
         for k, interface in router.interfaces.items():
             interfaces.append(interface.name)
+        interfaces.append('-')
         interfacesMenu = tk.OptionMenu(interfaceSelectFrame, interfaceVariable, *interfaces)
         interfacesMenu.pack(side='right')
 
@@ -183,7 +184,7 @@ class StaticRouteAddGUI:
                           entryIPNextHopFirst, entryIPNextHopSecond, entryIPNextHopThird, entryIPNextHopFourth]
             for entry in ip_entries:
                 entry.delete(0, 'end')
-
+            interfaceVariable.set('-')
             entryMask.delete(0, 'end')
 
         def apply_route():
@@ -195,7 +196,7 @@ class StaticRouteAddGUI:
                 distance = get_distance()
 
                 threading.Thread(target=add_static_route,
-                                 args=(main_gui, self, router, user, destination, mask, distance, next_hop, int_name)).start()
+                                 args=(main_gui, static_routes_gui, router, user, destination, mask, distance, next_hop, int_name)).start()
                 clean_entries()
 
         btnApply = tk.Button(root, text='Apply', command=apply_route)
