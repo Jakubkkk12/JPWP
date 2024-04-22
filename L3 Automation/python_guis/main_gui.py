@@ -355,8 +355,8 @@ class MainGUI:
             ## TODO Punkt 7
             aes_key = 'zzzzxxxxccccvvvv'
             new_project.save_project(aes_key=aes_key)
-        filemenu.add_command(label='Save project...', command=save_as_project)
 
+        filemenu.add_command(label='Save project...', command=save_as_project)
 
         def save_project():
             ## TODO Punkt 8, 9 - zrobić save zwykłe
@@ -372,7 +372,8 @@ class MainGUI:
             aes_key = 'zzzzxxxxccccvvvv'
             self.project.open_project(aes_key)
             self.show_view_all()
-            from resources.connect_frontend_with_backend.universal_router_commands import (get_rip, get_ospf, get_bgp, get_all_interfaces,
+            from resources.connect_frontend_with_backend.universal_router_commands import (get_rip, get_ospf, get_bgp,
+                                                                                           get_all_interfaces,
                                                                                            get_static_routes)
             import threading
 
@@ -405,7 +406,7 @@ class MainGUI:
         btnSSHPassword.grid(column=0, row=1, sticky='EW')
 
         btnEnablePassword = tk.Button(btnFrameAddSSH, text='Enable Password', padx=2, pady=2,
-                                        command=EnablePasswordGUI)
+                                      command=EnablePasswordGUI)
         btnEnablePassword.grid(column=0, row=2, sticky='EW')
 
         btnCredentials = tk.Button(btnFrameAddSSH, text='Credentials', padx=2, pady=2,
@@ -588,8 +589,10 @@ class MainGUI:
                     selected_router = self.project.devices.get(hostname)
                     if selected_router.rip is not None:
                         menu.post(event.x_root, event.y_root)
-                        menu.entryconfigure('Edit', command=lambda: RIPEditGUI(self, selected_router, self.project.current_user))
-                        menu.entryconfigure('Networks', command=lambda: RIPNetworksGUI(self, selected_router, self.project.current_user))
+                        menu.entryconfigure('Edit', command=lambda: RIPEditGUI(self, selected_router,
+                                                                               self.project.current_user))
+                        menu.entryconfigure('Networks', command=lambda: RIPNetworksGUI(self, selected_router,
+                                                                                       self.project.current_user))
                         menu.entryconfigure('Redistribution', command=lambda: RIPRedistributionGUI(self,
                                                                                                    selected_router,
                                                                                                    self.project.current_user))
@@ -604,6 +607,7 @@ class MainGUI:
 
         def add_router_rip():
             RIPAddRouterGUI(self, self.project.current_user)
+
         self.btnAddRouter.config(command=add_router_rip)
 
         return None
@@ -658,8 +662,10 @@ class MainGUI:
                     selected_router = self.project.devices.get(hostname)
                     if selected_router.bgp is not None:
                         menu.post(event.x_root, event.y_root)
-                        menu.entryconfigure('Edit', command=lambda: BGPEditGUI(self, selected_router, self.project.current_user))
-                        menu.entryconfigure('Neighbors', command=lambda: BGPNeighborsGUI(self, selected_router, self.project.current_user))
+                        menu.entryconfigure('Edit', command=lambda: BGPEditGUI(self, selected_router,
+                                                                               self.project.current_user))
+                        menu.entryconfigure('Neighbors', command=lambda: BGPNeighborsGUI(self, selected_router,
+                                                                                         self.project.current_user))
                         menu.entryconfigure('Redistribution', command=lambda: BGPRedistributionGUI(self,
                                                                                                    selected_router,
                                                                                                    self.project.current_user))
@@ -689,15 +695,16 @@ class MainGUI:
         for iid, (router_name, router) in enumerate(self.project.devices.items(), start=1):
             if router.ospf is not None:
                 router_areas = list(router.ospf.areas.keys())
-                ospf_area = router_areas[0]
-
-                values = (iid, router.name, router.ospf.router_id, ospf_area, router.ospf.auto_cost_reference_bandwidth,
-                          router.ospf.default_information_originate, router.ospf.default_metric_of_redistributed_routes,
-                          router.ospf.distance, router.ospf.maximum_paths)
+                ospf_area = str(router_areas[0])
+                if len(router_areas) > 1:
+                    ospf_area += '*'
+                values = (iid, router.name, router.ospf.router_id, ospf_area,
+                          router.ospf.auto_cost_reference_bandwidth, router.ospf.default_information_originate,
+                          router.ospf.default_metric_of_redistributed_routes, router.ospf.distance,
+                          router.ospf.maximum_paths)
                 self.tree.insert('', tk.END, values=values, iid=iid)
 
                 if len(router_areas) > 1:
-                    self.tree.item(iid)['values'][3].join('*')
                     for area in router_areas[1:]:
                         values = ('', router.name, '', router.ospf.areas[area].id)
                         self.tree.insert(iid, tk.END, values=values)
@@ -739,6 +746,8 @@ class MainGUI:
                     selected_router = self.get_router(hostname)
                     if selected_router.ospf is not None:
                         area = self.tree.item(item)['values'][3]
+                        if type(area) is str:
+                            area = area.replace('*', '')
                         selected_area = selected_router.ospf.areas.get(str(area))
 
                         menu.post(event.x_root, event.y_root)

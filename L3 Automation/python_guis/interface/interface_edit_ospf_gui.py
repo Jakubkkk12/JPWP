@@ -40,51 +40,73 @@ class EditInterfaceOSPFGUI:
         lblNetworkType.grid(column=0, row=0)
         networkTypeOption = ['broadcast', 'point-to-point', 'non-broadcast']
         typeVariable = tk.StringVar(root)
-        typeVariable.set(router.interfaces[int_name].ospf.network_type)
+        if router.interfaces[int_name].ospf is not None:
+                typeVariable.set(router.interfaces[int_name].ospf.network_type)
         optionMenuType = tk.OptionMenu(root, typeVariable, *networkTypeOption)
         optionMenuType.grid(column=1, row=0)
 
         lblCost = tk.Label(root, text='Cost:')
         lblCost.grid(column=0, row=1)
         entryCost = tk.Entry(root)
-        entryCost.insert(0, str(router.interfaces[int_name].ospf.cost))
+        if router.interfaces[int_name].ospf is not None:
+            entryCost.insert(0, str(router.interfaces[int_name].ospf.cost))
         entryCost.grid(column=1, row=1)
 
         lblPassiveInterface = tk.Label(root, text='Passive interface:')
         lblPassiveInterface.grid(column=0, row=2)
         varPassiveInt = tk.BooleanVar(root)
         chckbtnPassiveInterface = tk.Checkbutton(root, variable=varPassiveInt)
-        if router.interfaces[int_name].ospf.passive_interface is True:
-            chckbtnPassiveInterface.select()
-            varPassiveInt = True
-        else:
-            chckbtnPassiveInterface.deselect()
-            varPassiveInt = False
+        if router.interfaces[int_name].ospf is not None:
+            if router.interfaces[int_name].ospf.passive_interface is True:
+                chckbtnPassiveInterface.select()
+                varPassiveInt = True
         chckbtnPassiveInterface.grid(column=1, row=2)
 
         lblPriority = tk.Label(root, text='Priority:')
         lblPriority.grid(column=0, row=3)
         entryPriority = tk.Entry(root)
-        entryPriority.insert(0, str(router.interfaces[int_name].ospf.priority))
+        if router.interfaces[int_name].ospf is not None:
+            entryPriority.insert(0, str(router.interfaces[int_name].ospf.priority))
         entryPriority.grid(column=1, row=3)
 
         lblHelloTimer = tk.Label(root, text='Hello timer:')
         lblHelloTimer.grid(column=0, row=4)
         entryHelloTimer = tk.Entry(root)
-        entryHelloTimer.insert(0, str(router.interfaces[int_name].ospf.timers.hello_timer))
+        if router.interfaces[int_name].ospf is not None:
+            entryHelloTimer.insert(0, str(router.interfaces[int_name].ospf.timers.hello_timer))
         entryHelloTimer.grid(column=1, row=4)
 
         lblDeadTimer = tk.Label(root, text='Dead timer:')
         lblDeadTimer.grid(column=0, row=5)
         entryDeadTimer = tk.Entry(root)
-        entryDeadTimer.insert(0, str(router.interfaces[int_name].ospf.timers.dead_timer))
+        if router.interfaces[int_name].ospf is not None:
+            entryDeadTimer.insert(0, str(router.interfaces[int_name].ospf.timers.dead_timer))
         entryDeadTimer.grid(column=1, row=5)
 
         lblRetransmitTimer = tk.Label(root, text='Retransmit timer:')
         lblRetransmitTimer.grid(column=0, row=6)
         entryRetransmitTimer = tk.Entry(root)
-        entryRetransmitTimer.insert(0, str(router.interfaces[int_name].ospf.timers.retransmit_timer))
+        if router.interfaces[int_name].ospf is not None:
+            entryRetransmitTimer.insert(0, str(router.interfaces[int_name].ospf.timers.retransmit_timer))
         entryRetransmitTimer.grid(column=1, row=6)
+
+        lblAuthenticationMessageDigest = tk.Label(root, text='Authentication Message Digest:')
+        lblAuthenticationMessageDigest.grid(column=0, row=7)
+        varAuthenticationMessageDigest = tk.BooleanVar(root)
+        chckbtnAuthenticationMessageDigest = tk.Checkbutton(root, variable=varAuthenticationMessageDigest)
+        if router.interfaces[int_name].ospf is not None:
+            if router.interfaces[int_name].ospf.is_authentication_message_digest:
+                chckbtnAuthenticationMessageDigest.select()
+                varAuthenticationMessageDigest.set(True)
+        chckbtnAuthenticationMessageDigest.grid(column=1, row=7)
+
+        lblAuthenticationPassword = tk.Label(root, text='Authentication Password:')
+        lblAuthenticationPassword.grid(column=0, row=8)
+
+        entryAuthenticationPassword = tk.Entry(root)
+        if router.interfaces[int_name].ospf is not None:
+            entryAuthenticationPassword.insert(0, router.interfaces[int_name].ospf.authentication_password)
+        entryAuthenticationPassword.grid(column=1, row=8)
 
         def get_network_type() -> str:
             return typeVariable.get()
@@ -161,17 +183,13 @@ class EditInterfaceOSPFGUI:
                 hello_timer = get_hello_timer()
                 dead_timer = get_dead_timer()
                 retransmit_timer = get_retransmit_timer()
-                # todo 28
-                authentication_message_digest: bool = ...
-                authentication_password: str = ...
-
-                # todo 27
-                # ospf_interfaces_details_gui.update_interface_details(iid, int_name, router.interfaces[int_name].ospf)
+                authentication_message_digest = varAuthenticationMessageDigest.get()
+                authentication_password: str = entryAuthenticationPassword.get()
 
                 threading.Thread(target=update_interface_ospf,
-                                 args=(main_gui, router, user, router.interfaces[int_name], network_type, cost,
-                                       priority, authentication_message_digest, authentication_password, hello_timer,
-                                       dead_timer, retransmit_timer)).start()
+                                 args=(main_gui, ospf_interfaces_details_gui, router, user, router.interfaces[int_name],
+                                       network_type, cost, priority, authentication_message_digest,
+                                       authentication_password, hello_timer, dead_timer, retransmit_timer)).start()
                 root.destroy()
 
         btnFrame = tk.Frame(root, pady=10)
@@ -180,6 +198,6 @@ class EditInterfaceOSPFGUI:
 
         btnCancel = tk.Button(btnFrame, text='Cancel', command=root.destroy, width=30)
         btnCancel.pack()
-        btnFrame.grid(column=0, row=8, columnspan=2, sticky='s')
+        btnFrame.grid(column=0, row=9, columnspan=2, sticky='s')
 
         root.mainloop()

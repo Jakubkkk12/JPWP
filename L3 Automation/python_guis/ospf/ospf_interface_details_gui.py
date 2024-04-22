@@ -9,7 +9,7 @@ from resources.user.User import User
 
 class OSPFInterfaceDetailsGUI:
     def __init__(self, main_gui, router: Router, user: User):
-        self.selected_router = router
+        self.router = router
         self.user = user
         self.main_gui = main_gui
         self.hostname = router.name
@@ -65,12 +65,17 @@ class OSPFInterfaceDetailsGUI:
         interfaces = router.interfaces
         i = 1
         for k, interface in interfaces.items():
-            values = (i, interface.name, interface.ospf.network_type, interface.ospf.cost,
-                      interface.ospf.state, interface.ospf.passive_interface, interface.ospf.priority,
-                      interface.ospf.timers.hello_timer, interface.ospf.timers.dead_timer,
-                      interface.ospf.timers.retransmit_timer)
-            self.tree.insert('', tk.END, iid=i-1, values=values)
-            i += 1
+            if interface.ospf is not None:
+                values = (i, interface.name, interface.ospf.network_type, interface.ospf.cost,
+                          interface.ospf.state, interface.ospf.passive_interface, interface.ospf.priority,
+                          interface.ospf.timers.hello_timer, interface.ospf.timers.dead_timer,
+                          interface.ospf.timers.retransmit_timer)
+                self.tree.insert('', tk.END, iid=i-1, values=values)
+                i += 1
+            else:
+                values = (i, interface.name, 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A')
+                self.tree.insert('', tk.END, iid=i-1, values=values)
+                i += 1
 
         self.tree.heading(treeColumns[0], text='No', anchor='w')
         self.tree.column(treeColumns[0], width=30, stretch=False)
@@ -120,11 +125,21 @@ class OSPFInterfaceDetailsGUI:
         self.tree.bind('<Button-3>', show_menu_interfaces)
 
     def edit_interface_ospf(self) -> None:
-        EditInterfaceOSPFGUI(self.main_gui, self.selected_router, self.user, self.int_name, self.selected_router_iid, self)
+        EditInterfaceOSPFGUI(self.main_gui, self.router, self.user, self.int_name, self.selected_router_iid, self)
         return None
 
-    def update_interface_details(self, iid: int, name: str, ospf) -> None:
-        self.tree.item(iid-1, values=(iid, name, ospf.network_type, ospf.cost, self.tree.item(iid-1, 'values')[2],
-                                      ospf.passive_interface, ospf.priority, ospf.timers.hello_timer,
-                                      ospf.timers.dead_timer, ospf.timers.retransmit_timer))
-        return None
+    def update_window(self) -> None:
+        interfaces = self.router.interfaces
+        i = 1
+        for k, interface in interfaces.items():
+            if interface.ospf is not None:
+                values = (i, interface.name, interface.ospf.network_type, interface.ospf.cost,
+                          interface.ospf.state, interface.ospf.passive_interface, interface.ospf.priority,
+                          interface.ospf.timers.hello_timer, interface.ospf.timers.dead_timer,
+                          interface.ospf.timers.retransmit_timer)
+                self.tree.insert('', tk.END, iid=i-1, values=values)
+                i += 1
+            else:
+                values = (i, interface.name, 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A', 'N/A')
+                self.tree.insert('', tk.END, iid=i-1, values=values)
+                i += 1
