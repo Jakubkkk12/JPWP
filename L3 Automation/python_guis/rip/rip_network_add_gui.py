@@ -9,7 +9,7 @@ from python_guis.gui_resources import config
 from resources.routing_protocols.Network import Network
 from resources.user.User import User
 
-# todo 21
+
 class RIPNetworkAddGUI:
     def __init__(self, main_gui, rip_networks_gui, router: Router, user: User):
         self.hostname = router.name
@@ -98,9 +98,9 @@ class RIPNetworkAddGUI:
             if validate_network():
                 network = get_network()
                 mask = get_mask()
-
+                print('Network:', network)
                 threading.Thread(target=add_rip_networks,
-                                 args=(main_gui, router, user, [network])).start()
+                                 args=(main_gui, rip_networks_gui, router, user, [network])).start()
 
                 clean_entries()
 

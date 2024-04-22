@@ -246,11 +246,11 @@ def update_rip(main_gui, router: Router, user: User, auto_summary: bool, default
     if completed:
         main_gui.console_commands(output)
         router.rip = universal_router_commands.get_rip(None, router, user)
-        main_gui.update_rip_tree(router.rip)
+        main_gui.update_rip_tree()
     return None
 
 
-def remove_rip_networks(main_gui, router: Router, user: User, networks: list[str]) -> None:
+def remove_rip_networks(main_gui, rip_networks_gui, router: Router, user: User, networks: list[str]) -> None:
     try:
         completed, output = universal_router_commands.remove_rip_networks(router, user, networks)
     except netmiko.exceptions.NetMikoTimeoutException:
@@ -260,10 +260,11 @@ def remove_rip_networks(main_gui, router: Router, user: User, networks: list[str
     if completed:
         main_gui.console_commands(output)
         router.rip = universal_router_commands.get_rip(None, router, user)
+        rip_networks_gui.update_window()
     return None
 
 
-def add_rip_networks(main_gui, router: Router, user: User, networks: list[str]) -> None:
+def add_rip_networks(main_gui, rip_networks_gui, router: Router, user: User, networks: list[str]) -> None:
     try:
         completed, output = universal_router_commands.add_rip_networks(router, user, networks)
     except netmiko.exceptions.NetMikoTimeoutException:
@@ -273,6 +274,7 @@ def add_rip_networks(main_gui, router: Router, user: User, networks: list[str]) 
     if completed:
         main_gui.console_commands(output)
         router.rip = universal_router_commands.get_rip(None, router, user)
+        rip_networks_gui.update_window()
     return None
 
 

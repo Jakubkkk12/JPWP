@@ -6,7 +6,6 @@ from python_guis.ospf.ospf_network_add_gui import OSPFNetworkAddGUI
 from resources.connect_frontend_with_backend.frontend_backend_functions import remove_ospf_area_networks
 from resources.devices.Router import Router
 from resources.routing_protocols.ospf.OSPFArea import OSPFArea
-from resources.routing_protocols.Network import Network
 from resources.user.User import User
 
 

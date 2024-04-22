@@ -11,6 +11,8 @@ from resources.user.User import User
 
 class RIPNetworksGUI:
     def __init__(self, main_gui, router: Router, user: User):
+        self.router = router
+
         root = tk.Toplevel()
 
         # title
@@ -71,12 +73,7 @@ class RIPNetworksGUI:
             ip = self.tree.item(item)['values'][1]
 
             threading.Thread(target=remove_rip_networks,
-                             args=(main_gui, router, user, [ip])).start()
-
-            # Update No todo 22
-            # children = self.tree.get_children()
-            # for i, child in enumerate(children, start=1):
-            #     self.tree.item(child, values=(i,) + self.tree.item(child, 'values')[1:])
+                             args=(main_gui, self, router, user, [ip])).start()
 
         buttonFrame = tk.Frame(root)
         btnAdd = tk.Button(buttonFrame, text='Add', command=lambda: add_network(router))
@@ -89,10 +86,10 @@ class RIPNetworksGUI:
 
         root.mainloop()
 
-    def insert_network(self, network: Network):
-        last_item = self.tree.get_children()[-1]
-        last_index = self.tree.index(last_item)
-        no = last_index + 2
-        values = (no, network.network, network.mask)
-        # Update tree
-        self.tree.insert('', tk.END, values=values)
+    def update_window(self) -> None:
+        self.tree.delete(*self.tree.get_children())
+        i = 1
+        for k, network in self.router.rip.networks.items():
+            values = (i, network.network, network.mask)
+            self.tree.insert('', tk.END, iid=i - 1, values=values)
+            i += 1
