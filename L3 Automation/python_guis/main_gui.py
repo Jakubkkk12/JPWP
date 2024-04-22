@@ -6,6 +6,7 @@ from PIL import Image, ImageTk
 
 from python_guis.add_router_gui import AddRouterGUI
 from python_guis.bgp.bgp_add_router_gui import BGPAddRouterGUI
+from python_guis.enable_password_gui import EnablePasswordGUI
 from python_guis.ospf.ospf_add_router_gui import OSPFAddRouterGUI
 from python_guis.rip.rip_add_router_gui import RIPAddRouterGUI
 from python_guis.ssh import ssh_password_gui
@@ -24,6 +25,7 @@ from python_guis.rip.rip_networks_gui import RIPNetworksGUI
 from python_guis.rip.rip_redistribution_gui import RIPRedistributionGUI
 from python_guis.ssh.ssh_connections_gui import SSHConnectionsGUI
 from python_guis.static.static_routes_gui import StaticRoutesGUI
+from python_guis import enable_password_gui
 from resources.connect_frontend_with_backend.frontend_backend_functions import get_info_router
 
 from resources.devices.Router import Router
@@ -402,9 +404,13 @@ class MainGUI:
                                    command=ssh_password_gui.SSHPasswordGUI)
         btnSSHPassword.grid(column=0, row=1)
 
+        btnEnablePassword = tk.Button(btnFrameAddSSH, text='Enable Password', padx=2, pady=2,
+                                        command=EnablePasswordGUI)
+        btnEnablePassword.grid(column=0, row=2, sticky='EW')
+
         btnCredentials = tk.Button(btnFrameAddSSH, text='Credentials', padx=2, pady=2,
                                    command=LoginGUI)
-        btnCredentials.grid(column=0, row=2, sticky='EW')
+        btnCredentials.grid(column=0, row=3, sticky='EW')
 
         # Frame containing Logout and Quit buttons
         btnFrameLogoutQuit = tk.Frame(self.root)
