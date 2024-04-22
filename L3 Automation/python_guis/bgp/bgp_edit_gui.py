@@ -36,12 +36,6 @@ class BGPEditGUI:
         root.grid_columnconfigure(1, weight=1)
 
         # Components
-        lblAutonomousSystem = tk.Label(root, text='Autonomous System')
-        lblAutonomousSystem.grid(column=0, row=0)
-        entryAutonomousSystem = tk.Entry(root)
-        entryAutonomousSystem.insert(0, str(router.bgp.autonomous_system))
-        entryAutonomousSystem.grid(column=1, row=0)
-
         lblRouterID = tk.Label(root, text='Router ID')
         lblRouterID.grid(column=0, row=1)
 
@@ -104,11 +98,6 @@ class BGPEditGUI:
                 ipaddress.ip_address(id)
             except ValueError:
                 messagebox.showerror('Error', 'Router ID must be a valid IP address', parent=root)
-                return False
-
-            if not entryAutonomousSystem.get().isdigit() or not (0 <= int(entryAutonomousSystem.get()) <= 65535):
-                messagebox.showerror('Error', 'Autonomous System must be an integer between 0 and 65535', parent=root)
-                entryAutonomousSystem.delete(0, tk.END)
                 return False
             if not entryDefaultMetric.get().isdigit() or not (0 <= int(entryDefaultMetric.get()) <= 255):
                 messagebox.showerror('Error', 'Default Metric must be an integer between 0 and 255', parent=root)

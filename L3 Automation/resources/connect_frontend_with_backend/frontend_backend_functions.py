@@ -137,7 +137,7 @@ def update_bgp(main_gui, router: Router, user: User, router_id: str, default_inf
     if completed:
         main_gui.console_commands(output)
         router.bgp = universal_router_commands.get_bgp(None, router, user)
-        main_gui.update_bgp_tree(router.bgp)
+        main_gui.update_bgp_tree()
     return None
 
 
