@@ -16,7 +16,6 @@ class OSPFNetworkAddGUI:
     def __init__(self, main_gui, ospf_config_gui, router: Router, user: User, ospf_area: OSPFArea):
         self.hostname = router.name
         self.area = ospf_area
-        self.ospf_config_gui = ospf_config_gui
 
         root = tk.Toplevel()
         # ######## WINDOW PARAMETERS ######## #
@@ -112,10 +111,9 @@ class OSPFNetworkAddGUI:
                 wildcard = constants.WILDCARD_MASK[mask]
 
                 threading.Thread(target=add_ospf_area_networks,
-                                 args=(main_gui, router, user, ospf_area, [[network, wildcard]])).start()
+                                 args=(main_gui, ospf_config_gui, router, user, ospf_area, [[network, wildcard]])).start()
 
-                # todo 666
-                # self.ospf_config_gui.insert_network(network)
+                ospf_config_gui.update_window()
                 clean_entries()
 
         btnApply = tk.Button(root, text='Apply', command=apply_network)

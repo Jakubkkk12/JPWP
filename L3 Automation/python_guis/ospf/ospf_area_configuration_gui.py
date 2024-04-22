@@ -14,7 +14,7 @@ class OSPFAreaConfigurationGUI:
     def __init__(self, main_gui, router: Router, user: User, area: OSPFArea):
         self.main_gui = main_gui
         self.area = area
-
+        self.router = router
         root = tk.Toplevel()
 
         # title
@@ -105,16 +105,7 @@ class OSPFAreaConfigurationGUI:
 
             network_and_wildcard = [[network, wildcard]]
             threading.Thread(target=remove_ospf_area_networks,
-                             args=(main_gui, router, user, area, network_and_wildcard)).start()
-
-            # todo 666
-            # del router.ospf.areas[area.id].networks[network]
-            # self.tree.delete(item)
-            #
-            # # Update No
-            # children = self.tree.get_children()
-            # for i, child in enumerate(children, start=1):
-            #     self.tree.item(child, values=(i,) + self.tree.item(child, 'values')[1:])
+                             args=(main_gui, self, router, user, area, network_and_wildcard)).start()
 
         buttonFrame = tk.Frame(root)
         btnAdd = tk.Button(buttonFrame, text='Add', command=lambda: add_network(router, area))
@@ -127,10 +118,10 @@ class OSPFAreaConfigurationGUI:
 
         root.mainloop()
 
-    def insert_network(self, network: Network):
-        last_item = self.tree.get_children()[-1]
-        last_index = self.tree.index(last_item)
-        no = last_index + 2
-        values = (no, network.network, network.mask, network.wildcard)
-        # Update tree
-        self.tree.insert('', tk.END, values=values)
+    def update_window(self) -> None:
+        self.tree.delete(*self.tree.get_children())
+        i = 1
+        for k, network in self.router.ospf.areas[self.area.id].networks.items():
+            values = (i, network.network, network.mask, network.wildcard)
+            self.tree.insert('', tk.END, iid=i-1, values=values)
+            i += 1

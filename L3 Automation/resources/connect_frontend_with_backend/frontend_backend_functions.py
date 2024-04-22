@@ -341,7 +341,7 @@ def update_ospf_area(main_gui, router: Router, user: User, area: OSPFArea, authe
     return None
 
 
-def add_ospf_area_networks(main_gui, router: Router, user: User, area: OSPFArea,
+def add_ospf_area_networks(main_gui, ospf_area_config_gui, router: Router, user: User, area: OSPFArea,
                            network_and_wildcard: list[list[str]]) -> None:
     try:
         completed, output = universal_router_commands.add_ospf_area_networks(router, user, area, network_and_wildcard)
@@ -352,10 +352,11 @@ def add_ospf_area_networks(main_gui, router: Router, user: User, area: OSPFArea,
     if completed:
         main_gui.console_commands(output)
         router.ospf = universal_router_commands.get_ospf(None, router, user)
+        ospf_area_config_gui.update_window()
     return None
 
 
-def remove_ospf_area_networks(main_gui, router: Router, user: User, area: OSPFArea,
+def remove_ospf_area_networks(main_gui, ospf_area_config_gui, router: Router, user: User, area: OSPFArea,
                               network_and_wildcard: list[list[str]]) -> None:
     try:
         completed, output = universal_router_commands.remove_ospf_area_networks(router, user, area,
@@ -367,6 +368,7 @@ def remove_ospf_area_networks(main_gui, router: Router, user: User, area: OSPFAr
     if completed:
         main_gui.console_commands(output)
         router.ospf = universal_router_commands.get_ospf(None, router, user)
+        ospf_area_config_gui.update_window()
     return None
 
 
