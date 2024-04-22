@@ -7,6 +7,7 @@ from python_guis.interface.interface_errors_gui import InterfaceErrorsGUI
 from python_guis.interface.interface_statistics_gui import InterfaceStatisticsGUI
 from resources.devices.Router import Router
 from resources.user.User import User
+import platform
 
 
 class InterfacesDetailsGUI:

@@ -5,7 +5,7 @@ from python_guis.gui_resources import config
 from python_guis.interface.interface_edit_ospf_gui import EditInterfaceOSPFGUI
 from resources.devices.Router import Router
 from resources.user.User import User
-from platform import platform
+import platform
 
 
 class OSPFInterfaceDetailsGUI:
