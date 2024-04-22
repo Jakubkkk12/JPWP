@@ -120,7 +120,7 @@ def enable_bgp(main_gui, router: Router, user: User, autonomous_system: int, rou
     if completed:
         main_gui.console_commands(output)
         router.bgp = universal_router_commands.get_bgp(None, router, user)
-        main_gui.add_router_bgp(router)
+        main_gui.update_bgp_tree()
     return None
 
 
@@ -141,8 +141,8 @@ def update_bgp(main_gui, router: Router, user: User, router_id: str, default_inf
     return None
 
 
-def add_bgp_neighbor(main_gui, router: Router, user: User, neighbor_id: str, remote_as: int, ebgp_multihop: int,
-                     next_hop_self: bool, shutdown: bool, keep_alive: int, hold_on: int) -> None:
+def add_bgp_neighbor(main_gui, bgp_neighbors_gui, router: Router, user: User, neighbor_id: str, remote_as: int,
+                     ebgp_multihop: int, next_hop_self: bool, shutdown: bool, keep_alive: int, hold_on: int) -> None:
     try:
         completed, output = universal_router_commands.add_bgp_neighbor(router, user, neighbor_id, remote_as,
                                                                        ebgp_multihop, next_hop_self, shutdown,
@@ -154,6 +154,7 @@ def add_bgp_neighbor(main_gui, router: Router, user: User, neighbor_id: str, rem
     if completed:
         main_gui.console_commands(output)
         router.bgp = universal_router_commands.get_bgp(None, router, user)
+        bgp_neighbors_gui.update_window()
     return None
 
 
@@ -228,7 +229,7 @@ def enable_rip(main_gui, router: Router, user: User, auto_summary: bool, default
     if completed:
         main_gui.console_commands(output)
         router.rip = universal_router_commands.get_rip(None, router, user)
-        main_gui.add_router_rip(router)
+        main_gui.update_rip_tree()
     return None
 
 
@@ -296,7 +297,7 @@ def enable_ospf(main_gui, router: Router, user: User, router_id: str, auto_cost_
     if completed:
         main_gui.console_commands(output)
         router.ospf = universal_router_commands.get_ospf(None, router, user)
-        main_gui.add_router_ospf(router)
+        main_gui.update_ospf_tree()
         import re
         if re.search(r'(passive-interface default)', output):
             router.interfaces = universal_router_commands.get_all_interfaces(None, router, user)

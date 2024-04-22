@@ -387,14 +387,11 @@ class MainGUI:
                 threading.Thread(target=get_info_router,
                                  args=(self, self.project.devices[name], self.project.current_user)).start()
 
-
         filemenu.add_command(label='Open project...', command=open_project)
-
         menubar.add_cascade(label='File', menu=filemenu)
-
         self.root.config(menu=menubar)
 
-        # Frame containing SSH Button and Add Router
+        # Frame containing buttons
         btnFrameAddSSH = tk.Frame(self.root)
         btnFrameAddSSH.grid(column=5, row=0, padx=10)
 
@@ -404,6 +401,10 @@ class MainGUI:
         btnSSHPassword = tk.Button(btnFrameAddSSH, text='SSH Password', padx=2, pady=2,
                                    command=ssh_password_gui.SSHPasswordGUI)
         btnSSHPassword.grid(column=0, row=1)
+
+        btnCredentials = tk.Button(btnFrameAddSSH, text='Credentials', padx=2, pady=2,
+                                   command=LoginGUI)
+        btnCredentials.grid(column=0, row=2, sticky='EW')
 
         # Frame containing Logout and Quit buttons
         btnFrameLogoutQuit = tk.Frame(self.root)
@@ -774,6 +775,9 @@ class MainGUI:
         self.tree.configure(columns=treeColumns)
         return None
 
+    def clear_tree_data(self) -> None:
+        self.tree.delete(*self.tree.get_children())
+
     def console_command(self, text: str) -> None:
         self.consoleBox.insert(tk.END, text)
         return None
@@ -787,69 +791,74 @@ class MainGUI:
             self.console_command(command)
         return None
 
-    def update_rip_tree(self, rip: RIPInformation) -> None:
-        item = self.tree.selection()
-        self.tree.item(item, values=(self.tree.item(item)['values'][0], self.tree.item(item)['values'][1],
-                                     rip.auto_summary, rip.default_information_originate,
-                                     rip.default_metric_of_redistributed_routes, rip.distance,
-                                     rip.maximum_paths, rip.version))
+    def update_all_tree(self) -> None:
+        self.clear_tree_data()
+        routers = self.get_devices()
+        i = 1
+        for k, router in routers.items():
+            rip = ''
+            ospf = ''
+            bgp = ''
+            if router.rip is not None:
+                rip = 'Enabled'
+            if router.ospf is not None:
+                ospf = 'Enabled'
+            if router.bgp is not None:
+                bgp = 'Enabled'
+            values = (i, router.name, router.type, rip, ospf, bgp)
+            self.tree.insert('', tk.END, values=values)
         return None
 
-    def update_bgp_tree(self, bgp: BGPInformation) -> None:
-        item = self.tree.selection()
-        self.tree.item(item, values=(self.tree.item(item)['values'][0], self.tree.item(item)['values'][1],
-                                     bgp.autonomous_system, bgp.router_id, bgp.default_information_originate,
-                                     bgp.default_metric_of_redistributed_routes, bgp.timers.keep_alive,
-                                     bgp.timers.hold_time))
+    def update_rip_tree(self) -> None:
+        self.clear_tree_data()
+        routers = self.get_devices()
+        i = 1
+        for k, router in routers.items():
+            if router.rip is not None:
+                values = (i, router.name, router.rip.auto_summary, router.rip.default_information_originate,
+                          router.rip.default_metric_of_redistributed_routes, router.rip.distance,
+                          router.rip.maximum_paths, router.rip.version)
+                self.tree.insert('', tk.END, values=values)
+                i += 1
+
+    def update_bgp_tree(self) -> None:
+        self.clear_tree_data()
+        routers = self.get_devices()
+        i = 1
+        for k, router in routers.items():
+            if router.bgp is not None:
+                values = (i, router.name, router.bgp.autonomous_system, router.bgp.router_id,
+                          router.bgp.default_information_originate, router.bgp.default_metric_of_redistributed_routes,
+                          router.bgp.timers.keep_alive, router.bgp.timers.hold_time)
+                self.tree.insert('', tk.END, values=values)
+                i += 1
         return None
+
+    def update_ospf_tree(self) -> None:
+        self.clear_tree_data()
+        routers = self.get_devices()
+        i = 1
+        for k, router in routers.items():
+            if router.ospf is not None:
+                router_areas = list(router.ospf.areas.keys())
+                ospf_area = router_areas[0]
+
+                values = (i, router.name, router.ospf.router_id, ospf_area, router.ospf.auto_cost_reference_bandwidth,
+                          router.ospf.default_information_originate, router.ospf.default_metric_of_redistributed_routes,
+                          router.ospf.distance, router.ospf.maximum_paths)
+                self.tree.insert('', tk.END, values=values)
+
+                if len(router_areas) > 1:
+                    for area in router_areas[1:]:
+                        values = ('', router.name, '', router.ospf.areas[area].id)
+                        self.tree.insert(i, tk.END, values=values)
+                i += 1
 
     def router_exists(self, hostname: str) -> bool:
         for k, router in enumerate(self.project.devices.values(), start=1):
             if router.name == hostname:
                 return True
         return False
-
-    def add_router_all(self, router: Router) -> None:
-        self.project.devices[router.name] = router
-        last_item = self.tree.get_children()[-1]
-        last_index = self.tree.index(last_item)
-        no = last_index + 2
-        values = (no, router.name, router.type, '', '', '')
-        self.tree.insert('', tk.END, values=values)
-        return None
-
-    def add_router_rip(self, router: Router) -> None:
-        self.project.devices[router.name] = router
-        last_item = self.tree.get_children()[-1]
-        last_index = self.tree.index(last_item)
-        no = last_index + 2
-        values = (no, router.name, router.rip.auto_summary, router.rip.default_information_originate,
-                  router.rip.default_metric_of_redistributed_routes, router.rip.distance,
-                  router.rip.maximum_paths, router.rip.version)
-        self.tree.insert('', tk.END, values=values)
-        return None
-
-    def add_router_ospf(self, router: Router) -> None:
-        self.project.devices[router.name] = router
-        last_item = self.tree.get_children()[-1]
-        last_index = self.tree.index(last_item)
-        no = last_index + 2
-
-        values = (no, router.name, router.ospf.router_id, list(router.ospf.areas.keys())[0])
-        self.tree.insert('', tk.END, values=values)
-        return None
-
-    def add_router_bgp(self, router: Router) -> None:
-        self.project.devices[router.name] = router
-        last_item = self.tree.get_children()[-1]
-        last_index = self.tree.index(last_item)
-        no = last_index + 2
-
-        values = (no, router.name, router.bgp.autonomous_system, router.bgp.router_id,
-                  router.bgp.default_information_originate, router.bgp.default_metric_of_redistributed_routes,
-                  router.bgp.timers.keep_alive, router.bgp.timers.hold_time)
-        self.tree.insert('', tk.END, values=values)
-        return None
 
     def get_router(self, hostname: str) -> Router:
         return self.project.devices.get(hostname)

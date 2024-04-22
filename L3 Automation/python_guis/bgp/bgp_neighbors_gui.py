@@ -9,8 +9,11 @@ from resources.devices.Router import Router
 from resources.user.User import User
 from resources.connect_frontend_with_backend.universal_router_commands import remove_bgp_neighbor, get_bgp
 
+
 class BGPNeighborsGUI:
     def __init__(self, main_gui, router: Router, user: User):
+        self.main_gui = main_gui
+        self.router_name = router.name
         root = tk.Toplevel()
 
         # title
@@ -125,3 +128,16 @@ class BGPNeighborsGUI:
                   neighbor.next_hop_self, neighbor.shutdown, neighbor.timers.keep_alive, neighbor.timers.hold_time)
         # Update tree
         self.tree.insert('', tk.END, values=values)
+
+    def update_window(self):
+        i = 1
+        try:
+            router = self.main_gui.get_router(self.router_name)
+            for k, neighbor in router.bgp.neighbors.items():
+                values = (i, neighbor.ip_address, neighbor.remote_as, neighbor.state, neighbor.ebgp_multihop,
+                          neighbor.next_hop_self, neighbor.shutdown, neighbor.timers.keep_alive,
+                          neighbor.timers.hold_time)
+                self.tree.insert('', tk.END, iid=i-1, values=values)
+                i += 1
+        except AttributeError:
+            pass
