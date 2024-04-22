@@ -1,3 +1,4 @@
+import ipaddress
 import threading
 import tkinter as tk
 from tkinter import messagebox
@@ -30,7 +31,7 @@ class RIPAddRouterGUI:
         root.geometry(alignstr)
         root.resizable(width=True, height=True)
 
-        root.minsize(300, 300)
+        root.minsize(300, 400)
 
         root.columnconfigure(0, weight=1)
         root.columnconfigure(1, weight=1)
@@ -86,6 +87,40 @@ class RIPAddRouterGUI:
         optionMenuVersion = tk.OptionMenu(root, varVersion, *versionOptions)
         optionMenuVersion.grid(column=1, row=6)
 
+        lblNetwork = tk.Label(root, text='Network:')
+        lblNetwork.grid(column=0, row=7)
+        frameNetwork = tk.Frame(root)
+        frameNetwork.grid(column=1, row=7)
+        entryNetworkFirst = tk.Entry(frameNetwork, width=3)
+        entryNetworkFirst.pack(side=tk.LEFT)
+        lblDot1 = tk.Label(frameNetwork, text='.')
+        lblDot1.pack(side=tk.LEFT)
+        entryNetworkSecond = tk.Entry(frameNetwork, width=3)
+        entryNetworkSecond.pack(side=tk.LEFT)
+        lblDot2 = tk.Label(frameNetwork, text='.')
+        lblDot2.pack(side=tk.LEFT)
+        entryNetworkThird = tk.Entry(frameNetwork, width=3)
+        entryNetworkThird.pack(side=tk.LEFT)
+        lblDot3 = tk.Label(frameNetwork, text='.')
+        lblDot3.pack(side=tk.LEFT)
+        entryNetworkFourth = tk.Entry(frameNetwork, width=3)
+        entryNetworkFourth.pack(side=tk.LEFT)
+
+        lblMask = tk.Label(root, text='Mask:')
+        lblMask.grid(column=0, row=8)
+        entryMask = tk.Entry(root)
+        entryMask.grid(column=1, row=8)
+
+        def get_network() -> str:
+            try:
+                ip = (entryNetworkFirst.get() + '.' + entryNetworkSecond.get() + '.' + entryNetworkThird.get() + '.' +
+                      entryNetworkFourth.get())
+                mask = entryMask.get()
+                ipaddress.ip_network(ip + '/' + mask)
+                return ip
+            except ValueError:
+                messagebox.showerror('Error', 'Invalid network', parent=root)
+
         def validate_router() -> bool:
             if not entryDefaultMetric.get().isdigit() or not (0 <= int(entryDefaultMetric.get()) <= 15):
                 messagebox.showerror('Error', 'Default metric must be a an integer between 0 and 15', parent=root)
@@ -102,13 +137,18 @@ class RIPAddRouterGUI:
             if varVersion.get() not in ['1', '2']:
                 messagebox.showerror('Error', 'Version must be 1 or 2', parent=root)
                 return False
+            try:
+                ipaddress.ip_network(get_network() + '/' + entryMask.get())
+            except ValueError:
+                return False
+            except TypeError:
+                return False
             return True
 
         def add_router():
             if validate_router():
                 router = main_gui.get_router(varHostname.get())
-                 #todo 23
-                network: str = '44.44.44.44'
+                network: str = get_network()
                 threading.Thread(target=enable_rip,
                                  args=(main_gui, router, user, varAutoSummary.get(),
                                        varDefaultInformationOriginate.get(), int(entryDefaultMetric.get()),
@@ -122,6 +162,6 @@ class RIPAddRouterGUI:
         btnAdd.pack()
         btnCancel = tk.Button(btnFrame, text='Cancel', command=root.destroy, width=15)
         btnCancel.pack()
-        btnFrame.grid(row=7, column=1)
+        btnFrame.grid(row=9, column=1)
 
         root.mainloop()

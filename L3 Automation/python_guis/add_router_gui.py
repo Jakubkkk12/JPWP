@@ -64,15 +64,16 @@ class AddRouterGUI:
 
         addressFrame.grid(row=1, column=1)
 
-        lblSSHPassword = tk.Label(root, text='SSH Password:')
-        lblSSHPassword.grid(row=2, column=0)
-        entrySSHPassword = tk.Entry(root, show='*')
-        entrySSHPassword.grid(row=2, column=1)
+        lblEnablePassword = tk.Label(root, text='Enable Password:')
+        lblEnablePassword.grid(row=2, column=0)
+        entryEnablePassword = tk.Entry(root, show='*')
+        entryEnablePassword.grid(row=2, column=1)
 
         lblSSHPort = tk.Label(root, text='Port:')
         lblSSHPort.grid(row=3, column=0)
         entrySSHPort = tk.Entry(root, width=10)
         entrySSHPort.grid(row=3, column=1)
+        entrySSHPort.insert(0, '22')
 
         lblType = tk.Label(root, text='Type:')
         lblType.grid(row=4, column=0)
@@ -91,7 +92,7 @@ class AddRouterGUI:
             entryIPAddress2.delete(0, tk.END)
             entryIPAddress3.delete(0, tk.END)
             entryIPAddress4.delete(0, tk.END)
-            entrySSHPassword.delete(0, tk.END)
+            entryEnablePassword.delete(0, tk.END)
             entrySSHPort.delete(0, tk.END)
 
         def validate_router() -> bool:
@@ -107,7 +108,7 @@ class AddRouterGUI:
                 messagebox.showerror('Error', 'Invalid IP address', parent=root)
                 return False
 
-            ssh_password = entrySSHPassword.get()
+            ssh_password = entryEnablePassword.get()
             # check if ssh_password is correct
 
             ssh_port = entrySSHPort.get()
@@ -125,8 +126,7 @@ class AddRouterGUI:
                 router = Router(name=entryHostname.get(),
                                 ssh_information=SSHInformation(ip_addresses={get_address(): get_address()}),
                                 type=varOption.get(),
-                                # todo 24
-                                enable_password='ZSEDCxzaqwe')
+                                enable_password=entryEnablePassword.get())
                 main_gui.add_router_all(router)
                 messagebox.showinfo('Success', 'Router added successfully', parent=root)
 

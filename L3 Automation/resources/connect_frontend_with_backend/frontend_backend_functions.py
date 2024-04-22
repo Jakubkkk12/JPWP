@@ -280,7 +280,8 @@ def add_rip_networks(main_gui, router: Router, user: User, networks: list[str]) 
 # OSPF
 def enable_ospf(main_gui, router: Router, user: User, router_id: str, auto_cost_reference_bandwidth: int,
                 default_information_originate: bool, default_metric_of_redistributed_routes: int, distance: int,
-                maximum_paths: int, passive_interface_default: bool, area_id: str, network_and_wildcard: list[list[str]],
+                maximum_paths: int, passive_interface_default: bool, area_id: str,
+                network_and_wildcard: list[list[str]],
                 area_authentication_message_digest: bool, area_type: str) -> None:
     try:
         completed, output = universal_router_commands.enable_ospf(router, user, router_id,
@@ -341,7 +342,8 @@ def update_ospf_area(main_gui, router: Router, user: User, area: OSPFArea, authe
     return None
 
 
-def add_ospf_area_networks(main_gui, router: Router, user: User, area: OSPFArea, network_and_wildcard: list[list[str]]) -> None:
+def add_ospf_area_networks(main_gui, router: Router, user: User, area: OSPFArea,
+                           network_and_wildcard: list[list[str]]) -> None:
     try:
         completed, output = universal_router_commands.add_ospf_area_networks(router, user, area, network_and_wildcard)
     except netmiko.exceptions.NetMikoTimeoutException:
@@ -353,9 +355,12 @@ def add_ospf_area_networks(main_gui, router: Router, user: User, area: OSPFArea,
         router.ospf = universal_router_commands.get_ospf(None, router, user)
     return None
 
-def remove_ospf_area_networks(main_gui, router: Router, user: User, area: OSPFArea, network_and_wildcard: list[list[str]]) -> None:
+
+def remove_ospf_area_networks(main_gui, router: Router, user: User, area: OSPFArea,
+                              network_and_wildcard: list[list[str]]) -> None:
     try:
-        completed, output = universal_router_commands.remove_ospf_area_networks(router, user, area, network_and_wildcard)
+        completed, output = universal_router_commands.remove_ospf_area_networks(router, user, area,
+                                                                                network_and_wildcard)
     except netmiko.exceptions.NetMikoTimeoutException:
         main_gui.console_commands(f'Cannot connect to {router.name}')
         return None
@@ -365,11 +370,14 @@ def remove_ospf_area_networks(main_gui, router: Router, user: User, area: OSPFAr
         router.ospf = universal_router_commands.get_ospf(None, router, user)
     return None
 
+
 # RouterInterface
 def update_interface_basic(main_gui, interfaces_gui, router: Router, user: User, router_interface: RouterInterface,
                            description: str, ip_address: str, subnet: int, duplex: str, speed: str, mtu: int) -> None:
     try:
-        completed, output = universal_router_commands.update_interface_basic(router, user, router_interface, description, ip_address, subnet, duplex, speed, mtu)
+        completed, output = universal_router_commands.update_interface_basic(router, user, router_interface,
+                                                                             description, ip_address, subnet, duplex,
+                                                                             speed, mtu)
     except netmiko.exceptions.NetMikoTimeoutException:
         main_gui.console_commands(f'Cannot connect to {router.name}')
         return None

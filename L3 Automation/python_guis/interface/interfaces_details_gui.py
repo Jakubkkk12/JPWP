@@ -119,11 +119,6 @@ class InterfacesDetailsGUI:
         InterfaceErrorsGUI(self.router, self.int_name)
         return None
 
-    def update_interface_details(self, iid, interface) -> None:
-        self.tree.item(iid-1, values=(iid, interface.name, interface.ip_address, interface.subnet,
-                                      interface.description))
-        return None
-
     def update_window(self) -> None:
         self.tree.delete(*self.tree.get_children())
         interfaces = self.router.interfaces
