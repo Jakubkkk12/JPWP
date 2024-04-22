@@ -390,9 +390,10 @@ def update_interface_basic(main_gui, interfaces_gui, router: Router, user: User,
     return None
 
 
-def update_interface_ospf(main_gui, router: Router, user: User, router_interface: RouterInterface, network_type: str,
-                          cost: int, priority: int, authentication_message_digest: bool, authentication_password: str,
-                          hello_timer: int, dead_timer: int, retransmit_timer: int) -> None:
+def update_interface_ospf(main_gui, ospf_interfaces_details_gui, router: Router, user: User,
+                          router_interface: RouterInterface, network_type: str, cost: int, priority: int,
+                          authentication_message_digest: bool, authentication_password: str, hello_timer: int,
+                          dead_timer: int, retransmit_timer: int) -> None:
     try:
         completed, output = universal_router_commands.update_interface_ospf(router, user, router_interface,
                                                                             network_type, cost, priority,
@@ -407,4 +408,5 @@ def update_interface_ospf(main_gui, router: Router, user: User, router_interface
         main_gui.console_commands(output)
         router.interfaces[router_interface.name] = universal_router_commands.get_interface(None, router, user,
                                                                                            router_interface.name)
+        ospf_interfaces_details_gui.update_window()
     return None
