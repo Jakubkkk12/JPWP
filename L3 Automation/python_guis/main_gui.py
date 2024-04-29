@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import platform
 import tkinter as tk
 from tkinter import ttk
@@ -7,6 +9,7 @@ from PIL import Image, ImageTk
 
 from python_guis.add_router_gui import AddRouterGUI
 from python_guis.bgp.bgp_add_router_gui import BGPAddRouterGUI
+from python_guis.bgp.bgp_networks_gui import BGPNetworksGUI
 from python_guis.enable_password_gui import EnablePasswordGUI
 from python_guis.ospf.ospf_add_router_gui import OSPFAddRouterGUI
 from python_guis.rip.rip_add_router_gui import RIPAddRouterGUI
@@ -672,6 +675,8 @@ class MainGUI:
                         menu.post(event.x_root, event.y_root)
                         menu.entryconfigure('Edit', command=lambda: BGPEditGUI(self, selected_router,
                                                                                self.project.current_user))
+                        menu.entryconfigure('Networks', command=lambda: BGPNetworksGUI(self, selected_router,
+                                                                                       self.project.current_user))
                         menu.entryconfigure('Neighbors', command=lambda: BGPNeighborsGUI(self, selected_router,
                                                                                          self.project.current_user))
                         menu.entryconfigure('Redistribution', command=lambda: BGPRedistributionGUI(self,
@@ -682,12 +687,13 @@ class MainGUI:
 
         menu = tk.Menu(self.root, tearoff=False)
         menu.add_command(label='Edit', command=BGPEditGUI)
+        menu.add_command(label='Networks', command=BGPNetworksGUI)
         menu.add_command(label='Neighbors', command=BGPNeighborsGUI)
         menu.add_command(label='Redistribution', command=BGPRedistributionGUI)
         if platform.system() == 'Windows':
-            self.tree.bind('<Button-3>', show_menu_all)
+            self.tree.bind('<Button-3>', show_menu_bgp)
         if platform.system() == 'Darwin':
-            self.tree.bind('<Button-2>', show_menu_all)
+            self.tree.bind('<Button-2>', show_menu_bgp)
 
         self.btnAddRouter.config(command=lambda: BGPAddRouterGUI(self, self.project.current_user))
 
