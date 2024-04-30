@@ -71,7 +71,8 @@ class BGPNetworksGUI:
 
         def remove_network() -> None:
             item = self.tree.selection()
-            ip = self.tree.item(item)['values'][1]
+            ip = [self.tree.item(item)['values'][1], int(self.tree.item(item)['values'][2])]
+            print(ip)
 
             threading.Thread(target=remove_bgp_networks,
                              args=(main_gui, self, router, user, [ip])).start()

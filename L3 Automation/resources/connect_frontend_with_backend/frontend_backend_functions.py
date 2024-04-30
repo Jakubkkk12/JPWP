@@ -186,7 +186,7 @@ def update_bgp_neighbor(main_gui, router: Router, user: User, neighbor_id: str, 
     return None
 
 
-def add_bgp_networks(main_gui, router: Router, user: User, network_and_mask: list[list[str, int]]) -> None:
+def add_bgp_networks(main_gui, bgp_networks_gui, router: Router, user: User, network_and_mask: list[list[str, int]]) -> None:
     try:
         completed, output = universal_router_commands.add_bgp_networks(router, user, network_and_mask)
     except netmiko.exceptions.NetMikoTimeoutException:
@@ -196,10 +196,12 @@ def add_bgp_networks(main_gui, router: Router, user: User, network_and_mask: lis
     if completed:
         main_gui.console_commands(output)
         router.bgp = universal_router_commands.get_bgp(None, router, user)
+        bgp_networks_gui.update_window()
     return None
 
 
-def remove_bgp_networks(main_gui, router: Router, user: User, network_and_mask: list[list[str, int]]) -> None:
+def remove_bgp_networks(main_gui, bgp_networks_gui, router: Router, user: User,
+                        network_and_mask: list[list[str, int]]) -> None:
     try:
         completed, output = universal_router_commands.remove_bgp_networks(router, user, network_and_mask)
     except netmiko.exceptions.NetMikoTimeoutException:
@@ -209,6 +211,7 @@ def remove_bgp_networks(main_gui, router: Router, user: User, network_and_mask: 
     if completed:
         main_gui.console_commands(output)
         router.bgp = universal_router_commands.get_bgp(None, router, user)
+        bgp_networks_gui.update_window()
     return None
 
 
