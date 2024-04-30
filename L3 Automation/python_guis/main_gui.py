@@ -4,6 +4,7 @@ import platform
 import tkinter as tk
 from tkinter import ttk
 from tkinter.filedialog import asksaveasfile, askopenfilename
+from tkinter.simpledialog import askstring
 
 from PIL import Image, ImageTk
 
@@ -353,12 +354,12 @@ class MainGUI:
         filemenu = tk.Menu(menubar, tearoff=False)
 
         def save_as_project():
-            # TODO Punkt 14
             files = [('L3 Project Files', '*.jkal')]
             file = asksaveasfile(filetypes=files)
-            print(file.name)
             new_project = Project(file_path=file, devices=self.project.devices)
-            ## TODO Punkt 7
+            # root = tk.Tk()
+            # root.withdraw()
+            # aes_key = tk.simpledialog.askstring("Password", "Enter password:")
             aes_key = 'zzzzxxxxccccvvvv'
             new_project.save_project(aes_key=aes_key)
 
@@ -373,8 +374,13 @@ class MainGUI:
         def open_project():
             files = [('L3 Project Files', '*.jkal')]
             file = askopenfilename(filetypes=files)
+            if not file:
+                return
             self.project.file_path = file
-            ## TODO Punkt 6
+            # root = tk.Tk()
+            # root.withdraw()
+            # aes_key = tk.simpledialog.askstring("Password", "Enter password:")
+            # root.destroy()
             aes_key = 'zzzzxxxxccccvvvv'
             self.project.open_project(aes_key)
             self.show_view_all()
@@ -443,6 +449,8 @@ class MainGUI:
 
         consoleScrollbar.config(command=self.consoleBox.yview)
         consoleFrame.grid(column=0, row=5, sticky='NESW', padx=2, columnspan=4)
+
+        self.root.bind('<Control-s>', lambda event: save_project())
 
         # For first data insert load 'all' view
         self.show_view_all()
