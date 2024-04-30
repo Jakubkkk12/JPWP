@@ -851,23 +851,22 @@ class MainGUI:
 
     def update_ospf_tree(self) -> None:
         self.clear_tree_data()
-        routers = self.get_devices()
-        i = 1
-        for k, router in routers.items():
+        for iid, (router_name, router) in enumerate(self.project.devices.items(), start=1):
             if router.ospf is not None:
                 router_areas = list(router.ospf.areas.keys())
-                ospf_area = router_areas[0]
-
-                values = (i, router.name, router.ospf.router_id, ospf_area, router.ospf.auto_cost_reference_bandwidth,
-                          router.ospf.default_information_originate, router.ospf.default_metric_of_redistributed_routes,
-                          router.ospf.distance, router.ospf.maximum_paths)
-                self.tree.insert('', tk.END, values=values)
+                ospf_area = str(router_areas[0])
+                if len(router_areas) > 1:
+                    ospf_area += '*'
+                values = (iid, router.name, router.ospf.router_id, ospf_area,
+                          router.ospf.auto_cost_reference_bandwidth, router.ospf.default_information_originate,
+                          router.ospf.default_metric_of_redistributed_routes, router.ospf.distance,
+                          router.ospf.maximum_paths)
+                self.tree.insert('', tk.END, values=values, iid=iid)
 
                 if len(router_areas) > 1:
                     for area in router_areas[1:]:
                         values = ('', router.name, '', router.ospf.areas[area].id)
-                        self.tree.insert(i, tk.END, values=values)
-                i += 1
+                        self.tree.insert(iid, tk.END, values=values)
 
     def router_exists(self, hostname: str) -> bool:
         for k, router in enumerate(self.project.devices.values(), start=1):
