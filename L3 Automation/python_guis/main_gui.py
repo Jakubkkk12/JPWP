@@ -13,6 +13,7 @@ from python_guis.bgp.bgp_networks_gui import BGPNetworksGUI
 from python_guis.enable_password_gui import EnablePasswordGUI
 from python_guis.ospf.ospf_add_area_gui import OSPFAddAreaGUI
 from python_guis.ospf.ospf_add_router_gui import OSPFAddRouterGUI
+from python_guis.ospf.ospf_edit_gui import OSPFEditGUI
 from python_guis.rip.rip_add_router_gui import RIPAddRouterGUI
 from python_guis.ssh import ssh_password_gui
 from gui_resources import config
@@ -768,9 +769,12 @@ class MainGUI:
                         selected_area = selected_router.ospf.areas.get(str(area))
 
                         menu.post(event.x_root, event.y_root)
+                        menu.entryconfigure('Edit OSPF', command=lambda: OSPFEditGUI(self, selected_router,
+                                                                                     self.project.current_user))
                         menu.entryconfigure('Interfaces', command=lambda: show_interfaces_details(selected_router))
-                        menu.entryconfigure('Edit Area', command=lambda: run_ospf_area_configuration_gui(selected_router,
-                                                                                                    selected_area))
+                        menu.entryconfigure('Edit Area',
+                                            command=lambda: run_ospf_area_configuration_gui(selected_router,
+                                                                                            selected_area))
                         menu.entryconfigure('Add Area', command=lambda: OSPFAddAreaGUI(self, selected_router,
                                                                                        self.project.current_user))
                         menu.entryconfigure('Redistribution', command=lambda: show_redistribution(selected_router))
@@ -793,6 +797,7 @@ class MainGUI:
             return None
 
         menu = tk.Menu(self.root, tearoff=False)
+        menu.add_command(label='Edit OSPF', command=OSPFEditGUI)
         menu.add_command(label='Interfaces', command=OSPFInterfaceDetailsGUI)
         menu.add_command(label='Edit Area', command=OSPFAreaConfigurationGUI)
         menu.add_command(label='Add Area', command=OSPFAddAreaGUI)
