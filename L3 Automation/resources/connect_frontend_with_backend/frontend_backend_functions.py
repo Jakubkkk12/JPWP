@@ -325,6 +325,7 @@ def update_ospf(main_gui, router: Router, user: User, router_id: str, auto_cost_
     if completed:
         main_gui.console_commands(output)
         router.ospf = universal_router_commands.get_ospf(None, router, user)
+        main_gui.update_ospf_tree()
         import re
         if re.search(r'(passive-interface default)', output):
             router.interfaces = universal_router_commands.get_all_interfaces(None, router, user)
