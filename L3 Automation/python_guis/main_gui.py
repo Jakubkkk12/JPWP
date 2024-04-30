@@ -11,6 +11,7 @@ from python_guis.add_router_gui import AddRouterGUI
 from python_guis.bgp.bgp_add_router_gui import BGPAddRouterGUI
 from python_guis.bgp.bgp_networks_gui import BGPNetworksGUI
 from python_guis.enable_password_gui import EnablePasswordGUI
+from python_guis.ospf.ospf_add_area_gui import OSPFAddAreaGUI
 from python_guis.ospf.ospf_add_router_gui import OSPFAddRouterGUI
 from python_guis.rip.rip_add_router_gui import RIPAddRouterGUI
 from python_guis.ssh import ssh_password_gui
@@ -768,8 +769,10 @@ class MainGUI:
 
                         menu.post(event.x_root, event.y_root)
                         menu.entryconfigure('Interfaces', command=lambda: show_interfaces_details(selected_router))
-                        menu.entryconfigure('Area', command=lambda: run_ospf_area_configuration_gui(selected_router,
+                        menu.entryconfigure('Edit Area', command=lambda: run_ospf_area_configuration_gui(selected_router,
                                                                                                     selected_area))
+                        menu.entryconfigure('Add Area', command=lambda: OSPFAddAreaGUI(self, selected_router,
+                                                                                       self.project.current_user))
                         menu.entryconfigure('Redistribution', command=lambda: show_redistribution(selected_router))
                 except IndexError:
                     pass
@@ -791,7 +794,8 @@ class MainGUI:
 
         menu = tk.Menu(self.root, tearoff=False)
         menu.add_command(label='Interfaces', command=OSPFInterfaceDetailsGUI)
-        menu.add_command(label='Area', command=OSPFAreaConfigurationGUI)
+        menu.add_command(label='Edit Area', command=OSPFAreaConfigurationGUI)
+        menu.add_command(label='Add Area', command=OSPFAddAreaGUI)
         menu.add_command(label='Redistribution', command=OSPFRedistributionGUI)
         if platform.system() == 'Windows':
             self.tree.bind('<Button-3>', show_menu_ospf)

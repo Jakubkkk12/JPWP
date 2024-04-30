@@ -12,7 +12,6 @@ from resources import constants
 from resources.user.User import User
 
 
-#todo
 class OSPFAddRouterGUI:
     def __init__(self, main_gui, user: User):
         self.main_gui = main_gui
