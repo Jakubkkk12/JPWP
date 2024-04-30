@@ -7,6 +7,7 @@ from python_guis.interface.interface_errors_gui import InterfaceErrorsGUI
 from python_guis.interface.interface_statistics_gui import InterfaceStatisticsGUI
 from resources.devices.Router import Router
 from resources.user.User import User
+import platform
 
 
 class InterfacesDetailsGUI:
@@ -105,7 +106,10 @@ class InterfacesDetailsGUI:
         sub_details_menu.add_command(label='Errors', command=self.show_interface_errors)
         menu.add_cascade(label='Details', menu=sub_details_menu)
 
-        self.tree.bind('<Button-3>', show_menu_interfaces)
+        if platform.system() == 'Windows':
+            self.tree.bind('<Button-3>', show_menu_interfaces)
+        if platform.system() == 'Darwin':
+            self.tree.bind('<Button-2>', show_menu_interfaces)
 
     def edit_interface(self) -> None:
         EditInterfaceGUI(self.main_gui, self, self.router, self.user, self.int_name, self.selected_router_iid)

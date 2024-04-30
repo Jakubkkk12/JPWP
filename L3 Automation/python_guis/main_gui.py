@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import platform
 import tkinter as tk
 from tkinter import ttk
 from tkinter.filedialog import asksaveasfile, askopenfilename
@@ -6,6 +9,7 @@ from PIL import Image, ImageTk
 
 from python_guis.add_router_gui import AddRouterGUI
 from python_guis.bgp.bgp_add_router_gui import BGPAddRouterGUI
+from python_guis.bgp.bgp_networks_gui import BGPNetworksGUI
 from python_guis.enable_password_gui import EnablePasswordGUI
 from python_guis.ospf.ospf_add_router_gui import OSPFAddRouterGUI
 from python_guis.rip.rip_add_router_gui import RIPAddRouterGUI
@@ -495,6 +499,7 @@ class MainGUI:
 
         # This function defines pop-up menu for 'all' view
         def show_menu_all(event):
+            print('showed')
             item = self.tree.identify_row(event.y)
             self.tree.selection_set(item)
             if item:
@@ -529,7 +534,10 @@ class MainGUI:
         menu.add_command(label='SSH Addresses', command=show_ssh_addresses)
         menu.add_command(label='Interfaces', command=show_interfaces_details)
         menu.add_command(label='Static routes', command=show_static_routes)
-        self.tree.bind('<Button-3>', show_menu_all)
+        if platform.system() == 'Windows':
+            self.tree.bind('<Button-3>', show_menu_all)
+        if platform.system() == 'Darwin':
+            self.tree.bind('<Button-2>', show_menu_all)
 
         def add_router_all():
             AddRouterGUI(self, self.project.current_user)
@@ -603,7 +611,10 @@ class MainGUI:
         menu.add_command(label='Edit', command=RIPEditGUI)
         menu.add_command(label='Networks', command=RIPNetworkAddGUI)
         menu.add_command(label='Redistribution', command=RIPRedistributionGUI)
-        self.tree.bind('<Button-3>', show_menu_rip)
+        if platform.system() == 'Windows':
+            self.tree.bind('<Button-3>', show_menu_rip)
+        if platform.system() == 'Darwin':
+            self.tree.bind('<Button-2>', show_menu_rip)
 
         def add_router_rip():
             RIPAddRouterGUI(self, self.project.current_user)
@@ -664,6 +675,8 @@ class MainGUI:
                         menu.post(event.x_root, event.y_root)
                         menu.entryconfigure('Edit', command=lambda: BGPEditGUI(self, selected_router,
                                                                                self.project.current_user))
+                        menu.entryconfigure('Networks', command=lambda: BGPNetworksGUI(self, selected_router,
+                                                                                       self.project.current_user))
                         menu.entryconfigure('Neighbors', command=lambda: BGPNeighborsGUI(self, selected_router,
                                                                                          self.project.current_user))
                         menu.entryconfigure('Redistribution', command=lambda: BGPRedistributionGUI(self,
@@ -674,9 +687,13 @@ class MainGUI:
 
         menu = tk.Menu(self.root, tearoff=False)
         menu.add_command(label='Edit', command=BGPEditGUI)
+        menu.add_command(label='Networks', command=BGPNetworksGUI)
         menu.add_command(label='Neighbors', command=BGPNeighborsGUI)
         menu.add_command(label='Redistribution', command=BGPRedistributionGUI)
-        self.tree.bind('<Button-3>', show_menu_bgp)
+        if platform.system() == 'Windows':
+            self.tree.bind('<Button-3>', show_menu_bgp)
+        if platform.system() == 'Darwin':
+            self.tree.bind('<Button-2>', show_menu_bgp)
 
         self.btnAddRouter.config(command=lambda: BGPAddRouterGUI(self, self.project.current_user))
 
@@ -776,7 +793,10 @@ class MainGUI:
         menu.add_command(label='Interfaces', command=OSPFInterfaceDetailsGUI)
         menu.add_command(label='Area', command=OSPFAreaConfigurationGUI)
         menu.add_command(label='Redistribution', command=OSPFRedistributionGUI)
-        self.tree.bind('<Button-3>', show_menu_ospf)
+        if platform.system() == 'Windows':
+            self.tree.bind('<Button-3>', show_menu_ospf)
+        if platform.system() == 'Darwin':
+            self.tree.bind('<Button-2>', show_menu_ospf)
 
         self.btnAddRouter.config(command=lambda: OSPFAddRouterGUI(self, self.project.current_user))
 
