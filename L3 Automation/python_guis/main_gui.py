@@ -482,7 +482,7 @@ class MainGUI:
             if router.bgp is not None:
                 bgp = 'Enabled'
 
-            values = (i, router.name, router.type, rip, ospf, bgp)
+            values = (iid+1, router.name, router.type, rip, ospf, bgp)
             self.tree.insert('', tk.END, values=values, iid=iid)
 
             iid += 1
@@ -832,6 +832,7 @@ class MainGUI:
 
     def console_command(self, text: str) -> None:
         self.consoleBox.insert(tk.END, text)
+        self.consoleBox.see('end')
         return None
 
     def console_commands(self, text: str | list) -> None:
