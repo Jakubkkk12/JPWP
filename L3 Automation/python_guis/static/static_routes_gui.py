@@ -105,19 +105,14 @@ class StaticRoutesGUI:
 
         root.mainloop()
 
-    def insert_route(self, staticroute):
-        last_item = self.tree.get_children()[-1]
-        last_index = self.tree.index(last_item)
-        no = last_index + 2
-        values = (no, staticroute.network.network, staticroute.network.mask, staticroute.next_hop, staticroute.interface,
-                  staticroute.distance)
-        self.tree.insert('', tk.END, values=values)
-
     def update_window(self) -> None:
-        self.tree.delete(*self.tree.get_children())
-        i = 1
-        for route in self.router.static_routes:
-            values = (i, route.network.network, route.network.mask, route.next_hop, route.interface, route.distance)
-            self.tree.insert('', tk.END, iid=i-1, values=values)
-            i += 1
+        try:
+            self.tree.delete(*self.tree.get_children())
+            i = 1
+            for route in self.router.static_routes:
+                values = (i, route.network.network, route.network.mask, route.next_hop, route.interface, route.distance)
+                self.tree.insert('', tk.END, iid=i-1, values=values)
+                i += 1
+        except TypeError:
+            print('No static routes found.')
 

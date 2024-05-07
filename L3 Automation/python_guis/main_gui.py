@@ -450,8 +450,6 @@ class MainGUI:
         consoleScrollbar.config(command=self.consoleBox.yview)
         consoleFrame.grid(column=0, row=5, sticky='NESW', padx=2, columnspan=4)
 
-        self.root.bind('<Control-s>', lambda event: save_project())
-
         # For first data insert load 'all' view
         self.show_view_all()
         self.root.mainloop()
