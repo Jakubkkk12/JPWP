@@ -129,14 +129,14 @@ class BGPNeighborsGUI:
         self.tree.insert('', tk.END, values=values)
 
     def update_window(self):
+        self.tree.delete(*self.tree.get_children())
+        router = self.main_gui.get_router(self.router_name)
         i = 1
-        try:
-            router = self.main_gui.get_router(self.router_name)
+        if router.bgp.neighbors is not None:
             for k, neighbor in router.bgp.neighbors.items():
                 values = (i, neighbor.ip_address, neighbor.remote_as, neighbor.state, neighbor.ebgp_multihop,
                           neighbor.next_hop_self, neighbor.shutdown, neighbor.timers.keep_alive,
                           neighbor.timers.hold_time)
                 self.tree.insert('', tk.END, iid=i-1, values=values)
                 i += 1
-        except AttributeError:
-            pass
+
