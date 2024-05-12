@@ -94,7 +94,7 @@ class MainGUI:
         self.project = Project()
         self.project.current_user = User(username='admin12', ssh_password='ZAQ!2wsx')
 
-        LoginGUI()
+        # LoginGUI()
 
         treeColumns = ()  # default
 
@@ -191,7 +191,7 @@ class MainGUI:
         btnSSHPassword.grid(column=0, row=1, sticky='EW')
 
         btnEnablePassword = tk.Button(btnFrameAddSSH, text='Enable Password', padx=2, pady=2,
-                                      command=EnablePasswordGUI)
+                                      command= lambda: EnablePasswordGUI(self.project.devices))
         btnEnablePassword.grid(column=0, row=2, sticky='EW')
 
         btnCredentials = tk.Button(btnFrameAddSSH, text='Credentials', padx=2, pady=2,
