@@ -37,13 +37,6 @@ class OSPFEditGUI:
         root.columnconfigure(0, weight=1)
         root.columnconfigure(1, weight=1)
 
-        # Components
-        # lblHostname = tk.Label(root, text='Hostname:')
-        # lblHostname.grid(row=0, column=0)
-        # entryHostname = tk.Entry(root, state='disabled')
-        # entryHostname.insert(0, router.name)
-        # entryHostname.grid(row=0, column=1)
-
         lblRouterId = tk.Label(root, text='Router ID:')
         lblRouterId.grid(row=1, column=0)
 
@@ -101,12 +94,12 @@ class OSPFEditGUI:
         entryMaximumPaths.grid(row=6, column=1)
         entryMaximumPaths.insert(0, str(router.ospf.maximum_paths))
 
-        # lblPassiveInterface = tk.Label(root, text='Passive interface:')
-        # lblPassiveInterface.grid(row=7, column=0)
-        # varPassiveInterface = tk.BooleanVar()
-        # varPassiveInterface.set(router.ospf.passive_interface_default)
-        # checkPassiveInterface = tk.Checkbutton(root, variable=varPassiveInterface)
-        # checkPassiveInterface.grid(row=7, column=1)
+        lblPassiveInterface = tk.Label(root, text='Passive interface:')
+        lblPassiveInterface.grid(row=7, column=0)
+        varPassiveInterface = tk.BooleanVar()
+        varPassiveInterface.set(router.ospf.passive_interface_default)
+        checkPassiveInterface = tk.Checkbutton(root, variable=varPassiveInterface)
+        checkPassiveInterface.grid(row=7, column=1)
 
         def get_router_id() -> str:
             try:
@@ -150,12 +143,12 @@ class OSPFEditGUI:
                 default_metric_of_redistributed_routes = int(entryDefaultMetricOfRedistributedRoutes.get())
                 distance = int(entryDistance.get())
                 maximum_paths = int(entryMaximumPaths.get())
-                # passive_interface_default = varPassiveInterface.get()
+                passive_interface_default = varPassiveInterface.get()
 
                 threading.Thread(target=update_ospf, args=(main_gui, router, user, router_id,
                                                            auto_cost_reference_bandwidth, default_information_originate,
                                                            default_metric_of_redistributed_routes, distance,
-                                                           maximum_paths, False)).start()
+                                                           maximum_paths, passive_interface_default)).start()
 
                 root.destroy()
 
