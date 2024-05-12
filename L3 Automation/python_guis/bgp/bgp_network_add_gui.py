@@ -98,7 +98,7 @@ class BGPNetworkAddGUI:
                 network = get_network()
                 mask = get_mask()
                 threading.Thread(target=add_bgp_networks,
-                                 args=(main_gui, bgp_networks_gui, router, user, [network, mask])).start()
+                                 args=(main_gui, bgp_networks_gui, router, user, [[network, mask]])).start()
 
                 clean_entries()
 

@@ -7,7 +7,8 @@ BG_COLOR = config.BG_COLOR
 
 
 class EnablePasswordGUI:
-    def __init__(self):
+    def __init__(self, devices):
+        self.devices = devices
         self.root = tk.Toplevel()
         self.root.title('Enable password')
 
@@ -47,19 +48,17 @@ class EnablePasswordGUI:
         self.root.mainloop()
 
     def validate(self) -> None:
-        ssh_pass = self.entryEnablePassword.get()
-        ssh_confirm_pass = self.entryConfirmEnable.get()
+        enable_pass = self.entryEnablePassword.get()
+        enable_confirm_pass = self.entryConfirmEnable.get()
 
-        if ssh_pass != ssh_confirm_pass:
+        if enable_pass != enable_confirm_pass:
             self.entryEnablePassword.delete(0, 'end')
             self.entryConfirmEnable.delete(0, 'end')
             tk.messagebox.showerror(title='Wrong credentials', message='Passwords must be the same.', parent=self.root)
 
         else:
-            # router.sshpass = ssh_pass
+            for device in self.devices:
+                # device.enable_pass = enable_pass
+                pass
             self.root.destroy()
             return None
-
-
-if __name__ == '__main__':
-    EnablePasswordGUI()

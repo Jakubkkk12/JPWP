@@ -65,8 +65,9 @@ class LoginGUI:
     def validate_credentials(self):
         username = self.usernameEntry.get()
         password = self.entryPassword.get()
+
         self.root.destroy()
 
-        # import has to be there to avoid circular imports
-        from main_gui import MainGUI
-        MainGUI()
+    def get_credentials(self) -> list[str]:
+        return [self.usernameEntry.get(), self.entryPassword.get()]
+
