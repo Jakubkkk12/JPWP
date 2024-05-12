@@ -103,11 +103,6 @@ class BGPNeighborsGUI:
             threading.Thread(target=remove_bgp_neighbor,
                              args=(main_gui, self, router, user, ip)).start()
 
-            # Update No todo 22
-            # children = self.tree.get_children()
-            # for i, child in enumerate(children, start=1):
-            #     self.tree.item(child, values=(i,) + self.tree.item(child, 'values')[1:])
-
         buttonFrame = tk.Frame(root)
         btnAdd = tk.Button(buttonFrame, text='Add', command=lambda: add_neighbor(main_gui, self, router, user))
         btnAdd.pack()

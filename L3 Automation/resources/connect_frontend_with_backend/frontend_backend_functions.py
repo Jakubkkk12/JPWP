@@ -25,7 +25,6 @@ def get_info_router(main_gui, router: Router, user: User) -> None:
     main_gui.update_all_tree()
     # todo do usunięcia po beta
     main_gui.console_commands(f'Pozyskano dane z {router.name}')
-    print(router)
     return None
 
 

@@ -119,7 +119,8 @@ class MainGUI:
         def save_as_project():
             files = [('L3 Project Files', '*.jkal')]
             file = asksaveasfile(filetypes=files)
-            new_project = Project(file_path=file, devices=self.project.devices)
+            print(file)
+            new_project = Project(file_path=file.name, devices=self.project.devices)
             root = tk.Tk()
             root.withdraw()
             aes_key = tk.simpledialog.askstring("Password", "Enter password:")
@@ -164,12 +165,17 @@ class MainGUI:
         self.btnAddRouter = tk.Button(btnFrameAddSSH, text='Add Router')
         self.btnAddRouter.grid(column=0, row=0, sticky='EW')
 
-        btnSSHPassword = tk.Button(btnFrameAddSSH, text='SSH Password', padx=2, pady=2,
-                                   command=ssh_password_gui.SSHPasswordGUI)
-        btnSSHPassword.grid(column=0, row=1, sticky='EW')
+        def refresh_devices():
+            import threading
+            for name, device in self.project.devices.items():
+                threading.Thread(target=get_info_router,
+                                 args=(self, self.project.devices[name], self.project.current_user)).start()
+
+        btnRefresh = tk.Button(btnFrameAddSSH, text='Refresh', padx=2, pady=2, command=refresh_devices)
+        btnRefresh.grid(column=0, row=1, sticky='EW')
 
         btnEnablePassword = tk.Button(btnFrameAddSSH, text='Enable Password', padx=2, pady=2,
-                                      command= lambda: EnablePasswordGUI(self.project.devices))
+                                      command=lambda: EnablePasswordGUI(self.project.devices))
         btnEnablePassword.grid(column=0, row=2, sticky='EW')
 
         btnCredentials = tk.Button(btnFrameAddSSH, text='Credentials', padx=2, pady=2,
@@ -608,6 +614,7 @@ class MainGUI:
                 bgp = 'Enabled'
             values = (i, router.name, router.type, rip, ospf, bgp)
             self.tree.insert('', tk.END, values=values)
+            i += 1
         return None
 
     def update_rip_tree(self) -> None:

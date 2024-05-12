@@ -117,7 +117,9 @@ class AddRouterGUI:
                 return False
 
             type = varOption.get()
-            # check if type is correct
+            if type not in options:
+                messagebox.showerror('Error', 'Invalid type', parent=root)
+                return False
 
             return True
 
@@ -127,12 +129,11 @@ class AddRouterGUI:
                                 ssh_information=SSHInformation(ip_addresses={get_address(): get_address()}),
                                 type=varOption.get(),
                                 enable_password=entryEnablePassword.get())
-                main_gui.add_router_all(router)
-                messagebox.showinfo('Success', 'Router added successfully', parent=root)
-
+                main_gui.project.devices[router.name] = router
                 threading.Thread(target=get_info_router,
                                  args=(main_gui, router, user)).start()
 
+                messagebox.showinfo('Success', 'Router added successfully', parent=root)
                 clean_entries()
 
         btnFrame = tk.Frame(root)
