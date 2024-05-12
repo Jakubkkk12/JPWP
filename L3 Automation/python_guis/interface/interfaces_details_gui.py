@@ -8,6 +8,7 @@ from python_guis.interface.interface_statistics_gui import InterfaceStatisticsGU
 from resources.devices.Router import Router
 from resources.user.User import User
 import platform
+from resources.connect_frontend_with_backend.frontend_backend_functions import set_to_default_interface
 
 
 class InterfacesDetailsGUI:
@@ -94,12 +95,21 @@ class InterfacesDetailsGUI:
                     self.int_name = self.tree.item(item)['values'][1]
                     menu.post(event.x_root, event.y_root)
                     self.selected_router_iid = self.tree.item(item)['values'][0]
+                    interface = self.router.interfaces[self.int_name]
+                    menu.entryconfigure('Reset', command=lambda: set_to_default_interface(main_gui, self,
+                                                                                          self.router, user, interface))
                 except IndexError():
                     pass
 
         # Pop-up menu configuration
         menu = tk.Menu(root, tearoff=False)
         menu.add_command(label='Edit', command=self.edit_interface)
+
+        def reset_interface():
+            import threading
+            threading.Thread(target=set_to_default_interface, args=(main_gui, self, self.router, user,
+                                                                    interface)).start()
+        menu.add_command(label='Reset', command=reset_interface)
 
         sub_details_menu = tk.Menu(menu, tearoff=False)
         sub_details_menu.add_command(label='Statistics', command=self.show_interface_statistics)
