@@ -10,7 +10,8 @@ from resources.cisco.getting_bgp import (get_bgp_information, get_bgp_base_conf_
 from resources.cisco.getting_interface import (get_interfaces_name, get_base_interface_information,
                                                get_interface_base_conf_commands_for_update_as_list,
                                                get_interface_ospf_information,
-                                               get_interface_ospf_conf_commands_for_update_as_list)
+                                               get_interface_ospf_conf_commands_for_update_as_list,
+                                               get_interface_base_conf_commands_for_set_default)
 from resources.cisco.getting_ospf import (get_ospf_information, get_ospf_base_conf_commands_for_update_as_list,
                                           get_ospf_area_base_conf_commands_for_update_as_list,
                                           get_ospf_area_conf_networks_commands_as_list,
@@ -437,6 +438,12 @@ def update_interface_basic(router: Router, user: User, router_interface: RouterI
 
     commands.insert(0, f'interface {router_interface.name}')
     output: str = execute_conf_commands(router, user, commands)
+    return True, output
+
+
+def set_to_default_interface(router: Router, user: User, router_interface: RouterInterface) -> tuple[bool, str | None]:
+    command: str = get_interface_base_conf_commands_for_set_default(router_interface)
+    output: str = execute_conf_commands(router, user, command)
     return True, output
 
 

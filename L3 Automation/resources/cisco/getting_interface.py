@@ -326,11 +326,15 @@ def get_interface_conf_no_command_interface_ip_address() -> str:
     return f'no ip address'
 
 
-def get_interface_conf_command_interface_duplex(duplex: str) -> str:
+def get_interface_conf_command_interface_duplex(duplex: str) -> str | None:
+    if duplex == 'None':
+        return None
     return f'duplex {duplex}'
 
 
-def get_interface_conf_command_interface_speed(speed: str) -> str:
+def get_interface_conf_command_interface_speed(speed: str) -> str | None:
+    if speed == 'None':
+        return None
     if speed == '1000Mbps':
         return f'speed 1000'
     if speed == '100Mbps':
@@ -356,10 +360,14 @@ def get_interface_base_conf_commands_for_update_as_list(router_interface: Router
         list_of_commands.append(get_interface_conf_command_interface_ip_address(ip_address, NETWORK_MASK[subnet]))
 
     if router_interface.statistics.information.is_speed_different(new_speed_value=speed):
-        list_of_commands.append(get_interface_conf_command_interface_speed(speed))
+        command: str | None = get_interface_conf_command_interface_speed(speed)
+        if command is not None:
+            list_of_commands.append(command)
 
     if router_interface.statistics.information.is_duplex_different(new_duplex_value=duplex):
-        list_of_commands.append(get_interface_conf_command_interface_duplex(duplex))
+        command: str | None = get_interface_conf_command_interface_duplex(duplex)
+        if command is not None:
+            list_of_commands.append(command)
 
     if router_interface.statistics.information.is_mtu_different(new_mtu_value=mtu):
         list_of_commands.append(get_interface_conf_command_interface_mtu(mtu))
@@ -368,6 +376,9 @@ def get_interface_base_conf_commands_for_update_as_list(router_interface: Router
         return list_of_commands
     return None
 
+
+def get_interface_base_conf_commands_for_set_default(router_interface: RouterInterface) -> str:
+    return f'default interface {router_interface.name}'
 
 ########################################################################################################################
 # Parsing InterfaceOSPFInformation functions:
