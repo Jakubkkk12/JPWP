@@ -37,13 +37,6 @@ class OSPFEditGUI:
         root.columnconfigure(0, weight=1)
         root.columnconfigure(1, weight=1)
 
-        # Components
-        lblHostname = tk.Label(root, text='Hostname:')
-        lblHostname.grid(row=0, column=0)
-        entryHostname = tk.Entry(root, state='disabled')
-        entryHostname.insert(0, router.name)
-        entryHostname.grid(row=0, column=1)
-
         lblRouterId = tk.Label(root, text='Router ID:')
         lblRouterId.grid(row=1, column=0)
 
