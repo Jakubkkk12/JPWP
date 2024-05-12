@@ -98,7 +98,6 @@ class RIPNetworkAddGUI:
             if validate_network():
                 network = get_network()
                 mask = get_mask()
-                print('Network:', network)
                 threading.Thread(target=add_rip_networks,
                                  args=(main_gui, rip_networks_gui, router, user, [network])).start()
 

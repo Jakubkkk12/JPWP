@@ -1,6 +1,8 @@
 import tkinter as tk
 from gui_resources import config
 from PIL import Image, ImageTk
+from resources.user.User import User
+
 
 APPNAME = config.APPNAME
 VERSION = config.VERSION
@@ -11,8 +13,12 @@ LOGIN_ICON_PATH = config.LOGIN_ICON_PATH
 
 
 class LoginGUI:
-    def __init__(self):
+    def __init__(self, user: User):
         self.root = tk.Toplevel()
+
+        self.root.transient()  # Make this window a transient window of the parent window
+        self.root.grab_set()
+
         # ######## WINDOW PARAMETERS ######## #
         # title
         self.root.title(APPNAME + ' ' + VERSION + ' Login')
@@ -53,21 +59,19 @@ class LoginGUI:
         LOGIN_ICON = Image.open(LOGIN_ICON_PATH)
         LOGIN_ICON = LOGIN_ICON.resize((24, 24))
         tk_icon = ImageTk.PhotoImage(LOGIN_ICON)
+
+        def validate_credentials():
+            user.username = self.usernameEntry.get()
+            user.ssh_password = self.entryPassword.get()
+            self.root.destroy()
+
         btnLogin = tk.Button(self.root, text='Login', image=tk_icon, compound=tk.RIGHT,
-                             command=self.validate_credentials)
+                             command=validate_credentials)
         btnLogin.pack(pady=5)
 
         btnCancel = tk.Button(self.root, text='Cancel', command=self.root.destroy)
         btnCancel.pack(pady=5)
 
-        self.root.mainloop()
+        self.root.bind('<Return>', lambda event: validate_credentials())
 
-    def validate_credentials(self):
-        username = self.usernameEntry.get()
-        password = self.entryPassword.get()
-
-        self.root.destroy()
-
-    def get_credentials(self) -> list[str]:
-        return [self.usernameEntry.get(), self.entryPassword.get()]
-
+        self.root.wait_window()
