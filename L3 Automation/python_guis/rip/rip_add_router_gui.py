@@ -69,16 +69,19 @@ class RIPAddRouterGUI:
         lblDefaultMetric.grid(column=0, row=3)
         entryDefaultMetric = tk.Entry(root)
         entryDefaultMetric.grid(column=1, row=3)
+        entryDefaultMetric.insert(0, '1')
 
         lblDistance = tk.Label(root, text='Distance')
         lblDistance.grid(column=0, row=4)
         entryDistance = tk.Entry(root)
         entryDistance.grid(column=1, row=4)
+        entryDistance.insert(0, '120')
 
         lblMaximumPaths = tk.Label(root, text='Maximum Paths')
         lblMaximumPaths.grid(column=0, row=5)
         entryMaximumPaths = tk.Entry(root)
         entryMaximumPaths.grid(column=1, row=5)
+        entryMaximumPaths.insert(0, '4')
 
         lblVersion = tk.Label(root, text='Version')
         lblVersion.grid(column=0, row=6)
