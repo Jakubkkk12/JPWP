@@ -104,8 +104,7 @@ class EditInterfaceOSPFGUI:
         lblAuthenticationPassword.grid(column=0, row=8)
 
         entryAuthenticationPassword = tk.Entry(root)
-        if router.interfaces[int_name].ospf is not None:
-            entryAuthenticationPassword.insert(0, router.interfaces[int_name].ospf.authentication_password)
+        entryAuthenticationPassword.insert(0, '')
         entryAuthenticationPassword.grid(column=1, row=8)
 
         def get_network_type() -> str:
