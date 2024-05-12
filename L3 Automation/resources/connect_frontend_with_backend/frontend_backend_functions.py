@@ -397,6 +397,22 @@ def update_interface_basic(main_gui, interfaces_gui, router: Router, user: User,
     return None
 
 
+def set_to_default_interface(main_gui, interfaces_gui, router: Router, user: User, router_interface: RouterInterface
+                             ) -> None:
+    try:
+        completed, output = universal_router_commands.set_to_default_interface(router, user, router_interface)
+    except netmiko.exceptions.NetMikoTimeoutException:
+        main_gui.console_commands(f'Cannot connect to {router.name}')
+        return None
+
+    if completed:
+        main_gui.console_commands(output)
+        router.interfaces[router_interface.name] = universal_router_commands.get_interface(None, router, user,
+                                                                                           router_interface.name)
+        interfaces_gui.update_window()
+    return None
+
+
 def update_interface_ospf(main_gui, ospf_interfaces_details_gui, router: Router, user: User,
                           router_interface: RouterInterface, network_type: str, cost: int, priority: int,
                           authentication_message_digest: bool, authentication_password: str, hello_timer: int,

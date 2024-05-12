@@ -104,9 +104,9 @@ class EditInterfaceGUI:
         def get_speed_options() -> list[str]:
             if router.type == 'cisco_ios':
                 if 'GigabitEthernet' in int_name:
-                    return ['1000 Mbps', '100 Mbps', '10 Mbps']
+                    return ['1000Mbps', '100Mbps', '10Mbps']
                 if 'FastEthernet' in int_name:
-                    return ['100 Mbps', '10 Mbps']
+                    return ['100Mbps', '10Mbps']
                 if 'Serial' in int_name:
                     return ['None']
             # todo: add other types
@@ -171,7 +171,7 @@ class EditInterfaceGUI:
                 if 'Serial' in int_name:
                     threading.Thread(target=update_interface_basic,
                                      args=(main_gui, interfaces_details_gui, router, user, router.interfaces[int_name],
-                                           get_description(), get_ip_address(), get_mask(), duplexVariable.get(), 'None'
+                                           get_description(), get_ip_address(), get_mask(), 'None', 'None'
                                            , get_mtu())).start()
                 else:
                     threading.Thread(target=update_interface_basic,
