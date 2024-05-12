@@ -159,8 +159,8 @@ class BGPNeighborAddGUI:
                 holdTimeTimer = int(entryHoldTimeTimer.get())
 
                 threading.Thread(target=add_bgp_neighbor,
-                                 args=(main_gui, router, user, ip, remote_as, ebgpMultihop, nextHopSelf, shutdown,
-                                       keepAliveTimer, holdTimeTimer)).start()
+                                 args=(main_gui, bgp_neighbors_gui, router, user, ip, remote_as, ebgpMultihop,
+                                       nextHopSelf, shutdown, keepAliveTimer, holdTimeTimer)).start()
                 clean_entries()
 
         btnFrame = tk.Frame(root)

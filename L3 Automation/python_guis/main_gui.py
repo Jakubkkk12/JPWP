@@ -146,9 +146,6 @@ class MainGUI:
             root.destroy()
             self.project.open_project(aes_key)
             self.show_view_all()
-            from resources.connect_frontend_with_backend.universal_router_commands import (get_rip, get_ospf, get_bgp,
-                                                                                           get_all_interfaces,
-                                                                                           get_static_routes)
             import threading
 
             for name, device in self.project.devices.items():

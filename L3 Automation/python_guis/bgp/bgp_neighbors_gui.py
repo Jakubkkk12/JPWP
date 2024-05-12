@@ -7,7 +7,6 @@ from resources.connect_frontend_with_backend.frontend_backend_functions import r
 from resources.routing_protocols.bgp.BGPNeighbor import BGPNeighbor
 from resources.devices.Router import Router
 from resources.user.User import User
-from resources.connect_frontend_with_backend.universal_router_commands import remove_bgp_neighbor, get_bgp
 
 
 class BGPNeighborsGUI:
@@ -102,7 +101,7 @@ class BGPNeighborsGUI:
             ip = self.tree.item(item)['values'][1]
 
             threading.Thread(target=remove_bgp_neighbor,
-                             args=(main_gui, router, user, ip)).start()
+                             args=(main_gui, self, router, user, ip)).start()
 
             # Update No todo 22
             # children = self.tree.get_children()

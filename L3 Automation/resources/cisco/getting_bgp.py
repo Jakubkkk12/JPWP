@@ -55,11 +55,12 @@ def get_bgp_networks(sh_run_sec_bgp_output: str) -> dict[str, Network] | None:
     if not match:
         return {}
     # 'network 11.0.0.0 mask 255.255.255.0'
+    # 'network 11.0.0.0'
     networks_list: list[list[str]] = [[line.split(' ')[1], line.split(' ')[-1]] for line in match]
     networks: dict[str, Network] = {}
     for net in networks_list:
         if net[0] == net[1]:
-            f_octet: int = int(net[0].split('.')[1])
+            f_octet: int = int(net[0].split('.')[0])
             if 0 < f_octet <= 127:
                 net[1] = '255.0.0.0'
             elif 128 < f_octet <= 191:
@@ -299,8 +300,14 @@ def get_bgp_no_conf_networks_commands_as_list(network_and_mask: list[list[str, i
     list_of_commands: list[str] = []
 
     for network, mask in network_and_mask:
-        net_mask: str = NETWORK_MASK[mask]
-        list_of_commands.append(f'no network {network} mask {net_mask}')
+        octet_1, octet_2, octet_3, octet_4 = network.split('.')
+        if (0 < int(octet_1) <= 127 and octet_2 == '0' and octet_3 == '0' and octet_4 == '0' or
+            127 < int(octet_1) <= 191 and octet_3 == '0' and octet_4 == '0' or
+            191 < int(octet_1) <= 223 and octet_4 == '0'):
+            list_of_commands.append(f'no network {network}')
+        else:
+            net_mask: str = NETWORK_MASK[mask]
+            list_of_commands.append(f'no network {network} mask {net_mask}')
 
     if len(list_of_commands) > 0:
         return list_of_commands

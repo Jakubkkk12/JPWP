@@ -157,7 +157,7 @@ def add_bgp_neighbor(main_gui, bgp_neighbors_gui, router: Router, user: User, ne
     return None
 
 
-def remove_bgp_neighbor(main_gui, router: Router, user: User, neighbor_id: str) -> None:
+def remove_bgp_neighbor(main_gui, bgp_neighbors_gui, router: Router, user: User, neighbor_id: str) -> None:
     try:
         completed, output = universal_router_commands.remove_bgp_neighbor(router, user, neighbor_id)
     except netmiko.exceptions.NetMikoTimeoutException:
@@ -167,6 +167,7 @@ def remove_bgp_neighbor(main_gui, router: Router, user: User, neighbor_id: str) 
     if completed:
         main_gui.console_commands(output)
         router.bgp = universal_router_commands.get_bgp(None, router, user)
+        bgp_neighbors_gui.update_window()
     return None
 
 
