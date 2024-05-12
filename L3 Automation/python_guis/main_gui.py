@@ -1,13 +1,9 @@
-from __future__ import annotations
-
 import platform
 import tkinter as tk
 from tkinter import ttk
 from tkinter.filedialog import asksaveasfile, askopenfilename
 from tkinter.simpledialog import askstring
-
 from PIL import Image, ImageTk
-
 from python_guis.add_router_gui import AddRouterGUI
 from python_guis.bgp.bgp_add_router_gui import BGPAddRouterGUI
 from python_guis.bgp.bgp_networks_gui import BGPNetworksGUI
@@ -32,24 +28,9 @@ from python_guis.rip.rip_networks_gui import RIPNetworksGUI
 from python_guis.rip.rip_redistribution_gui import RIPRedistributionGUI
 from python_guis.ssh.ssh_connections_gui import SSHConnectionsGUI
 from python_guis.static.static_routes_gui import StaticRoutesGUI
-from python_guis import enable_password_gui
 from resources.connect_frontend_with_backend.frontend_backend_functions import get_info_router
-
 from resources.devices.Router import Router
-from resources.interfaces.InterfaceOSPFInformation import InterfaceOSPFInformation
-from resources.interfaces.InterfaceStatistics import InterfaceStatistics, InformationStatistics, ErrorsStatistics
-from resources.interfaces.RouterInterface import RouterInterface
-from resources.routing_protocols.Network import Network
-from resources.routing_protocols.Redistribution import Redistribution
-from resources.routing_protocols.StaticRoute import StaticRoute
-from resources.routing_protocols.bgp.BGPInformation import BGPInformation
-from resources.routing_protocols.bgp.BGPNeighbor import BGPNeighbor
-from resources.routing_protocols.bgp.BGPTimers import BGPTimers
 from resources.routing_protocols.ospf.OSPFArea import OSPFArea
-from resources.routing_protocols.ospf.OSPFInformation import OSPFInformation
-from resources.routing_protocols.ospf.OSPFTimers import OSPFTimers
-from resources.routing_protocols.rip.RIPInformation import RIPInformation
-from resources.ssh.SSHInformation import SSHInformation
 from resources.Project import Project
 from resources.user.User import User
 
@@ -92,9 +73,9 @@ class MainGUI:
 
         # Sample data:
         self.project = Project()
-        self.project.current_user = User(username='admin12', ssh_password='ZAQ!2wsx')
-
-        # LoginGUI()
+        # self.project.current_user = User(username='admin12', ssh_password='ZAQ!2wsx')
+        self.project.current_user = User(username='', ssh_password='')
+        LoginGUI(self.project.current_user)
 
         treeColumns = ()  # default
 
@@ -195,7 +176,7 @@ class MainGUI:
         btnEnablePassword.grid(column=0, row=2, sticky='EW')
 
         btnCredentials = tk.Button(btnFrameAddSSH, text='Credentials', padx=2, pady=2,
-                                   command=LoginGUI)
+                                   command= lambda: LoginGUI(self.project.current_user))
         btnCredentials.grid(column=0, row=3, sticky='EW')
 
         # Frame containing Logout and Quit buttons
@@ -280,7 +261,6 @@ class MainGUI:
 
         # This function defines pop-up menu for 'all' view
         def show_menu_all(event):
-            print('showed')
             item = self.tree.identify_row(event.y)
             self.tree.selection_set(item)
             if item:
