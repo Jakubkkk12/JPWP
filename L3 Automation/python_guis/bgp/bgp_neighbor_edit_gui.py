@@ -6,18 +6,19 @@ from tkinter import messagebox
 from resources.devices.Router import Router
 from python_guis.gui_resources import config
 from resources.user.User import User
-from resources.connect_frontend_with_backend.frontend_backend_functions import add_bgp_neighbor
+from resources.connect_frontend_with_backend.frontend_backend_functions import update_bgp_neighbor
+from resources.routing_protocols.bgp.BGPNeighbor import BGPNeighbor
 
 
-class BGPNeighborAddGUI:
-    def __init__(self, main_gui, bgp_neighbors_gui, router: Router, user: User):
+class BGPNeighborEditGUI:
+    def __init__(self, main_gui, bgp_neighbors_gui, router: Router, user: User, neighbor: BGPNeighbor):
         self.hostname = router.name
         self.bgp_neighbors_gui = bgp_neighbors_gui
 
         root = tk.Toplevel()
         # ######## WINDOW PARAMETERS ######## #
         # title
-        root.title(config.APPNAME + ' ' + config.VERSION + ' ' + self.hostname + ' Add BGP Neighbor')
+        root.title(config.APPNAME + ' ' + config.VERSION + ' ' + self.hostname + ' Edit BGP Neighbor')
 
         # window icon, using conversion to iso, cause tkinter doesn't accept jpg
         icon = tk.PhotoImage(file=config.WINDOW_ICON_PATH)
@@ -37,24 +38,31 @@ class BGPNeighborAddGUI:
         lblIpAddress = tk.Label(root, text='IP address:')
         lblIpAddress.grid(column=0, row=0)
 
+        ip = neighbor.ip_address
+        ip = ip.split('.')
+
         networkFrame = tk.Frame(root)
         entryIPNetworkFirst = tk.Entry(networkFrame, width=10)
         entryIPNetworkFirst.pack(side='left')
+        entryIPNetworkFirst.insert(0, ip[0])
         labelDot1 = tk.Label(networkFrame, text='.')
         labelDot1.pack(side='left')
 
         entryIPNetworkSecond = tk.Entry(networkFrame, width=10)
         entryIPNetworkSecond.pack(side='left')
+        entryIPNetworkSecond.insert(0, ip[1])
         labelDot2 = tk.Label(networkFrame, text='.')
         labelDot2.pack(side='left')
 
         entryIPNetworkThird = tk.Entry(networkFrame, width=10)
         entryIPNetworkThird.pack(side='left')
+        entryIPNetworkThird.insert(0, ip[2])
         labelDot3 = tk.Label(networkFrame, text='.')
         labelDot3.pack(side='left')
 
         entryIPNetworkFourth = tk.Entry(networkFrame, width=10)
         entryIPNetworkFourth.pack(side='left')
+        entryIPNetworkFourth.insert(0, ip[3])
 
         networkFrame.grid(column=1, row=0)
 
@@ -62,33 +70,39 @@ class BGPNeighborAddGUI:
         lblRemoteAS.grid(column=0, row=1)
         entryRemoteAS = tk.Entry(root, width=5)
         entryRemoteAS.grid(column=1, row=1)
+        entryRemoteAS.insert(0, str(neighbor.remote_as))
 
         lblEBGPMultihop = tk.Label(root, text='EBGP Multihop:')
         lblEBGPMultihop.grid(column=0, row=2)
         entryEBGPMultihop = tk.Entry(root)
         entryEBGPMultihop.grid(column=1, row=2)
+        entryEBGPMultihop.insert(0, str(neighbor.ebgp_multihop))
 
         lblNextHopSelf = tk.Label(root, text='Next hop self:')
         lblNextHopSelf.grid(column=0, row=3)
         varNextHopSelf = tk.BooleanVar(root)
         chckbtnNextHopSelf = tk.Checkbutton(root, variable=varNextHopSelf)
         chckbtnNextHopSelf.grid(column=1, row=3)
+        chckbtnNextHopSelf.select() if neighbor.next_hop_self else chckbtnNextHopSelf.deselect()
 
         lblShutdown = tk.Label(root, text='Shutdown')
         lblShutdown.grid(column=0, row=4)
         varShutdown = tk.BooleanVar(root)
         chckbtnShutdown = tk.Checkbutton(root, variable=varShutdown)
         chckbtnShutdown.grid(column=1, row=4)
+        chckbtnShutdown.select() if neighbor.shutdown else chckbtnShutdown.deselect()
 
         lblKeepAliveTimer = tk.Label(root, text='Keep alive timer:')
         lblKeepAliveTimer.grid(column=0, row=5)
         entryKeepAliveTimer = tk.Entry(root)
         entryKeepAliveTimer.grid(column=1, row=5)
+        entryKeepAliveTimer.insert(0, str(neighbor.timers.keep_alive))
 
         lblHoldTimeTimer = tk.Label(root, text='Hold time timer:')
         lblHoldTimeTimer.grid(column=0, row=6)
         entryHoldTimeTimer = tk.Entry(root)
         entryHoldTimeTimer.grid(column=1, row=6)
+        entryHoldTimeTimer.insert(0, str(neighbor.timers.hold_time))
 
         def get_ip() -> str:
             try:
@@ -157,8 +171,8 @@ class BGPNeighborAddGUI:
                 keepAliveTimer = int(entryKeepAliveTimer.get())
                 holdTimeTimer = int(entryHoldTimeTimer.get())
 
-                threading.Thread(target=add_bgp_neighbor,
-                                 args=(main_gui, bgp_neighbors_gui, router, user, ip, remote_as, ebgpMultihop,
+                threading.Thread(target=update_bgp_neighbor,
+                                 args=(main_gui, self.bgp_neighbors_gui, router, user, ip, remote_as, ebgpMultihop,
                                        nextHopSelf, shutdown, keepAliveTimer, holdTimeTimer)).start()
                 clean_entries()
 

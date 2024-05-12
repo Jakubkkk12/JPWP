@@ -9,14 +9,13 @@ from python_guis.gui_resources import config
 from resources.user.User import User
 
 
-# todo punkt 16
 class BGPEditGUI:
     def __init__(self, main_gui, router: Router, user: User):
         root = tk.Toplevel()
         main_gui = main_gui
 
         # title
-        root.title(config.APPNAME + ' ' + config.VERSION + ' ' + router.name + ' ' + ' Edit RIP ')
+        root.title(config.APPNAME + ' ' + config.VERSION + ' ' + router.name + ' ' + ' Edit BGP ')
         # window icon, using conversion to iso, cause tkinter doesn't accept jpg
         icon = tk.PhotoImage(file=config.WINDOW_ICON_PATH)
         root.wm_iconphoto(False, icon)

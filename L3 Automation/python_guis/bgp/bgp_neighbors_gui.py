@@ -1,6 +1,8 @@
 import threading
 import tkinter as tk
 import tkinter.ttk
+
+from python_guis.bgp.bgp_neighbor_edit_gui import BGPNeighborEditGUI
 from python_guis.gui_resources import config
 from python_guis.bgp.bgp_neighbor_add_gui import BGPNeighborAddGUI
 from resources.connect_frontend_with_backend.frontend_backend_functions import remove_bgp_neighbor
@@ -111,6 +113,24 @@ class BGPNeighborsGUI:
         btnQuit = tk.Button(buttonFrame, text='Quit', command=root.destroy)
         btnQuit.pack()
         buttonFrame.grid(column=0, row=4, columnspan=2)
+
+        menu = tk.Menu(root, tearoff=0)
+        menu.add_command(label='Edit', command=lambda: BGPNeighborEditGUI(main_gui, self, router, user, neighbor))
+
+        def show_menu_all(event):
+            item = self.tree.identify_row(event.y)
+            self.tree.selection_set(item)
+            if item:
+                try:
+                    hostname = self.tree.item(item)['values'][1]
+                    selected_neighbor = router.bgp.neighbors[hostname]
+                    menu.post(event.x_root, event.y_root)
+                    menu.entryconfigure('Edit', command=lambda: BGPNeighborEditGUI(main_gui, self, router, user,
+                                                                                   selected_neighbor))
+                except IndexError:
+                    pass
+
+        root.bind('<Button-3>', show_menu_all)
 
         root.mainloop()
 

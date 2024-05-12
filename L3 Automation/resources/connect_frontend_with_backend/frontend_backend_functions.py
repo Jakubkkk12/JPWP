@@ -170,12 +170,12 @@ def remove_bgp_neighbor(main_gui, bgp_neighbors_gui, router: Router, user: User,
     return None
 
 
-def update_bgp_neighbor(main_gui, router: Router, user: User, neighbor_id: str, remote_as: int, ebgp_multihop: int,
-                        next_hop_self: bool, shutdown: bool, keep_alive: int, hold_on: int) -> None:
+def update_bgp_neighbor(main_gui, bgp_neighbors_gui, router: Router, user: User, neighbor_id: str, remote_as: int,
+                        ebgp_multihop: int, next_hop_self: bool, shutdown: bool, keep_alive: int, hold_on: int) -> None:
     try:
         completed, output = universal_router_commands.update_bgp_neighbor(router, user, neighbor_id, remote_as,
                                                                           ebgp_multihop, next_hop_self, shutdown,
-                                                                          keep_alive, hold_on)
+                                                                          None, keep_alive, hold_on)
     except netmiko.exceptions.NetMikoTimeoutException:
         main_gui.console_commands(f'Cannot connect to {router.name}')
         return None
@@ -183,6 +183,7 @@ def update_bgp_neighbor(main_gui, router: Router, user: User, neighbor_id: str, 
     if completed:
         main_gui.console_commands(output)
         router.bgp = universal_router_commands.get_bgp(None, router, user)
+        bgp_neighbors_gui.update_window()
     return None
 
 
