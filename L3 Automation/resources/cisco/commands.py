@@ -6,7 +6,7 @@ from resources.cisco.getting_bgp import (get_bgp_information, get_bgp_base_conf_
                                          get_bgp_conf_neighbor_commands_for_add_as_list,
                                          get_bgp_conf_networks_commands_as_list,
                                          get_bgp_no_conf_networks_commands_as_list,
-                                         get_bgp_base_conf_commands_for_enable_as_list)
+                                         get_bgp_base_conf_commands_for_enable_as_list, get_no_bgp)
 from resources.cisco.getting_interface import (get_interfaces_name, get_base_interface_information,
                                                get_interface_base_conf_commands_for_update_as_list,
                                                get_interface_ospf_information,
@@ -16,14 +16,14 @@ from resources.cisco.getting_ospf import (get_ospf_information, get_ospf_base_co
                                           get_ospf_area_base_conf_commands_for_update_as_list,
                                           get_ospf_area_conf_networks_commands_as_list,
                                           get_ospf_area_no_conf_networks_commands_as_list,
-                                          get_ospf_base_conf_commands_for_enable_as_list)
+                                          get_ospf_base_conf_commands_for_enable_as_list, get_no_ospf)
 from resources.cisco.getting_redistribution import (get_routing_protocol_redistribution,
                                                     get_redistribution_conf_commands_as_list)
 from resources.cisco.getting_rip_information import (get_rip_information,
                                                      get_rip_conf_basic_commands_for_update_as_list,
                                                      get_rip_conf_networks_commands_as_list,
                                                      get_rip_no_conf_networks_commands_as_list,
-                                                     get_rip_conf_basic_commands_for_enable_as_list)
+                                                     get_rip_conf_basic_commands_for_enable_as_list, get_no_rip)
 from resources.cisco.getting_static_routes import (get_static_routes, get_static_route_conf_command,
                                                    get_static_route_no_conf_command)
 from resources.devices.Router import Router
@@ -140,6 +140,11 @@ def add_bgp_neighbor(router: Router, user: User, neighbor_id: str, remote_as: in
     return True, output
 
 
+def remove_bgp(router: Router, user: User) -> tuple[bool, str | None]:
+    output: str = execute_conf_commands(router, user, get_no_bgp(router.bgp.autonomous_system))
+    return True, output
+
+
 ########################################################################################################################
 # Section StaticRoutes
 
@@ -242,6 +247,11 @@ def remove_rip_networks(router: Router, user: User, networks: list[str]) -> tupl
     return True, output
 
 
+def remove_rip(router: Router, user: User) -> tuple[bool, str | None]:
+    output: str = execute_conf_commands(router, user, get_no_rip())
+    return True, output
+
+
 ########################################################################################################################
 # Section OSPF
 def enable_ospf(router: Router, user: User, router_id: str, auto_cost_reference_bandwidth: int,
@@ -331,6 +341,11 @@ def remove_ospf_area_networks(router: Router, user: User, area: OSPFArea, networ
 
     commands.insert(0, f'router ospf {router.ospf.process_id}')
     output: str = execute_conf_commands(router, user, commands)
+    return True, output
+
+
+def remove_ospf(router: Router, user: User) -> tuple[bool, str | None]:
+    output: str = execute_conf_commands(router, user, get_no_ospf(router.ospf.process_id))
     return True, output
 
 

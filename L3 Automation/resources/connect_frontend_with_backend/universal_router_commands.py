@@ -63,6 +63,11 @@ def add_bgp_neighbor(router: Router, user: User, neighbor_id: str, remote_as: in
                                       keep_alive, hold_on)
 
 
+def remove_bgp(router: Router, user: User) -> tuple[bool, str | None]:
+    if 'cisco_ios' == router.type:
+        return cisco.remove_bgp(router, user)
+
+
 ########################################################################################################################
 # Section StaticRoutes
 
@@ -119,6 +124,11 @@ def remove_rip_networks(router: Router, user: User, networks: list[str]) -> tupl
         return cisco.remove_rip_networks(router, user, networks)
 
 
+def remove_rip(router: Router, user: User) -> tuple[bool, str | None]:
+    if 'cisco_ios' == router.type:
+        return cisco.remove_rip(router, user)
+
+
 ########################################################################################################################
 # Section OSPF
 def enable_ospf(router: Router, user: User, router_id: str, auto_cost_reference_bandwidth: int,
@@ -160,6 +170,11 @@ def add_ospf_area_networks(router: Router, user: User, area: OSPFArea, network_a
 def remove_ospf_area_networks(router: Router, user: User, area: OSPFArea, network_and_wildcard: list[list[str]]) -> tuple[bool, str | None]:
     if 'cisco_ios' == router.type:
         return cisco.remove_ospf_area_networks(router, user, area, network_and_wildcard)
+
+
+def remove_ospf(router: Router, user: User) -> tuple[bool, str | None]:
+    if 'cisco_ios' == router.type:
+        return cisco.remove_ospf(router, user)
 
 
 ########################################################################################################################

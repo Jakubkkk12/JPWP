@@ -8,7 +8,7 @@ import resources.connect_frontend_with_backend.universal_router_commands as univ
 import netmiko
 
 
-## Info Router
+# Info Router
 def get_info_router(main_gui, router: Router, user: User) -> None:
     try:
         connection = create_connection_to_router(router, user)
@@ -19,8 +19,11 @@ def get_info_router(main_gui, router: Router, user: User) -> None:
         router.bgp = universal_router_commands.get_bgp(connection, router, user)
         router.ospf = universal_router_commands.get_ospf(connection, router, user)
         close_connection(connection)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
     main_gui.update_all_tree()
     # todo do usunięcia po beta
@@ -28,7 +31,7 @@ def get_info_router(main_gui, router: Router, user: User) -> None:
     return None
 
 
-## Redistribution
+# Redistribution
 def update_redistribution(main_gui, router: Router, user: User, routing_protocol: str,
                           routing_protocol_redistribution: Redistribution, ospf: bool, rip: bool, bgp: bool,
                           static: bool,
@@ -46,8 +49,11 @@ def update_redistribution(main_gui, router: Router, user: User, routing_protocol
                                                                                 connected, subnets_on=False)
         else:
             raise ValueError('Invalid routing protocol')
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:
@@ -64,7 +70,7 @@ def update_redistribution(main_gui, router: Router, user: User, routing_protocol
     return None
 
 
-## Static Route
+# Static Route
 def add_static_route(main_gui, static_route_gui, router: Router, user: User, network: str, network_mask: int,
                      route_distance: int,
                      next_hop: str, interface_name: str) -> None:
@@ -75,8 +81,11 @@ def add_static_route(main_gui, static_route_gui, router: Router, user: User, net
         else:
             completed, output = universal_router_commands.add_static_route(router, user, network, network_mask,
                                                                            route_distance, next_hop, interface_name)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:
@@ -90,8 +99,11 @@ def remove_static_route(main_gui, static_route_gui, router: Router, user: User, 
                         network_mask: int) -> None:
     try:
         completed, output = universal_router_commands.remove_static_route(router, user, network, network_mask)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:
@@ -111,8 +123,11 @@ def enable_bgp(main_gui, router: Router, user: User, autonomous_system: int, rou
                                                                  default_information_originate,
                                                                  default_metric_of_redistributed_routes, keep_alive,
                                                                  hold_on, network_and_mask)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:
@@ -128,8 +143,11 @@ def update_bgp(main_gui, router: Router, user: User, router_id: str, default_inf
         completed, output = universal_router_commands.update_bgp(router, user, router_id, default_information_originate,
                                                                  default_metric_of_redistributed_routes, keep_alive,
                                                                  hold_on)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:
@@ -145,8 +163,11 @@ def add_bgp_neighbor(main_gui, bgp_neighbors_gui, router: Router, user: User, ne
         completed, output = universal_router_commands.add_bgp_neighbor(router, user, neighbor_id, remote_as,
                                                                        ebgp_multihop, next_hop_self, shutdown,
                                                                        keep_alive, hold_on)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:
@@ -159,8 +180,11 @@ def add_bgp_neighbor(main_gui, bgp_neighbors_gui, router: Router, user: User, ne
 def remove_bgp_neighbor(main_gui, bgp_neighbors_gui, router: Router, user: User, neighbor_id: str) -> None:
     try:
         completed, output = universal_router_commands.remove_bgp_neighbor(router, user, neighbor_id)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:
@@ -176,8 +200,11 @@ def update_bgp_neighbor(main_gui, bgp_neighbors_gui, router: Router, user: User,
         completed, output = universal_router_commands.update_bgp_neighbor(router, user, neighbor_id, remote_as,
                                                                           ebgp_multihop, next_hop_self, shutdown,
                                                                           None, keep_alive, hold_on)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:
@@ -190,8 +217,11 @@ def update_bgp_neighbor(main_gui, bgp_neighbors_gui, router: Router, user: User,
 def add_bgp_networks(main_gui, bgp_networks_gui, router: Router, user: User, network_and_mask: list[list[str, int]]) -> None:
     try:
         completed, output = universal_router_commands.add_bgp_networks(router, user, network_and_mask)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:
@@ -205,8 +235,11 @@ def remove_bgp_networks(main_gui, bgp_networks_gui, router: Router, user: User,
                         network_and_mask: list[list[str, int]]) -> None:
     try:
         completed, output = universal_router_commands.remove_bgp_networks(router, user, network_and_mask)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:
@@ -216,7 +249,24 @@ def remove_bgp_networks(main_gui, bgp_networks_gui, router: Router, user: User,
     return None
 
 
-## RIP
+def remove_bgp(main_gui, router: Router, user: User) -> None:
+    try:
+        completed, output = universal_router_commands.remove_bgp(router, user)
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
+        return None
+
+    if completed:
+        main_gui.console_commands(output)
+        router.bgp = universal_router_commands.get_bgp(None, router, user)
+        main_gui.update_window()
+    return None
+
+
+# RIP
 def enable_rip(main_gui, router: Router, user: User, auto_summary: bool, default_information_originate: bool,
                default_metric_of_redistributed_routes: int, distance: int, maximum_paths: int, version: int,
                networks: list[str]) -> None:
@@ -225,8 +275,11 @@ def enable_rip(main_gui, router: Router, user: User, auto_summary: bool, default
                                                                  default_information_originate,
                                                                  default_metric_of_redistributed_routes, distance,
                                                                  maximum_paths, version, networks)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:
@@ -243,8 +296,11 @@ def update_rip(main_gui, router: Router, user: User, auto_summary: bool, default
                                                                  default_information_originate,
                                                                  default_metric_of_redistributed_routes, distance,
                                                                  maximum_paths, version)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:
@@ -257,8 +313,11 @@ def update_rip(main_gui, router: Router, user: User, auto_summary: bool, default
 def remove_rip_networks(main_gui, rip_networks_gui, router: Router, user: User, networks: list[str]) -> None:
     try:
         completed, output = universal_router_commands.remove_rip_networks(router, user, networks)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:
@@ -271,14 +330,34 @@ def remove_rip_networks(main_gui, rip_networks_gui, router: Router, user: User, 
 def add_rip_networks(main_gui, rip_networks_gui, router: Router, user: User, networks: list[str]) -> None:
     try:
         completed, output = universal_router_commands.add_rip_networks(router, user, networks)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:
         main_gui.console_commands(output)
         router.rip = universal_router_commands.get_rip(None, router, user)
         rip_networks_gui.update_window()
+    return None
+
+
+def remove_rip(main_gui, router: Router, user: User) -> None:
+    try:
+        completed, output = universal_router_commands.remove_rip(router, user)
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
+        return None
+
+    if completed:
+        main_gui.console_commands(output)
+        router.rip = universal_router_commands.get_rip(None, router, user)
+        main_gui.update_window()
     return None
 
 
@@ -296,8 +375,11 @@ def enable_ospf(main_gui, router: Router, user: User, router_id: str, auto_cost_
                                                                   maximum_paths, passive_interface_default, area_id,
                                                                   network_and_wildcard,
                                                                   area_authentication_message_digest, area_type)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:
@@ -319,8 +401,11 @@ def update_ospf(main_gui, router: Router, user: User, router_id: str, auto_cost_
                                                                   default_information_originate,
                                                                   default_metric_of_redistributed_routes, distance,
                                                                   maximum_paths, passive_interface_default)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:
@@ -338,8 +423,11 @@ def update_ospf_area(main_gui, router: Router, user: User, area: OSPFArea, authe
     try:
         completed, output = universal_router_commands.update_ospf_area(router, user, area,
                                                                        authentication_message_digest, area_type)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:
@@ -352,8 +440,11 @@ def add_ospf_area_networks(main_gui, ospf_area_config_gui, router: Router, user:
                            network_and_wildcard: list[list[str]]) -> None:
     try:
         completed, output = universal_router_commands.add_ospf_area_networks(router, user, area, network_and_wildcard)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:
@@ -368,14 +459,34 @@ def remove_ospf_area_networks(main_gui, ospf_area_config_gui, router: Router, us
     try:
         completed, output = universal_router_commands.remove_ospf_area_networks(router, user, area,
                                                                                 network_and_wildcard)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:
         main_gui.console_commands(output)
         router.ospf = universal_router_commands.get_ospf(None, router, user)
         ospf_area_config_gui.update_window()
+    return None
+
+
+def remove_ospf(main_gui, router: Router, user: User) -> None:
+    try:
+        completed, output = universal_router_commands.remove_ospf(router, user)
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
+        return None
+
+    if completed:
+        main_gui.console_commands(output)
+        router.ospf = universal_router_commands.get_ospf(None, router, user)
+        main_gui.update_window()
     return None
 
 
@@ -386,8 +497,11 @@ def update_interface_basic(main_gui, interfaces_gui, router: Router, user: User,
         completed, output = universal_router_commands.update_interface_basic(router, user, router_interface,
                                                                              description, ip_address, subnet, duplex,
                                                                              speed, mtu)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:
@@ -402,8 +516,11 @@ def set_to_default_interface(main_gui, interfaces_gui, router: Router, user: Use
                              ) -> None:
     try:
         completed, output = universal_router_commands.set_to_default_interface(router, user, router_interface)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:
@@ -424,8 +541,11 @@ def update_interface_ospf(main_gui, ospf_interfaces_details_gui, router: Router,
                                                                             authentication_message_digest,
                                                                             authentication_password, hello_timer,
                                                                             dead_timer, retransmit_timer)
-    except netmiko.exceptions.NetMikoTimeoutException:
-        main_gui.console_commands(f'Cannot connect to {router.name}')
+    except netmiko.exceptions.NetMikoTimeoutException and netmiko.exceptions.ReadTimeout:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to timeout')
+        return None
+    except netmiko.exceptions.NetMikoAuthenticationException:
+        main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
 
     if completed:

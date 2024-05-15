@@ -347,3 +347,7 @@ def get_ospf_area_no_conf_networks_commands_as_list(area_id: str, network_and_wi
     if len(list_of_commands) > 0:
         return list_of_commands
     return None
+
+
+def get_no_ospf(process_id: int) -> str:
+    return f"no router ospf {process_id}"

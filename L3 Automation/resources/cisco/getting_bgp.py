@@ -397,3 +397,7 @@ def get_bgp_conf_neighbor_commands_for_add_as_list(neighbor_id: str,
         list_of_commands.append(get_bgp_neighbor_conf_command_timers(neighbor_id, keep_alive, hold_on))
 
     return list_of_commands
+
+
+def get_no_bgp(autonomous_system: int) -> str:
+    return f"no router bgp {autonomous_system}"

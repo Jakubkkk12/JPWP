@@ -162,3 +162,7 @@ def get_rip_no_conf_networks_commands_as_list(list_of_networks: list[str]) -> li
     if len(list_of_commands) > 0:
         return list_of_commands
     return None
+
+
+def get_no_rip() -> str:
+    return f"no router rip"
