@@ -3,6 +3,8 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.filedialog import asksaveasfile, askopenfilename
 from tkinter.simpledialog import askstring
+
+from Crypto.Hash import SHA256
 from PIL import Image, ImageTk
 from python_guis.add_router_gui import AddRouterGUI
 from python_guis.bgp.bgp_add_router_gui import BGPAddRouterGUI
@@ -12,7 +14,6 @@ from python_guis.ospf.ospf_add_area_gui import OSPFAddAreaGUI
 from python_guis.ospf.ospf_add_router_gui import OSPFAddRouterGUI
 from python_guis.ospf.ospf_edit_gui import OSPFEditGUI
 from python_guis.rip.rip_add_router_gui import RIPAddRouterGUI
-from python_guis.ssh import ssh_password_gui
 from gui_resources import config
 from login_gui import LoginGUI
 from python_guis.bgp.bgp_edit_gui import BGPEditGUI
@@ -118,12 +119,13 @@ class MainGUI:
 
         def save_as_project():
             files = [('L3 Project Files', '*.jkal')]
-            file = asksaveasfile(filetypes=files)
-            print(file)
+            file = asksaveasfile(filetypes=files, defaultextension='.jkal')
+            if file is None:
+                return None
             new_project = Project(file_path=file.name, devices=self.project.devices)
             root = tk.Tk()
             root.withdraw()
-            aes_key = tk.simpledialog.askstring("Password", "Enter password:")
+            aes_key = SHA256.new(tk.simpledialog.askstring("Password", "Enter password:").encode()).hexdigest()[:32]
             new_project.save_project(aes_key=aes_key)
 
         filemenu.add_command(label='Save project...', command=save_as_project)
@@ -131,7 +133,7 @@ class MainGUI:
         def save_project():
             root = tk.Tk()
             root.withdraw()
-            aes_key = tk.simpledialog.askstring("Password", "Enter password:")
+            aes_key = SHA256.new(tk.simpledialog.askstring("Password", "Enter password:").encode()).hexdigest()[:32]
             root.destroy()
             self.project.save_project(aes_key=aes_key)
 
@@ -143,16 +145,16 @@ class MainGUI:
             self.project.file_path = file
             root = tk.Tk()
             root.withdraw()
-            aes_key = tk.simpledialog.askstring("Password", "Enter password:")
+            aes_key = SHA256.new(tk.simpledialog.askstring("Password", "Enter password:").encode()).hexdigest()[:32]
             root.destroy()
             self.project.open_project(aes_key)
             self.show_view_all()
-            import threading
-
-            for name, device in self.project.devices.items():
-                self.project.devices[name].enable_password = 'ZSEDCxzaqwe'
-                threading.Thread(target=get_info_router,
-                                 args=(self, self.project.devices[name], self.project.current_user)).start()
+            # import threading
+            #
+            # for name, device in self.project.devices.items():
+            #     self.project.devices[name].enable_password = 'ZSEDCxzaqwe'
+            #     threading.Thread(target=get_info_router,
+            #                      args=(self, self.project.devices[name], self.project.current_user)).start()
 
         filemenu.add_command(label='Open project...', command=open_project)
         menubar.add_cascade(label='File', menu=filemenu)
