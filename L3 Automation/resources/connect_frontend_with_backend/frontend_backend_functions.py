@@ -25,7 +25,17 @@ def get_info_router(main_gui, router: Router, user: User) -> None:
     except netmiko.exceptions.NetMikoAuthenticationException:
         main_gui.console_commands(f'Cannot connect to {router.name} due to authentication error')
         return None
-    main_gui.update_all_tree()
+
+    from python_guis.main_gui import MainGUI
+    if main_gui.current_view == MainGUI.ALL:
+        main_gui.update_all_tree()
+    elif main_gui.current_view == MainGUI.RIP:
+        main_gui.update_rip_tree()
+    elif main_gui.current_view == MainGUI.BGP:
+        main_gui.update_bgp_tree()
+    elif main_gui.current_view == MainGUI.OSPF:
+        main_gui.update_ospf_tree()
+
     # todo do usunięcia po beta
     main_gui.console_commands(f'Pozyskano dane z {router.name}')
     return None

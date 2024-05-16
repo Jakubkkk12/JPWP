@@ -1,13 +1,16 @@
+import threading
 import tkinter as tk
 import tkinter.messagebox
 from python_guis.gui_resources import config
+from resources.connect_frontend_with_backend.frontend_backend_functions import get_info_router
 
 WINDOW_ICON_PATH = config.WINDOW_ICON_PATH
 BG_COLOR = config.BG_COLOR
 
 
 class EnablePasswordGUI:
-    def __init__(self, devices):
+    def __init__(self, main_gui, devices):
+        self.main_gui = main_gui
         self.devices = devices
         self.root = tk.Toplevel()
         self.root.title('Enable password')
@@ -81,6 +84,9 @@ class EnablePasswordGUI:
             for device in self.devices.values():
                 if device.name in who_to_enable:
                     device.enable_password = enable_pass
+                    threading.Thread(target=get_info_router,
+                                     args=(self.main_gui, self.main_gui.project.devices[device.name],
+                                           self.main_gui.project.current_user)).start()
 
             self.root.destroy()
             return None

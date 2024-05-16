@@ -37,11 +37,19 @@ from resources.user.User import User
 
 
 class MainGUI:
+    ALL = 'all'
+    RIP = 'rip'
+    OSPF = 'ospf'
+    BGP = 'bgp'
+
     def __init__(self):
         self.root = tk.Tk()
 
         # title
         self.root.title(config.APPNAME + ' ' + config.VERSION)
+
+        # current view
+        self.current_view = MainGUI.ALL
 
         # window icon, using conversion to iso, cause tkinter doesn't accept jpg
         icon = tk.PhotoImage(file=config.WINDOW_ICON_PATH)
@@ -177,7 +185,7 @@ class MainGUI:
         btnRefresh.grid(column=0, row=1, sticky='EW')
 
         btnEnablePassword = tk.Button(btnFrameAddSSH, text='Enable Password', padx=2, pady=2,
-                                      command=lambda: EnablePasswordGUI(self.project.devices))
+                                      command=lambda: EnablePasswordGUI(self, self.project.devices))
         btnEnablePassword.grid(column=0, row=2, sticky='EW')
 
         btnCredentials = tk.Button(btnFrameAddSSH, text='Credentials', padx=2, pady=2,
@@ -222,6 +230,7 @@ class MainGUI:
     # This function inserts data into treeview widget and binds <MB-3> according to 'all' view
     def show_view_all(self) -> None:
         self.clear_tree()
+        self.current_view = MainGUI.ALL
 
         treeColumns = ('No', 'Hostname', 'Type', 'RIP', 'OSPF', 'BGP')
         self.tree.configure(columns=treeColumns)
@@ -314,6 +323,7 @@ class MainGUI:
 
     def show_view_rip(self) -> None:
         self.clear_tree()
+        self.current_view = MainGUI.RIP
 
         treeColumns = ('No', 'Hostname', 'Auto-summary', 'Default information originate', 'Default metric',
                        'Distance', 'Maximum paths', 'Version')
@@ -391,6 +401,7 @@ class MainGUI:
 
     def show_view_bgp(self) -> None:
         self.clear_tree()
+        self.current_view = MainGUI.BGP
 
         treeColumns = ('No', 'Hostname', 'AS', 'Router ID', 'Default information originate',
                        'Default metric of redistributed routers', 'Keep alive timer', 'Hold time timer')
@@ -468,6 +479,7 @@ class MainGUI:
     # This function inserts ospf data into treeview widget and binds <MB-3> according to 'ospf' view
     def show_view_ospf(self) -> None:
         self.clear_tree()
+        self.current_view = MainGUI.OSPF
 
         treeColumns = ('No', 'Hostname', 'Router ID', 'Areas', 'Auto cost bandwidth', 'Default information originate',
                        'Default metric of redistributed routes', 'Distance', 'Maximum paths')
