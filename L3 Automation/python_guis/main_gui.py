@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter.filedialog import asksaveasfile, askopenfilename
 from tkinter.simpledialog import askstring
+import messagebox
 
 from Crypto.Hash import SHA256
 from PIL import Image, ImageTk
@@ -286,6 +287,7 @@ class MainGUI:
                     menu.entryconfigure('Interfaces', command=lambda: show_interfaces_details(selected_router))
                     menu.entryconfigure('Static routes', command=lambda: show_static_routes(self, selected_router,
                                                                                             self.project.current_user))
+                    menu.entryconfigure('Disable', command=lambda: disable_router(self, selected_router))
                 except IndexError():
                     pass
 
@@ -305,10 +307,17 @@ class MainGUI:
                 SSHConnectionsGUI(selected_router)
             return None
 
+        def disable_router(main_gui, selected_router: Router) -> None:
+            if selected_router:
+                pass
+            #Remove router completely
+            return None
+
         menu = tk.Menu(self.root, tearoff=False)
         menu.add_command(label='SSH Addresses', command=show_ssh_addresses)
         menu.add_command(label='Interfaces', command=show_interfaces_details)
         menu.add_command(label='Static routes', command=show_static_routes)
+        menu.add_command(label='Disable', command=disable_router)
         if platform.system() == 'Windows':
             self.tree.bind('<Button-3>', show_menu_all)
         if platform.system() == 'Darwin':
@@ -380,13 +389,22 @@ class MainGUI:
                         menu.entryconfigure('Redistribution', command=lambda: RIPRedistributionGUI(self,
                                                                                                    selected_router,
                                                                                                    self.project.current_user))
+                        menu.entryconfigure('Disable', command=lambda: disable_router_rip(self, selected_router))
                 except IndexError:
                     pass
+
+        def disable_router_rip(main_gui, selected_router: Router) -> None:
+            if selected_router:
+                if messagebox.askokcancel(title='Disable RIP', message=f'Are you sure to disable RIP on '
+                                                                       f'{selected_router.name}?',):
+                    pass
+                    # Disable RIP on selected router
 
         menu = tk.Menu(self.root, tearoff=False)
         menu.add_command(label='Edit', command=RIPEditGUI)
         menu.add_command(label='Networks', command=RIPNetworkAddGUI)
         menu.add_command(label='Redistribution', command=RIPRedistributionGUI)
+        menu.add_command(label='Disable', command=disable_router_rip)
         if platform.system() == 'Windows':
             self.tree.bind('<Button-3>', show_menu_rip)
         if platform.system() == 'Darwin':
@@ -459,14 +477,22 @@ class MainGUI:
                         menu.entryconfigure('Redistribution', command=lambda: BGPRedistributionGUI(self,
                                                                                                    selected_router,
                                                                                                    self.project.current_user))
+                        menu.entryconfigure('Disable', command=lambda: disable_router_bgp(self, selected_router))
                 except IndexError:
                     pass
+
+        def disable_router_bgp(main_gui, selected_router: Router) -> None:
+            if selected_router:
+                if messagebox.askokcancel('Disable', f'Are you sure to disable BGP on {selected_router.name}?'):
+                    pass
+                    # Disable BGP on selected router
 
         menu = tk.Menu(self.root, tearoff=False)
         menu.add_command(label='Edit', command=BGPEditGUI)
         menu.add_command(label='Networks', command=BGPNetworksGUI)
         menu.add_command(label='Neighbors', command=BGPNeighborsGUI)
         menu.add_command(label='Redistribution', command=BGPRedistributionGUI)
+        menu.add_command(label='Disable', command=disable_router_bgp)
         if platform.system() == 'Windows':
             self.tree.bind('<Button-3>', show_menu_bgp)
         if platform.system() == 'Darwin':
@@ -554,6 +580,7 @@ class MainGUI:
                         menu.entryconfigure('Add Area', command=lambda: OSPFAddAreaGUI(self, selected_router,
                                                                                        self.project.current_user))
                         menu.entryconfigure('Redistribution', command=lambda: show_redistribution(selected_router))
+                        menu.entryconfigure('Disable', command=lambda: disable_router_ospf(self, selected_router))
                 except IndexError:
                     pass
 
@@ -572,12 +599,19 @@ class MainGUI:
                 OSPFRedistributionGUI(self, selected_router, self.project.current_user)
             return None
 
+        def disable_router_ospf(self, selected_router: Router) -> None:
+            if selected_router:
+                if messagebox.askokcancel('Disable OSPF', f'Are you sure to disable OSPF on {selected_router.name}?'):
+                    pass
+                # Disable OSPF on selected router
+
         menu = tk.Menu(self.root, tearoff=False)
         menu.add_command(label='Edit OSPF', command=OSPFEditGUI)
         menu.add_command(label='Interfaces', command=OSPFInterfaceDetailsGUI)
         menu.add_command(label='Edit Area', command=OSPFAreaConfigurationGUI)
         menu.add_command(label='Add Area', command=OSPFAddAreaGUI)
         menu.add_command(label='Redistribution', command=OSPFRedistributionGUI)
+        menu.add_command(label='Disable', command=disable_router_ospf)
         if platform.system() == 'Windows':
             self.tree.bind('<Button-3>', show_menu_ospf)
         if platform.system() == 'Darwin':
