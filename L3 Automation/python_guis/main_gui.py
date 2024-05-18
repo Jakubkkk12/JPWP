@@ -1,4 +1,5 @@
 import platform
+import threading
 import tkinter as tk
 from tkinter import ttk
 from tkinter.filedialog import asksaveasfile, askopenfilename
@@ -31,6 +32,7 @@ from python_guis.rip.rip_redistribution_gui import RIPRedistributionGUI
 from python_guis.ssh.ssh_connections_gui import SSHConnectionsGUI
 from python_guis.static.static_routes_gui import StaticRoutesGUI
 from resources.connect_frontend_with_backend.frontend_backend_functions import get_info_router
+from resources.connect_frontend_with_backend.frontend_backend_functions import remove_rip, remove_ospf, remove_bgp
 from resources.devices.Router import Router
 from resources.routing_protocols.ospf.OSPFArea import OSPFArea
 from resources.Project import Project
@@ -309,8 +311,8 @@ class MainGUI:
 
         def disable_router(main_gui, selected_router: Router) -> None:
             if selected_router:
-                pass
-            #Remove router completely
+                if messagebox.askokcancel('Disable', 'Are you sure to disable this router?'):
+                    del self.project.devices[selected_router.name]
             return None
 
         menu = tk.Menu(self.root, tearoff=False)
@@ -397,8 +399,7 @@ class MainGUI:
             if selected_router:
                 if messagebox.askokcancel(title='Disable RIP', message=f'Are you sure to disable RIP on '
                                                                        f'{selected_router.name}?',):
-                    pass
-                    # Disable RIP on selected router
+                    threading.Thread(target=remove_rip, args=(main_gui, selected_router, self.project.current_user)).start()
 
         menu = tk.Menu(self.root, tearoff=False)
         menu.add_command(label='Edit', command=RIPEditGUI)
@@ -484,8 +485,7 @@ class MainGUI:
         def disable_router_bgp(main_gui, selected_router: Router) -> None:
             if selected_router:
                 if messagebox.askokcancel('Disable', f'Are you sure to disable BGP on {selected_router.name}?'):
-                    pass
-                    # Disable BGP on selected router
+                    threading.Thread(target=remove_bgp, args=(main_gui, selected_router, self.project.current_user)).start()
 
         menu = tk.Menu(self.root, tearoff=False)
         menu.add_command(label='Edit', command=BGPEditGUI)
@@ -599,11 +599,10 @@ class MainGUI:
                 OSPFRedistributionGUI(self, selected_router, self.project.current_user)
             return None
 
-        def disable_router_ospf(self, selected_router: Router) -> None:
+        def disable_router_ospf(main_gui, selected_router: Router) -> None:
             if selected_router:
                 if messagebox.askokcancel('Disable OSPF', f'Are you sure to disable OSPF on {selected_router.name}?'):
-                    pass
-                # Disable OSPF on selected router
+                    threading.Thread(target=remove_ospf, args=(main_gui, selected_router, self.project.current_user)).start()
 
         menu = tk.Menu(self.root, tearoff=False)
         menu.add_command(label='Edit OSPF', command=OSPFEditGUI)
