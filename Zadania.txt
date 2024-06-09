@@ -1,0 +1,12 @@
+Zadania dla studentów:
+
+ZADANIE1 (frontend):
+Zrefaktoruj kod tak aby zrobić jedno uniwersalne okienko RedistributionGUI (zamiast BGPRedistributionGUI, OSPFRedistributionGUI i RIPRedistributionGUI) i móc je zaaplikować do wszystkich protokołów routingu.
+
+ZADANIE2 (backend):
+Stosując przyjętą w projekcie konwencję napisz odpowiednie funkcje umożliwiające obsłużenie dodania AREA w OSPF. Popatrz na ospf_area_add_gui.py aby zobaczyć jakie dane są zwracane z okienka. Prawidłowo rozwiązane zadanie powinno składać się z dopisanych funkcji w: frontend_backend_functions.py, universal_router_commands.py, commands.py oraz getting_ospf.py. 
+
+ZADANIE3 (frontend + backend):
+Stosując Tkinter oraz przyjętą w projekcie konwencją na backend zaimplementuj możliwość stworzenia loopback interface (na urządzeniach cisco)  
+
+ 

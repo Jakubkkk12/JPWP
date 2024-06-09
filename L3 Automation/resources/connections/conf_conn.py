@@ -1,3 +1,4 @@
+import netmiko
 from netmiko import ConnectHandler
 from resources.devices.Router import Router
 from contextlib import contextmanager
@@ -29,11 +30,17 @@ class Connection:
         return None
 
 
-def execute_conf_commands(router: Router, user: User, commands: str | list[str]) -> str:
-    with Connection(router=router, user=user) as connection:
+def execute_conf_commands(router: Router, user: User, commands: str | list[str],
+                          connection: netmiko.BaseConnection | None = None) -> str:
+    is_connection = False if connection is None else True
+    if is_connection:
         output: list = connection.send_config_set(commands).splitlines()[2:-2]
-        output.insert(0, f'Configuring {router.name}')
-        output.append(f'End')
+    else:
+        with open_connection(router=router, user=user) as connection:
+            output: list = connection.send_config_set(commands).splitlines()[2:-2]
+
+    output.insert(0, f'Configuring {router.name}')
+    output.append(f'End')
     return '\n'.join(output)
 
 
@@ -62,11 +69,17 @@ def open_connection(router: Router, user: User):
         connection.disconnect()
 
 
-def execute_conf_commands_v2(router: Router, user: User, commands: str | list[str]) -> str:
-    with open_connection(router=router, user=user) as connection:
+def execute_conf_commands_v2(router: Router, user: User, commands: str | list[str],
+                             connection: netmiko.BaseConnection | None = None) -> str:
+    is_connection = False if connection is None else True
+    if is_connection:
         output: list = connection.send_config_set(commands).splitlines()[2:-2]
-        output.insert(0, f'Configuring {router.name}')
-        output.append(f'End')
+    else:
+        with open_connection(router=router, user=user) as connection:
+            output: list = connection.send_config_set(commands).splitlines()[2:-2]
+
+    output.insert(0, f'Configuring {router.name}')
+    output.append(f'End')
     return '\n'.join(output)
 
 
