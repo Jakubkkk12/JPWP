@@ -1,0 +1,681 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="e74b435d-9d13-4e9b-b5dd-3452e2e9b5e1" name="Changes" comment="added default rip values" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$/.." value="guis" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
+  <component name="ProjectId" id="2daMqltncA7YQlV80TesoO3vVGH" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.TEST.executor": "Run",
+    "Python.constants.executor": "Run",
+    "Python.edit_interface_ospf_gui.executor": "Run",
+    "Python.enable_password_gui.executor": "Run",
+    "Python.frontend_backend_functions.executor": "Run",
+    "Python.interface_edit_all_gui.executor": "Run",
+    "Python.interface_errors_gui.executor": "Run",
+    "Python.interfaces_details.executor": "Run",
+    "Python.interfaces_details_gui.executor": "Run",
+    "Python.login_gui.executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.main_gui.executor": "Run",
+    "Python.menu_test.executor": "Run",
+    "Python.operating_on_project_files.executor": "Run",
+    "Python.ospf_add_router_gui.executor": "Run",
+    "Python.ospf_area_configuration_gui.executor": "Run",
+    "Python.ospf_interface_details_gui.executor": "Run",
+    "Python.rip_add_router_gui.executor": "Run",
+    "Python.scrollbars_test.executor": "Run",
+    "Python.static_route_add_gui.executor": "Run",
+    "Python.static_routes_gui.executor": "Run",
+    "Python.ttk.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/STUDIA/SEM IV/wwwijs/rpg_gym_app",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Admin\Desktop\PROJEKT_JPWP\JPWP\L3 Automation\python_guis\ssh" />
+      <recent name="C:\Users\Admin\Desktop\PROJEKT_JPWP\JPWP\L3 Automation\python_guis\interface" />
+      <recent name="C:\Users\Admin\Desktop\PROJEKT_JPWP\JPWP\L3 Automation\python_guis\static" />
+      <recent name="C:\Users\Admin\Desktop\PROJEKT_JPWP\JPWP\L3 Automation\python_guis\rip" />
+      <recent name="C:\Users\Admin\Desktop\PROJEKT_JPWP\JPWP\L3 Automation\python_guis\bgp" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.main_gui">
+    <configuration name="interfaces_details_gui" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="L3 Automation" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/python_guis" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\Admin\Desktop\PROJEKT_JPWP\JPWP\L3 Automation\python_guis\interface\interfaces_details_gui.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main_gui" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="L3 Automation" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/python_guis" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/python_guis/main_gui.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="menu_test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="L3 Automation" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TESTING" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TESTING/menu_test.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.main_gui" />
+        <item itemvalue="Python.interfaces_details_gui" />
+        <item itemvalue="Python.menu_test" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-09665e90c3a7-b11f5e8da5ad-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-233.15026.15" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e74b435d-9d13-4e9b-b5dd-3452e2e9b5e1" name="Changes" comment="" />
+      <created>1710241929030</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1710241929030</updated>
+      <workItem from="1710241930076" duration="44000" />
+      <workItem from="1710505206901" duration="9245000" />
+      <workItem from="1710582799183" duration="5935000" />
+      <workItem from="1710590218492" duration="42000" />
+      <workItem from="1710594942289" duration="34000" />
+      <workItem from="1710755132619" duration="8705000" />
+      <workItem from="1710767836684" duration="2780000" />
+      <workItem from="1710772235225" duration="29000" />
+      <workItem from="1710777798057" duration="4372000" />
+      <workItem from="1710789381998" duration="4247000" />
+      <workItem from="1710842355844" duration="7024000" />
+      <workItem from="1710872179445" duration="2376000" />
+      <workItem from="1710926195988" duration="4519000" />
+      <workItem from="1710932398164" duration="9480000" />
+      <workItem from="1710942343001" duration="644000" />
+      <workItem from="1711116897916" duration="1079000" />
+      <workItem from="1711200033184" duration="6983000" />
+      <workItem from="1711209527225" duration="6491000" />
+      <workItem from="1711218607936" duration="100000" />
+      <workItem from="1711289313429" duration="195000" />
+      <workItem from="1711290190300" duration="313000" />
+      <workItem from="1711290513875" duration="16000" />
+      <workItem from="1711290872006" duration="1692000" />
+      <workItem from="1711292592946" duration="888000" />
+      <workItem from="1711296419591" duration="18000" />
+      <workItem from="1711363594603" duration="15334000" />
+      <workItem from="1712393666107" duration="11540000" />
+      <workItem from="1712425818985" duration="5872000" />
+      <workItem from="1712499797658" duration="689000" />
+      <workItem from="1712568159264" duration="613000" />
+      <workItem from="1712568795002" duration="5539000" />
+      <workItem from="1712742980232" duration="65000" />
+      <workItem from="1712743070522" duration="27000" />
+      <workItem from="1712743103267" duration="29000" />
+      <workItem from="1712743139133" duration="9472000" />
+      <workItem from="1712755331714" duration="3993000" />
+      <workItem from="1712769664656" duration="19000" />
+      <workItem from="1712781366709" duration="165000" />
+      <workItem from="1712999553801" duration="13848000" />
+      <workItem from="1713192520076" duration="2543000" />
+      <workItem from="1713772393660" duration="863000" />
+      <workItem from="1713773266765" duration="676000" />
+      <workItem from="1713773952302" duration="14450000" />
+      <workItem from="1713870621373" duration="2156000" />
+      <workItem from="1714460780736" duration="7426000" />
+      <workItem from="1715074896805" duration="2854000" />
+      <workItem from="1715511395971" duration="6841000" />
+      <workItem from="1715519067954" duration="101000" />
+      <workItem from="1715524835226" duration="5232000" />
+      <workItem from="1715530411453" duration="71000" />
+      <workItem from="1715593394669" duration="378000" />
+      <workItem from="1716995068537" duration="1181000" />
+      <workItem from="1717840178863" duration="486000" />
+      <workItem from="1717840673808" duration="19000" />
+    </task>
+    <task id="LOCAL-00068" summary="ssh organize">
+      <option name="closed" value="true" />
+      <created>1713003404953</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1713003404953</updated>
+    </task>
+    <task id="LOCAL-00069" summary="added add router _all">
+      <option name="closed" value="true" />
+      <created>1713003414629</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1713003414629</updated>
+    </task>
+    <task id="LOCAL-00070" summary="added add router _rip">
+      <option name="closed" value="true" />
+      <created>1713004929165</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1713004929165</updated>
+    </task>
+    <task id="LOCAL-00071" summary="added AttributeError handler">
+      <option name="closed" value="true" />
+      <created>1713005234929</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1713005234929</updated>
+    </task>
+    <task id="LOCAL-00072" summary="finished rip add router">
+      <option name="closed" value="true" />
+      <created>1713005640770</created>
+      <option name="number" value="00072" />
+      <option name="presentableId" value="LOCAL-00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1713005640770</updated>
+    </task>
+    <task id="LOCAL-00073" summary="added wildcard dict">
+      <option name="closed" value="true" />
+      <created>1713010180544</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1713010180544</updated>
+    </task>
+    <task id="LOCAL-00074" summary="added wildcard dict">
+      <option name="closed" value="true" />
+      <created>1713010205082</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1713010205082</updated>
+    </task>
+    <task id="LOCAL-00075" summary="added redistribution AttributeError handler">
+      <option name="closed" value="true" />
+      <created>1713010972089</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1713010972089</updated>
+    </task>
+    <task id="LOCAL-00076" summary="added ospf add router">
+      <option name="closed" value="true" />
+      <created>1713011079989</created>
+      <option name="number" value="00076" />
+      <option name="presentableId" value="LOCAL-00076" />
+      <option name="project" value="LOCAL" />
+      <updated>1713011079989</updated>
+    </task>
+    <task id="LOCAL-00077" summary="added default options">
+      <option name="closed" value="true" />
+      <created>1713011400831</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1713011400831</updated>
+    </task>
+    <task id="LOCAL-00078" summary="removed unused comments">
+      <option name="closed" value="true" />
+      <created>1713011453147</created>
+      <option name="number" value="00078" />
+      <option name="presentableId" value="LOCAL-00078" />
+      <option name="project" value="LOCAL" />
+      <updated>1713011453147</updated>
+    </task>
+    <task id="LOCAL-00079" summary="added AttributeError handling">
+      <option name="closed" value="true" />
+      <created>1713013123952</created>
+      <option name="number" value="00079" />
+      <option name="presentableId" value="LOCAL-00079" />
+      <option name="project" value="LOCAL" />
+      <updated>1713013123952</updated>
+    </task>
+    <task id="LOCAL-00080" summary="added add router _bgp">
+      <option name="closed" value="true" />
+      <created>1713013137120</created>
+      <option name="number" value="00080" />
+      <option name="presentableId" value="LOCAL-00080" />
+      <option name="project" value="LOCAL" />
+      <updated>1713013137120</updated>
+    </task>
+    <task id="LOCAL-00081" summary="added empty AttributeError and TypeError handler">
+      <option name="closed" value="true" />
+      <created>1713013313176</created>
+      <option name="number" value="00081" />
+      <option name="presentableId" value="LOCAL-00081" />
+      <option name="project" value="LOCAL" />
+      <updated>1713013313176</updated>
+    </task>
+    <task id="LOCAL-00082" summary="fixed import">
+      <option name="closed" value="true" />
+      <created>1713013337761</created>
+      <option name="number" value="00082" />
+      <option name="presentableId" value="LOCAL-00082" />
+      <option name="project" value="LOCAL" />
+      <updated>1713013337761</updated>
+    </task>
+    <task id="LOCAL-00083" summary="added save project and open project">
+      <option name="closed" value="true" />
+      <created>1713193062505</created>
+      <option name="number" value="00083" />
+      <option name="presentableId" value="LOCAL-00083" />
+      <option name="project" value="LOCAL" />
+      <updated>1713193062505</updated>
+    </task>
+    <task id="LOCAL-00084" summary="fixed views and some bugs">
+      <option name="closed" value="true" />
+      <created>1713194135766</created>
+      <option name="number" value="00084" />
+      <option name="presentableId" value="LOCAL-00084" />
+      <option name="project" value="LOCAL" />
+      <updated>1713194135767</updated>
+    </task>
+    <task id="LOCAL-00085" summary="refactored update data system for main views">
+      <option name="closed" value="true" />
+      <created>1713778886344</created>
+      <option name="number" value="00085" />
+      <option name="presentableId" value="LOCAL-00085" />
+      <option name="project" value="LOCAL" />
+      <updated>1713778886345</updated>
+    </task>
+    <task id="LOCAL-00086" summary="removed login, added it as separate button">
+      <option name="closed" value="true" />
+      <created>1713778905418</created>
+      <option name="number" value="00086" />
+      <option name="presentableId" value="LOCAL-00086" />
+      <option name="project" value="LOCAL" />
+      <updated>1713778905418</updated>
+    </task>
+    <task id="LOCAL-00087" summary="added enable password gui">
+      <option name="closed" value="true" />
+      <created>1713779242480</created>
+      <option name="number" value="00087" />
+      <option name="presentableId" value="LOCAL-00087" />
+      <option name="project" value="LOCAL" />
+      <updated>1713779242480</updated>
+    </task>
+    <task id="LOCAL-00088" summary="fixed update system and disabled speed options for Serial interfaces">
+      <option name="closed" value="true" />
+      <created>1713781484570</created>
+      <option name="number" value="00088" />
+      <option name="presentableId" value="LOCAL-00088" />
+      <option name="project" value="LOCAL" />
+      <updated>1713781484570</updated>
+    </task>
+    <task id="LOCAL-00089" summary="removed ospf networks gui">
+      <option name="closed" value="true" />
+      <created>1713782617004</created>
+      <option name="number" value="00089" />
+      <option name="presentableId" value="LOCAL-00089" />
+      <option name="project" value="LOCAL" />
+      <updated>1713782617004</updated>
+    </task>
+    <task id="LOCAL-00090" summary="added network entry for add router rip">
+      <option name="closed" value="true" />
+      <created>1713782688081</created>
+      <option name="number" value="00090" />
+      <option name="presentableId" value="LOCAL-00090" />
+      <option name="project" value="LOCAL" />
+      <updated>1713782688081</updated>
+    </task>
+    <task id="LOCAL-00091" summary="removed bgp as edit">
+      <option name="closed" value="true" />
+      <created>1713783103767</created>
+      <option name="number" value="00091" />
+      <option name="presentableId" value="LOCAL-00091" />
+      <option name="project" value="LOCAL" />
+      <updated>1713783103767</updated>
+    </task>
+    <task id="LOCAL-00092" summary="added indication about multiple areas">
+      <option name="closed" value="true" />
+      <created>1713787339200</created>
+      <option name="number" value="00092" />
+      <option name="presentableId" value="LOCAL-00092" />
+      <option name="project" value="LOCAL" />
+      <updated>1713787339200</updated>
+    </task>
+    <task id="LOCAL-00093" summary="added ospf interfaces details gui as arg">
+      <option name="closed" value="true" />
+      <created>1713787356045</created>
+      <option name="number" value="00093" />
+      <option name="presentableId" value="LOCAL-00093" />
+      <option name="project" value="LOCAL" />
+      <updated>1713787356045</updated>
+    </task>
+    <task id="LOCAL-00094" summary="refactored data update">
+      <option name="closed" value="true" />
+      <created>1713788333002</created>
+      <option name="number" value="00094" />
+      <option name="presentableId" value="LOCAL-00094" />
+      <option name="project" value="LOCAL" />
+      <updated>1713788333002</updated>
+    </task>
+    <task id="LOCAL-00095" summary="refactored data update for static routes">
+      <option name="closed" value="true" />
+      <created>1713788349145</created>
+      <option name="number" value="00095" />
+      <option name="presentableId" value="LOCAL-00095" />
+      <option name="project" value="LOCAL" />
+      <updated>1713788349145</updated>
+    </task>
+    <task id="LOCAL-00096" summary="refactored data update for ospf networks">
+      <option name="closed" value="true" />
+      <created>1713788837909</created>
+      <option name="number" value="00096" />
+      <option name="presentableId" value="LOCAL-00096" />
+      <option name="project" value="LOCAL" />
+      <updated>1713788837909</updated>
+    </task>
+    <task id="LOCAL-00097" summary="refactored data update for rip networks">
+      <option name="closed" value="true" />
+      <created>1713789588275</created>
+      <option name="number" value="00097" />
+      <option name="presentableId" value="LOCAL-00097" />
+      <option name="project" value="LOCAL" />
+      <updated>1713789588275</updated>
+    </task>
+    <task id="LOCAL-00098" summary="updated ospf data">
+      <option name="closed" value="true" />
+      <created>1714461080557</created>
+      <option name="number" value="00098" />
+      <option name="presentableId" value="LOCAL-00098" />
+      <option name="project" value="LOCAL" />
+      <updated>1714461080557</updated>
+    </task>
+    <task id="LOCAL-00099" summary="added bgp networks">
+      <option name="closed" value="true" />
+      <created>1714465326634</created>
+      <option name="number" value="00099" />
+      <option name="presentableId" value="LOCAL-00099" />
+      <option name="project" value="LOCAL" />
+      <updated>1714465326634</updated>
+    </task>
+    <task id="LOCAL-00100" summary="added ospf add area">
+      <option name="closed" value="true" />
+      <created>1714467973936</created>
+      <option name="number" value="00100" />
+      <option name="presentableId" value="LOCAL-00100" />
+      <option name="project" value="LOCAL" />
+      <updated>1714467973936</updated>
+    </task>
+    <task id="LOCAL-00101" summary="added ospf edit gui">
+      <option name="closed" value="true" />
+      <created>1714469464180</created>
+      <option name="number" value="00101" />
+      <option name="presentableId" value="LOCAL-00101" />
+      <option name="project" value="LOCAL" />
+      <updated>1714469464180</updated>
+    </task>
+    <task id="LOCAL-00102" summary="added data updated">
+      <option name="closed" value="true" />
+      <created>1714469638421</created>
+      <option name="number" value="00102" />
+      <option name="presentableId" value="LOCAL-00102" />
+      <option name="project" value="LOCAL" />
+      <updated>1714469638421</updated>
+    </task>
+    <task id="LOCAL-00103" summary="added aes key request when saving project">
+      <option name="closed" value="true" />
+      <created>1714470426812</created>
+      <option name="number" value="00103" />
+      <option name="presentableId" value="LOCAL-00103" />
+      <option name="project" value="LOCAL" />
+      <updated>1714470426812</updated>
+    </task>
+    <task id="LOCAL-00104" summary="added autoscroll on console box">
+      <option name="closed" value="true" />
+      <created>1715075557845</created>
+      <option name="number" value="00104" />
+      <option name="presentableId" value="LOCAL-00104" />
+      <option name="project" value="LOCAL" />
+      <updated>1715075557845</updated>
+    </task>
+    <task id="LOCAL-00105" summary="removed unused fun">
+      <option name="closed" value="true" />
+      <created>1715076270876</created>
+      <option name="number" value="00105" />
+      <option name="presentableId" value="LOCAL-00105" />
+      <option name="project" value="LOCAL" />
+      <updated>1715076270876</updated>
+    </task>
+    <task id="LOCAL-00106" summary="some fixes">
+      <option name="closed" value="true" />
+      <created>1715512431810</created>
+      <option name="number" value="00106" />
+      <option name="presentableId" value="LOCAL-00106" />
+      <option name="project" value="LOCAL" />
+      <updated>1715512431810</updated>
+    </task>
+    <task id="LOCAL-00107" summary="added enable password configuration for selected routers">
+      <option name="closed" value="true" />
+      <created>1715515409480</created>
+      <option name="number" value="00107" />
+      <option name="presentableId" value="LOCAL-00107" />
+      <option name="project" value="LOCAL" />
+      <updated>1715515409480</updated>
+    </task>
+    <task id="LOCAL-00108" summary="fixed login problem at start">
+      <option name="closed" value="true" />
+      <created>1715516351362</created>
+      <option name="number" value="00108" />
+      <option name="presentableId" value="LOCAL-00108" />
+      <option name="project" value="LOCAL" />
+      <updated>1715516351362</updated>
+    </task>
+    <task id="LOCAL-00109" summary="commented unused components">
+      <option name="closed" value="true" />
+      <created>1715517104521</created>
+      <option name="number" value="00109" />
+      <option name="presentableId" value="LOCAL-00109" />
+      <option name="project" value="LOCAL" />
+      <updated>1715517104521</updated>
+    </task>
+    <task id="LOCAL-00110" summary="removed unused component">
+      <option name="closed" value="true" />
+      <created>1715517197292</created>
+      <option name="number" value="00110" />
+      <option name="presentableId" value="LOCAL-00110" />
+      <option name="project" value="LOCAL" />
+      <updated>1715517197292</updated>
+    </task>
+    <task id="LOCAL-00111" summary="fixed auth password error">
+      <option name="closed" value="true" />
+      <created>1715518400611</created>
+      <option name="number" value="00111" />
+      <option name="presentableId" value="LOCAL-00111" />
+      <option name="project" value="LOCAL" />
+      <updated>1715518400611</updated>
+    </task>
+    <task id="LOCAL-00112" summary="fixed window update error">
+      <option name="closed" value="true" />
+      <created>1715526063690</created>
+      <option name="number" value="00112" />
+      <option name="presentableId" value="LOCAL-00112" />
+      <option name="project" value="LOCAL" />
+      <updated>1715526063690</updated>
+    </task>
+    <task id="LOCAL-00113" summary="fixing stuff">
+      <option name="closed" value="true" />
+      <created>1715528183919</created>
+      <option name="number" value="00113" />
+      <option name="presentableId" value="LOCAL-00113" />
+      <option name="project" value="LOCAL" />
+      <updated>1715528183919</updated>
+    </task>
+    <task id="LOCAL-00114" summary="added bgp neighbor edit">
+      <option name="closed" value="true" />
+      <created>1715529627797</created>
+      <option name="number" value="00114" />
+      <option name="presentableId" value="LOCAL-00114" />
+      <option name="project" value="LOCAL" />
+      <updated>1715529627797</updated>
+    </task>
+    <task id="LOCAL-00115" summary="added reset function">
+      <option name="closed" value="true" />
+      <created>1715530154865</created>
+      <option name="number" value="00115" />
+      <option name="presentableId" value="LOCAL-00115" />
+      <option name="project" value="LOCAL" />
+      <updated>1715530154865</updated>
+    </task>
+    <task id="LOCAL-00116" summary="added default rip values">
+      <option name="closed" value="true" />
+      <created>1715530472592</created>
+      <option name="number" value="00116" />
+      <option name="presentableId" value="LOCAL-00116" />
+      <option name="project" value="LOCAL" />
+      <updated>1715530472592</updated>
+    </task>
+    <option name="localTasksCounter" value="117" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="added indication about multiple areas" />
+    <MESSAGE value="added ospf interfaces details gui as arg" />
+    <MESSAGE value="refactored data update" />
+    <MESSAGE value="refactored data update for static routes" />
+    <MESSAGE value="refactored data update for ospf networks" />
+    <MESSAGE value="refactored data update for rip networks" />
+    <MESSAGE value="updated ospf data" />
+    <MESSAGE value="added bgp networks" />
+    <MESSAGE value="added ospf add area" />
+    <MESSAGE value="added ospf edit gui" />
+    <MESSAGE value="added data updated" />
+    <MESSAGE value="added aes key request when saving project" />
+    <MESSAGE value="added autoscroll on console box" />
+    <MESSAGE value="removed unused fun" />
+    <MESSAGE value="some fixes" />
+    <MESSAGE value="added enable password configuration for selected routers" />
+    <MESSAGE value="fixed login problem at start" />
+    <MESSAGE value="commented unused components" />
+    <MESSAGE value="removed unused component" />
+    <MESSAGE value="fixed auth password error" />
+    <MESSAGE value="fixed window update error" />
+    <MESSAGE value="fixing stuff" />
+    <MESSAGE value="added bgp neighbor edit" />
+    <MESSAGE value="added reset function" />
+    <MESSAGE value="added default rip values" />
+    <option name="LAST_COMMIT_MESSAGE" value="added default rip values" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/L3_Automation$scrollbars_test.coverage" NAME="scrollbars_test Coverage Results" MODIFIED="1710587879424" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TESTING" />
+    <SUITE FILE_PATH="coverage/L3_Automation$constants.coverage" NAME="constants Coverage Results" MODIFIED="1713009687096" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/resources" />
+    <SUITE FILE_PATH="coverage/L3_Automation$ospf_interface_details_gui.coverage" NAME="ospf_interface_details_gui Coverage Results" MODIFIED="1711213115561" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/python_guis" />
+    <SUITE FILE_PATH="coverage/L3_Automation$frontend_backend_functions.coverage" NAME="frontend_backend_functions Coverage Results" MODIFIED="1713787793380" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/resources/connect_frontend_with_backend" />
+    <SUITE FILE_PATH="coverage/L3_Automation$static_routes_gui.coverage" NAME="static_routes_gui Coverage Results" MODIFIED="1713788224278" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/python_guis/static" />
+    <SUITE FILE_PATH="coverage/L3_Automation$interface_edit_all_gui.coverage" NAME="interface_edit_all_gui Coverage Results" MODIFIED="1713790184492" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/python_guis/interface" />
+    <SUITE FILE_PATH="coverage/L3_Automation$ttk.coverage" NAME="ttk Coverage Results" MODIFIED="1710509767207" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$USER_HOME$/AppData/Local/Programs/Python/Python312/Lib/tkinter" />
+    <SUITE FILE_PATH="coverage/L3_Automation$enable_password_gui.coverage" NAME="enable_password_gui Coverage Results" MODIFIED="1713779142137" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/python_guis" />
+    <SUITE FILE_PATH="coverage/L3_Automation$ospf_area_configuration_gui.coverage" NAME="ospf_area_configuration_gui Coverage Results" MODIFIED="1713788762226" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/python_guis/ospf" />
+    <SUITE FILE_PATH="coverage/L3_Automation$rip_add_router_gui.coverage" NAME="rip_add_router_gui Coverage Results" MODIFIED="1713782730263" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/python_guis/rip" />
+    <SUITE FILE_PATH="coverage/L3_Automation$TEST.coverage" NAME="TEST Coverage Results" MODIFIED="1710928905513" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/resources" />
+    <SUITE FILE_PATH="coverage/L3_Automation$static_route_add_gui.coverage" NAME="static_route_add_gui Coverage Results" MODIFIED="1713788146219" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/python_guis/static" />
+    <SUITE FILE_PATH="coverage/L3_Automation$ospf_add_router_gui.coverage" NAME="ospf_add_router_gui Coverage Results" MODIFIED="1713009729175" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/python_guis/ospf" />
+    <SUITE FILE_PATH="coverage/L3_Automation$interfaces_details.coverage" NAME="interfaces_details Coverage Results" MODIFIED="1710872955182" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/python_guis" />
+    <SUITE FILE_PATH="coverage/L3_Automation$interface_errors_gui.coverage" NAME="interface_errors_gui Coverage Results" MODIFIED="1710930043912" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/python_guis" />
+    <SUITE FILE_PATH="coverage/L3_Automation$edit_interface_ospf_gui.coverage" NAME="edit_interface_ospf_gui Coverage Results" MODIFIED="1711212216602" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/python_guis" />
+    <SUITE FILE_PATH="coverage/L3_Automation$menu_test.coverage" NAME="menu_test Coverage Results" MODIFIED="1710778650938" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TESTING" />
+    <SUITE FILE_PATH="coverage/L3_Automation$main_gui.coverage" NAME="main_gui Coverage Results" MODIFIED="1716996524718" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/python_guis" />
+    <SUITE FILE_PATH="coverage/L3_Automation$interfaces_details_gui.coverage" NAME="interfaces_details_gui Coverage Results" MODIFIED="1713780733726" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/python_guis/interface" />
+    <SUITE FILE_PATH="coverage/L3_Automation$main.coverage" NAME="main Coverage Results" MODIFIED="1713772762487" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/python_guis" />
+    <SUITE FILE_PATH="coverage/L3_Automation$login_gui.coverage" NAME="login_gui Coverage Results" MODIFIED="1713773072610" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/python_guis" />
+    <SUITE FILE_PATH="coverage/L3_Automation$operating_on_project_files.coverage" NAME="operating_on_project_files Coverage Results" MODIFIED="1713773135692" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/resources/login_and_dataloading" />
+  </component>
+</project>
