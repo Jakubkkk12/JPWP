@@ -36,8 +36,7 @@ def get_info_router(main_gui, router: Router, user: User) -> None:
     elif main_gui.current_view == MainGUI.OSPF:
         main_gui.update_ospf_tree()
 
-    # todo do usunięcia po beta
-    main_gui.console_commands(f'Pozyskano dane z {router.name}')
+    main_gui.console_commands(f'Data received from {router.name}')
     return None
 
 
@@ -272,7 +271,7 @@ def remove_bgp(main_gui, router: Router, user: User) -> None:
     if completed:
         main_gui.console_commands(output)
         router.bgp = universal_router_commands.get_bgp(None, router, user)
-        main_gui.update_window()
+        main_gui.update_bgp_tree()
     return None
 
 
@@ -367,7 +366,7 @@ def remove_rip(main_gui, router: Router, user: User) -> None:
     if completed:
         main_gui.console_commands(output)
         router.rip = universal_router_commands.get_rip(None, router, user)
-        main_gui.update_window()
+        main_gui.update_rip_tree()
     return None
 
 
@@ -496,7 +495,7 @@ def remove_ospf(main_gui, router: Router, user: User) -> None:
     if completed:
         main_gui.console_commands(output)
         router.ospf = universal_router_commands.get_ospf(None, router, user)
-        main_gui.update_window()
+        main_gui.update_ospf_tree()
     return None
 
 
